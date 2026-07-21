@@ -108,12 +108,12 @@ Update `src/app/page.tsx`.
 
 ## Acceptance Criteria
 
-- [ ] A valid public playlist URL returns up to 50 album artwork thumbnails.
-- [ ] The access token is never exposed in the browser network tab (only API calls to the BFF are visible).
-- [ ] The token is reused across requests within the same server process until expiry.
-- [ ] An invalid URL shows a clear error message.
-- [ ] A non-existent or private playlist shows a clear error message.
-- [ ] Loading state is visible while the API call is in progress.
+- [x] A valid public playlist URL returns up to 50 album artwork thumbnails.
+- [x] The access token is never exposed in the browser network tab (only API calls to the BFF are visible).
+- [x] The token is reused across requests within the same server process until expiry.
+- [x] An invalid URL shows a clear error message.
+- [x] A non-existent or private playlist shows a clear error message.
+- [x] Loading state is visible while the API call is in progress.
 
 ## Environment Variables
 
