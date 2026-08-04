@@ -95,8 +95,9 @@ export async function drawWallpaper(
   }
 
   if (config.title) {
-    const fontSize = Math.round(config.width * 0.035);
-    const padding = Math.round(fontSize * 0.6);
+    const isDesktop = config.width > config.height;
+    const fontSize = Math.round(config.width * (isDesktop ? 0.02 : 0.035));
+    const padding = Math.round(fontSize * 0.5);
     const barHeight = fontSize + padding * 2;
     const barY = config.height - barHeight;
 
