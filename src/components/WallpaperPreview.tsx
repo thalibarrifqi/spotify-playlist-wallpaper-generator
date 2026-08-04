@@ -117,11 +117,12 @@ export default function WallpaperPreview({
       {error && <p className="text-red-500 text-sm">{error}</p>}
 
       <canvas
+        key={`${width}x${height}`}
         ref={canvasRef}
         width={width}
         height={height}
-        className="w-full max-h-[70vh] object-contain rounded-lg border border-zinc-400"
-        style={{ backgroundColor }}
+        className="w-full object-contain rounded-lg border border-zinc-400"
+        style={{ backgroundColor, aspectRatio: `${width} / ${height}` }}
       />
 
       <div className="flex gap-2">
