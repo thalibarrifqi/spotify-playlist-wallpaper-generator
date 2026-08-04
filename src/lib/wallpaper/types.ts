@@ -17,6 +17,9 @@ export interface WallpaperConfig {
   width: number;
   height: number;
   title?: string;
+  spacing?: number;
+  borderRadius?: number;
+  backgroundColor?: string;
 }
 
 export const RESOLUTIONS: Record<

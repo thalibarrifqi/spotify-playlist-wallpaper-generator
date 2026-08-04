@@ -14,13 +14,19 @@ function loadImage(src: string): Promise<HTMLImageElement> {
 function findBestColumns(
   count: number,
   width: number,
-  height: number
+  height: number,
+  spacing: number
 ): number {
+  const gapX = spacing * (Math.min(count, Math.ceil(width / height)) + 1);
+  const gapY = spacing * (Math.ceil(count / Math.min(count, Math.ceil(width / height))) + 1);
+  const availW = width - gapX;
+  const availH = height - gapY;
+
   let bestColumns = 1;
   let bestSize = 0;
   for (let columns = 1; columns <= count; columns++) {
     const rows = Math.ceil(count / columns);
-    const size = Math.min(width / columns, height / rows);
+    const size = Math.min(availW / columns, availH / rows);
     if (size > bestSize) {
       bestSize = size;
       bestColumns = columns;
@@ -48,15 +54,19 @@ export async function drawWallpaper(
     throw new Error("Canvas 2D context is not supported in this browser");
   }
 
-  ctx.fillStyle = "#000000";
+  const bgColor = config.backgroundColor ?? "#000000";
+  const spacing = config.spacing ?? 0;
+  const borderRadius = config.borderRadius ?? 0;
+
+  ctx.fillStyle = bgColor;
   ctx.fillRect(0, 0, config.width, config.height);
 
-  const columns = findBestColumns(images.length, config.width, config.height);
+  const columns = findBestColumns(images.length, config.width, config.height, spacing);
   const rows = Math.ceil(images.length / columns);
   const targetCount = columns * rows;
   const padded = padImages(images, targetCount);
 
-  const cells = computeGridLayout(padded.length, config.width, config.height);
+  const cells = computeGridLayout(padded.length, config.width, config.height, spacing);
 
   const loaded = await Promise.all(
     padded.map(async (image, index) => {
@@ -81,9 +91,16 @@ export async function drawWallpaper(
     const drawH = element.height * scale;
 
     ctx.save();
-    ctx.beginPath();
-    ctx.rect(cell.x, cell.y, cell.width, cell.height);
-    ctx.clip();
+    if (borderRadius > 0) {
+      const r = Math.min(borderRadius, cell.width / 2, cell.height / 2);
+      ctx.beginPath();
+      ctx.roundRect(cell.x, cell.y, cell.width, cell.height, r);
+      ctx.clip();
+    } else {
+      ctx.beginPath();
+      ctx.rect(cell.x, cell.y, cell.width, cell.height);
+      ctx.clip();
+    }
     ctx.drawImage(
       element,
       cell.x + (cell.width - drawW) / 2,

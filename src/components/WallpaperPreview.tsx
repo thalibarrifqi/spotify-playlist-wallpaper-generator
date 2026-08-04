@@ -9,7 +9,12 @@ interface WallpaperPreviewProps {
   images: AlbumImage[];
   playlistName: string;
   resolution: ResolutionKey;
+  customWidth?: number;
+  customHeight?: number;
   showTitle: boolean;
+  spacing: number;
+  borderRadius: number;
+  backgroundColor: string;
   onReshuffle: () => void;
 }
 
@@ -26,7 +31,12 @@ export default function WallpaperPreview({
   images,
   playlistName,
   resolution,
+  customWidth,
+  customHeight,
   showTitle,
+  spacing,
+  borderRadius,
+  backgroundColor,
   onReshuffle,
 }: WallpaperPreviewProps) {
   const [status, setStatus] = useState<{ key: string; error: string } | null>(
@@ -34,8 +44,10 @@ export default function WallpaperPreview({
   );
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  const { width, height } = RESOLUTIONS[resolution];
-  const renderKey = `${width}x${height}${showTitle ? "-title" : ""}`;
+  const { width: presetWidth, height: presetHeight } = RESOLUTIONS[resolution];
+  const width = customWidth ?? presetWidth;
+  const height = customHeight ?? presetHeight;
+  const renderKey = `${width}x${height}${showTitle ? "-title" : ""}-s${spacing}-r${borderRadius}-bg${backgroundColor}`;
   const current = status?.key === renderKey ? status : null;
   const rendering = current === null;
   const error = current?.error ?? "";
@@ -52,6 +64,9 @@ export default function WallpaperPreview({
           width,
           height,
           title: showTitle ? playlistName : undefined,
+          spacing,
+          borderRadius,
+          backgroundColor,
         });
         if (cancelled) return;
         setStatus({ key: renderKey, error: "" });
@@ -71,7 +86,7 @@ export default function WallpaperPreview({
     return () => {
       cancelled = true;
     };
-  }, [images, width, height, renderKey, showTitle, playlistName]);
+  }, [images, width, height, renderKey, showTitle, playlistName, spacing, borderRadius, backgroundColor]);
 
   const handleDownload = useCallback(() => {
     const canvas = canvasRef.current;
@@ -105,7 +120,8 @@ export default function WallpaperPreview({
         ref={canvasRef}
         width={width}
         height={height}
-        className="w-full max-h-[70vh] object-contain rounded-lg border border-zinc-400 bg-black"
+        className="w-full max-h-[70vh] object-contain rounded-lg border border-zinc-400"
+        style={{ backgroundColor }}
       />
 
       <div className="flex gap-2">

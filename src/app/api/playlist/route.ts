@@ -2,13 +2,21 @@ import { NextRequest, NextResponse } from "next/server";
 import { parsePlaylistUrl, PlaylistUrlError } from "@/lib/spotify/parse-playlist-url";
 import { getPlaylist, PlaylistError, RateLimitError } from "@/lib/spotify/playlists";
 
+const STATUS = {
+  BAD_REQUEST: 400,
+  NOT_FOUND: 404,
+  RATE_LIMITED: 429,
+  BAD_GATEWAY: 502,
+  INTERNAL_ERROR: 500,
+} as const;
+
 export async function GET(request: NextRequest) {
   const url = request.nextUrl.searchParams.get("url");
 
   if (!url) {
     return NextResponse.json(
       { error: "Missing 'url' query parameter" },
-      { status: 400 }
+      { status: STATUS.BAD_REQUEST }
     );
   }
 
@@ -17,11 +25,11 @@ export async function GET(request: NextRequest) {
     playlistId = parsePlaylistUrl(url);
   } catch (error) {
     if (error instanceof PlaylistUrlError) {
-      return NextResponse.json({ error: error.message }, { status: 400 });
+      return NextResponse.json({ error: error.message }, { status: STATUS.BAD_REQUEST });
     }
     return NextResponse.json(
       { error: "Failed to parse playlist URL" },
-      { status: 400 }
+      { status: STATUS.BAD_REQUEST }
     );
   }
 
@@ -36,20 +44,18 @@ export async function GET(request: NextRequest) {
           code: "RATE_LIMIT_EXCEEDED",
           isFreeAccount: error.isFreeAccount
         },
-        { status: 429 }
+        { status: STATUS.RATE_LIMITED }
       );
     }
     if (error instanceof PlaylistError) {
       const status = error.message.includes("not found")
-        ? 404
-        : error.message.includes("rate limit")
-          ? 429
-          : 502;
+        ? STATUS.NOT_FOUND
+        : STATUS.BAD_GATEWAY;
       return NextResponse.json({ error: error.message }, { status });
     }
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: STATUS.INTERNAL_ERROR }
     );
   }
 }
