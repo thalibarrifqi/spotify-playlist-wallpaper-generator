@@ -10,24 +10,27 @@ Sprint 1 completed the data pipeline: the app can fetch and display album artwor
 
 ## Requirements
 
-- [ ] Canvas compositing of album artworks into a single image
-- [ ] Grid layout (5 columns for mobile, matching the preview)
-- [ ] Mobile resolution target: 1080x1920
-- [ ] Download button that exports the canvas as PNG
-- [ ] Black background behind artworks
+- [x] Canvas compositing of album artworks into a single image
+- [x] Layout options: Grid (5 columns) and Random
+- [x] Random layout: fixed-size cells at random positions with rotation up to 90°
+- [x] "Reshuffle" button re-randomizes the random layout
+- [x] Resolution options: Mobile (1080x1920) and Desktop (1920x1080)
+- [x] UI controls to select layout and resolution before generating
+- [x] Download button that exports the canvas as PNG
+- [x] Black background behind artworks
 
 ## Acceptance Criteria
 
-- [ ] Clicking "Download Wallpaper" produces a PNG file
-- [ ] The downloaded image is 1080x1920 pixels
-- [ ] Album artworks are arranged in a 5-column grid
-- [ ] All available artworks (up to 50) appear in the wallpaper
-- [ ] Black padding fills any empty space in the grid
+- [x] Clicking "Download Wallpaper" produces a PNG file
+- [x] The downloaded image matches the selected resolution (1080x1920 or 1920x1080)
+- [x] Grid layout arranges artworks in a 5-column grid
+- [x] Random layout places artworks at randomized, non-overlapping positions with rotation up to 90°
+- [x] "Reshuffle" regenerates the random layout
+- [x] All available artworks (up to 50) appear in the wallpaper
+- [x] Black background fills the canvas and any empty grid space
 
 ## Out of Scope
 
-- [ ] Random layout
-- [ ] Desktop resolution (1920x1080)
 - [ ] Gradient/blur backgrounds
 - [ ] Playlist title overlay
 - [ ] Multiple themes
@@ -49,15 +52,17 @@ Sprint 1 completed the data pipeline: the app can fetch and display album artwor
 
 ## Deliverables
 
-- [ ] `src/lib/wallpaper/grid-layout.ts` — Grid layout calculation
-- [ ] `src/lib/wallpaper/render.ts` — Canvas rendering logic
-- [ ] `src/components/WallpaperPreview.tsx` — Canvas preview component
-- [ ] Download button in `src/app/page.tsx`
+- [x] `src/lib/wallpaper/grid-layout.ts` — Grid layout calculation
+- [x] `src/lib/wallpaper/random-layout.ts` — Random layout calculation
+- [x] `src/lib/wallpaper/render.ts` — Canvas rendering logic
+- [x] `src/components/WallpaperPreview.tsx` — Canvas preview component
+- [x] Layout and resolution selector controls in `src/app/page.tsx`
+- [x] Download button in `src/app/page.tsx`
 
 ## Definition of Done
 
-- [ ] Acceptance criteria completed
-- [ ] Lint passes
-- [ ] AI self-review completed
+- [x] Acceptance criteria completed
+- [x] Lint passes
+- [x] AI self-review completed
 - [ ] Human review completed
-- [ ] Documentation updated (README.md, sprint review)
+- [x] Documentation updated (README.md, sprint review)

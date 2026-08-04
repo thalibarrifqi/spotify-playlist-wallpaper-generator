@@ -14,13 +14,24 @@ Generate beautiful wallpapers from Spotify playlist album artworks.
 
 ## Current Status
 
-Spotify API integration complete. The app can:
+Wallpaper generation is complete. The app can:
 
 - Accept a Spotify playlist URL
 - Fetch playlist data via the Spotify Web API (Client Credentials flow)
 - Display album artwork thumbnails in a grid preview
-
-Wallpaper generation, download, and layout options are not yet implemented.
+- Generate and download a PNG wallpaper with:
+  - Grid (5 columns) or Random layout
+  - Mobile (1080x1920) or Desktop (1920x1080) resolution
+  - Black background behind artworks
+  - Reshuffle button to re-randomize the Random layout
+- Accept a Spotify playlist URL
+- Fetch playlist data via the Spotify Web API (Client Credentials flow)
+- Display album artwork thumbnails in a grid preview
+- Generate and download a PNG wallpaper with:
+  - Grid (5 columns) or Random layout
+  - Mobile (1080x1920) or Desktop (1920x1080) resolution
+  - Black background behind artworks
+  - Reshuffle button to re-randomize the Random layout
 
 ---
 
@@ -30,7 +41,7 @@ Wallpaper generation, download, and layout options are not yet implemented.
 - TypeScript
 - Tailwind CSS v4
 - Spotify Web API
-- HTML Canvas (planned)
+- HTML Canvas
 
 ---
 
@@ -41,15 +52,24 @@ src/
   app/
     api/playlist/    BFF route handler for Spotify API
     page.tsx         Main page component
+  components/
+    WallpaperPreview.tsx  Canvas preview, download, and reshuffle
   lib/
     spotify/
       parse-playlist-url.ts   URL parsing utility
       playlists.ts            Playlist fetch helper with rate-limit retry
       token.ts                OAuth token cache
+    wallpaper/
+      types.ts                Layout/resolution types and resolutions
+      grid-layout.ts          Grid layout calculation
+      random-layout.ts        Random layout calculation
+      render.ts               Canvas rendering logic
 docs/
   prd.md                     Product Requirements Document
   implementation-plan.md     Sprint-level implementation plan
   engineering-principles.md  Development workflow and principles
+  project-status.md          Development log
+  sprints/                   Sprint plans and reviews
 ```
 
 ---
