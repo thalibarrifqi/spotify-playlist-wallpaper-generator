@@ -19,8 +19,9 @@ Spotify users who want aesthetic wallpapers for their phones or desktops.
 
 ## Wallpaper Layout
 
-- Square-cell grid that auto-selects column count to fill the canvas (no stretched artwork)
+- Square-cell grid that auto-selects column count and scales to cover the whole canvas (no stretched artwork, no black margins)
 - Artwork is cover-cropped (never distorted)
+- Album artworks are deduplicated by album, so songs from the same album appear once
 
 ## Target Resolution
 

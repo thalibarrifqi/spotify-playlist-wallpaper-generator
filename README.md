@@ -18,9 +18,9 @@ Wallpaper generation is complete. The app can:
 
 - Accept a Spotify playlist URL
 - Fetch playlist data via the Spotify Web API (Client Credentials flow)
-- Display album artwork thumbnails in a grid preview
+- Display album artwork thumbnails in a grid preview (deduplicated per album)
 - Generate and download a PNG wallpaper with:
-  - A square-cell grid that auto-selects column count to fill the canvas (no stretched artwork)
+  - A square-cell grid that auto-selects column count and scales to cover the whole canvas (no stretched artwork, no black margins)
   - Mobile (1080x1920) or Desktop (1920x1080) resolution
   - Black background behind artworks
 

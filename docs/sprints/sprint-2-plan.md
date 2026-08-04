@@ -11,7 +11,8 @@ Sprint 1 completed the data pipeline: the app can fetch and display album artwor
 ## Requirements
 
 - [x] Canvas compositing of album artworks into a single image
-- [x] Grid layout with square, centered cells that auto-select column count to fill the canvas (no stretched artwork)
+- [x] Grid layout with square cells that auto-select column count and scale to cover the whole canvas (no stretched artwork, no black margins)
+- [x] Album artworks deduplicated by album, so songs from the same album appear once
 - [x] Resolution options: Mobile (1080x1920) and Desktop (1920x1080)
 - [x] UI controls to select resolution before generating
 - [x] Download button that exports the canvas as PNG
@@ -22,7 +23,8 @@ Sprint 1 completed the data pipeline: the app can fetch and display album artwor
 - [x] Clicking "Download Wallpaper" produces a PNG file
 - [x] The downloaded image matches the selected resolution (1080x1920 or 1920x1080)
 - [x] Grid layout arranges artworks in square cells with no distortion
-- [x] The grid auto-selects column count so it spans a full canvas dimension (e.g., Desktop 50 artworks → 10 columns filling the width)
+- [x] The grid covers the entire canvas edge-to-edge regardless of artwork count (e.g., a 2-song playlist fills the whole wallpaper)
+- [x] Songs from the same album appear only once
 - [x] All available artworks (up to 50) appear in the wallpaper
 - [x] Black background fills the canvas and any empty grid space
 

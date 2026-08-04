@@ -105,16 +105,19 @@ export async function getPlaylist(playlistId: string): Promise<PlaylistData> {
   const data = await response.json();
 
   const images: AlbumImage[] = [];
-  for (const track of data.tracks?.items ?? []) {
-    const album = track.track?.album;
-    if (album?.images?.length > 0) {
-      const bestImage = album.images.reduce(
-        (best: AlbumImage, current: AlbumImage) =>
-          current.width > best.width ? current : best,
-        album.images[0]
-      );
-      images.push(bestImage);
-    }
+  const seenAlbums = new Set<string>();
+  for (const item of data.tracks?.items ?? []) {
+    const album = item.track?.album;
+    if (!album || album.images?.length === 0) continue;
+    if (seenAlbums.has(album.id)) continue;
+    seenAlbums.add(album.id);
+
+    const bestImage = album.images.reduce(
+      (best: AlbumImage, current: AlbumImage) =>
+        current.width > best.width ? current : best,
+      album.images[0]
+    );
+    images.push(bestImage);
 
     if (images.length >= 50) break;
   }
