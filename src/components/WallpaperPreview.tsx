@@ -9,6 +9,7 @@ interface WallpaperPreviewProps {
   images: AlbumImage[];
   playlistName: string;
   resolution: ResolutionKey;
+  onReshuffle: () => void;
 }
 
 function sanitizeFilename(name: string): string {
@@ -24,6 +25,7 @@ export default function WallpaperPreview({
   images,
   playlistName,
   resolution,
+  onReshuffle,
 }: WallpaperPreviewProps) {
   const [status, setStatus] = useState<{ key: string; error: string } | null>(
     null
@@ -89,7 +91,7 @@ export default function WallpaperPreview({
   return (
     <div className="space-y-4">
       {rendering && (
-        <div className="py-10 text-center text-zinc-400">
+        <div className="py-10 text-center text-zinc-500">
           Generating wallpaper...
         </div>
       )}
@@ -100,10 +102,17 @@ export default function WallpaperPreview({
         ref={canvasRef}
         width={width}
         height={height}
-        className="w-full max-h-[70vh] object-contain rounded-lg border border-zinc-700 bg-black"
+        className="w-full max-h-[70vh] object-contain rounded-lg border border-zinc-400 bg-black"
       />
 
       <div className="flex gap-2">
+        <button
+          onClick={onReshuffle}
+          disabled={rendering}
+          className="flex-1 py-3 px-4 bg-zinc-600 hover:bg-zinc-700 text-white font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Reshuffle
+        </button>
         <button
           onClick={handleDownload}
           disabled={rendering}

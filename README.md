@@ -21,8 +21,10 @@ Wallpaper generation is complete. The app can:
 - Display album artwork thumbnails in a grid preview (deduplicated per album)
 - Generate and download a PNG wallpaper with:
   - A square-cell grid that auto-selects column count and scales to cover the whole canvas (no stretched artwork, no black margins)
+  - Random image padding to fill the grid and eliminate black spots
   - Mobile (1080x1920) or Desktop (1920x1080) resolution
   - Black background behind artworks
+- Reshuffle button to randomize artwork order and padding images
 
 ---
 

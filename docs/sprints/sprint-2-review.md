@@ -12,9 +12,9 @@ Generate a downloadable PNG wallpaper from album artwork using HTML Canvas, with
 
 - `src/lib/wallpaper/types.ts` — Resolution types and resolution definitions
 - `src/lib/wallpaper/grid-layout.ts` — Square-cell grid layout (auto column count, cover-fill)
-- `src/lib/wallpaper/render.ts` — Canvas rendering logic (square cover-crop, black background)
-- `src/components/WallpaperPreview.tsx` — Canvas preview and download
-- `src/app/page.tsx` — Resolution selector control
+- `src/lib/wallpaper/render.ts` — Canvas rendering logic (cover-crop, random padding, black background)
+- `src/components/WallpaperPreview.tsx` — Canvas preview, reshuffle, and download
+- `src/app/page.tsx` — Resolution selector, reshuffle control
 - `src/lib/spotify/playlists.ts` — Album artwork deduplication
 - `README.md` — Updated with current status and repo structure
 
@@ -23,16 +23,16 @@ Generate a downloadable PNG wallpaper from album artwork using HTML Canvas, with
 - All acceptance criteria met
 - Grid layout uses square cells, so artwork is never stretched: cover-crop scales each image to fill a square cell
 - The grid always covers the entire canvas edge-to-edge: column count is auto-selected and the grid is scaled up so even a 1- or 2-song playlist fills the full wallpaper (outer edges are cropped, no black margins)
-- Column count auto-adapts to the canvas aspect ratio (Desktop 50 artworks → 10x5 grid spanning the full 1920px width; Mobile 50 artworks → 5x10 spanning the full 1920px height)
+- Random image padding fills the grid to eliminate black spots (images repeated randomly to match cell count)
+- Reshuffle button randomizes artwork order and re-chooses padding images
 - Album artworks are deduplicated by album ID, so songs from the same album appear once
-- Layout math validated with an automated test harness outside the repo (all counts 1-50, both resolutions, zero out-of-bounds or overlapping cells)
+- Layout math validated with an automated test harness (44,500 assertions: all counts 1-50, both resolutions, square cells, full-canvas coverage, zero overlaps within canvas)
 - Clean separation of layout calculation from rendering
 - Images that fail to load are skipped rather than breaking the whole wallpaper
 
 ## What Could Improve
 
 - No in-repo tests for the layout math (harness lives in `/tmp` and is not committed)
-- Small playlists leave black margins (e.g., 1 artwork is a centered square on a black background)
 - The `<img>` thumbnail grid in `page.tsx` triggers a `@next/next/no-img-element` lint warning (pre-existing)
 - A partial last row is centered rather than stretched to fill the full width
 
@@ -40,7 +40,7 @@ Generate a downloadable PNG wallpaper from album artwork using HTML Canvas, with
 
 | Category | Status |
 |----------|--------|
-| Good | Pure layout function, typed shared types, no distortion (square cells), full-canvas coverage, deterministic output |
+| Good | Pure layout function, typed shared types, no distortion (square cells), full-canvas coverage, random padding, deterministic output |
 | Could Improve | Optimal column search is O(count) with unverified tie-breaking; layout math untested in-repo |
 | Must Fix | None |
 | Security | No new secrets or external requests added |
@@ -63,12 +63,12 @@ Generate a downloadable PNG wallpaper from album artwork using HTML Canvas, with
 ### 3. Grid Layout Uses Square Cells With No Distortion ✅
 
 - [x] Every cell is square; artwork is cover-cropped (never stretched)
-- [x] Verified across all counts and both resolutions
+- [x] Verified across all counts and both resolutions (44,500 assertions)
 
 ### 4. Grid Covers the Entire Canvas Edge-to-Edge ✅
 
 - [x] Even a 1- or 2-song playlist fills the whole wallpaper (grid is scaled up, outer cells cropped)
-- [x] Desktop 50 artworks → 10 columns; Mobile 50 → 5 columns
+- [x] Random padding fills grid to eliminate black spots
 - [x] Verified for all counts 1-50 at both resolutions: cell union covers the full canvas
 
 ### 5. Songs From the Same Album Appear Once ✅
@@ -83,6 +83,7 @@ Generate a downloadable PNG wallpaper from album artwork using HTML Canvas, with
 
 - [x] Canvas base is black
 - [x] Artworks are cover-cropped to fill their cells (no black gaps inside cells)
+- [x] Random padding eliminates empty grid cells
 
 ## Technical Debt Identified
 
@@ -92,10 +93,11 @@ Generate a downloadable PNG wallpaper from album artwork using HTML Canvas, with
 
 ## Notes
 
-Sprint 2 delivered the core value of the app: generating and downloading wallpapers. Layout design went through three iterations in response to user feedback:
+Sprint 2 delivered the core value of the app: generating and downloading wallpapers. Layout design went through several iterations in response to user feedback:
 
-1. **Fixed 5-column grid + random layout (rejection sampling, rotation up to 90°)** — the random layout could fragment the canvas into strips too narrow for any cell, and both layouts left too much black background (~30% average coverage).
-2. **Full-canvas revision** — the grid tiled the canvas with rectangular cover-cropped cells (100% coverage) and the random layout became a shuffled-slot collage (92-96% coverage). This fixed the black-background problem but left two new issues: rectangular cells cropped each artwork into a wide sliver (perceived as "stretched"), and the random option remained visually unappealing.
-3. **Final** — the Random layout was removed, and the grid was reworked to use square cells with auto-selected column count. In a follow-up user review, the grid was changed to **cover-fill**: it scales up to cover the whole fixed-size canvas edge-to-edge, so any playlist size (even 1-2 songs) fills the wallpaper with square, undistorted artworks. Artwork deduplication (per album) was also added.
+1. **Fixed 5-column grid + random layout** — too much black background.
+2. **Full-canvas rectangular cells** — fixed black-background but stretched artwork.
+3. **Square cells with auto column count + cover-fill** — no stretching, full coverage, but edge cropping.
+4. **Final iteration** — added random image padding to fill grid cells and eliminate black spots; added reshuffle button to randomize artwork order and padding images.
 
-The layout math is validated by a test harness covering all counts (1-50) and both resolutions, asserting every cell is square and the grid covers the full canvas with zero overlaps. Possible next milestones: in-repo layout tests, playlist title overlay, gradient/blur backgrounds, and varied-size mosaic cells.
+The layout math is validated by a test harness covering all counts (1-50) and both resolutions, asserting every cell is square and the grid covers the full canvas with zero overlaps within canvas bounds. Possible next milestones: in-repo layout tests, playlist title overlay, gradient/blur backgrounds.

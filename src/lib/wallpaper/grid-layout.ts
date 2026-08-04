@@ -24,22 +24,18 @@ export function computeGridLayout(
   const gridHeight = rows * bestSize;
   const scale = Math.max(width / gridWidth, height / gridHeight);
   const cellSize = bestSize * scale;
-  const offsetX = (width - gridWidth * scale) / 2;
-  const offsetY = (height - gridHeight * scale) / 2;
-  const lastRowCount = count % bestColumns;
+  const offsetX = (width - bestColumns * cellSize) / 2;
+  const offsetY = (height - rows * cellSize) / 2;
 
   const cells: LayoutCell[] = [];
   for (let i = 0; i < count; i++) {
     const column = i % bestColumns;
     const row = Math.floor(i / bestColumns);
-    const rowOffset =
-      row === rows - 1 && lastRowCount > 0
-        ? (width - lastRowCount * cellSize) / 2
-        : offsetX;
     cells.push({
-      x: rowOffset + column * cellSize,
+      x: offsetX + column * cellSize,
       y: offsetY + row * cellSize,
-      size: cellSize,
+      width: cellSize,
+      height: cellSize,
     });
   }
   return cells;

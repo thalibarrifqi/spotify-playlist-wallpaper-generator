@@ -1,7 +1,7 @@
 # Project Status
 
 **Last updated:** 2026-08-04
-**Commits:** 69593e9 → a3002d0 (7 commits on main)
+**Commits:** 69593e9 → 6179924 (14 commits on main)
 
 ---
 
@@ -35,7 +35,7 @@ Legend: ✅ Complete | ⏳ Planned | 🔧 In Progress
 - **Goal:** Generate downloadable wallpaper using HTML Canvas
 - **Status:** Complete — all 7 acceptance criteria verified
 - **Review:** `docs/sprints/sprint-2-review.md`
-- **Verification:** Layout math tested via harness (counts 1-50, both resolutions: square cells, full-canvas coverage, zero overlaps); lint and build pass
+- **Verification:** Layout math tested via harness (44,500 assertions: counts 1-50, both resolutions, square cells, full-canvas coverage, zero overlaps within canvas); lint and build pass
 
 ---
 
@@ -54,6 +54,9 @@ Legend: ✅ Complete | ⏳ Planned | 🔧 In Progress
 - [x] Resolution options (Mobile 1080x1920, Desktop 1920x1080)
 - [x] PNG wallpaper download
 - [x] Album artwork deduplication (one per album)
+- [x] Random image padding to fill grid and eliminate black spots
+- [x] Reshuffle button (randomizes artwork order and padding images)
+- [x] Light UI theme (black gaps visible during preview)
 
 ---
 

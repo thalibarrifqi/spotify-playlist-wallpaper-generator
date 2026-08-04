@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import WallpaperPreview from "@/components/WallpaperPreview";
 import { RESOLUTIONS } from "@/lib/wallpaper/types";
 import type { AlbumImage, ResolutionKey } from "@/lib/wallpaper/types";
@@ -20,6 +20,17 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [playlist, setPlaylist] = useState<PlaylistResponse | null>(null);
   const [resolution, setResolution] = useState<ResolutionKey>("mobile");
+  const [shuffledImages, setShuffledImages] = useState<AlbumImage[]>([]);
+
+  const handleReshuffle = useCallback(() => {
+    if (!playlist) return;
+    const arr = [...playlist.images];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    setShuffledImages(arr);
+  }, [playlist]);
 
   const validateSpotifyUrl = (url: string): boolean => {
     const spotifyPlaylistRegex =
@@ -59,6 +70,7 @@ export default function Home() {
       }
 
       setPlaylist(data);
+      setShuffledImages(data.images);
     } catch {
       setError("Network error. Please check your connection and try again.");
     } finally {
@@ -67,13 +79,13 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen bg-zinc-200 flex flex-col items-center justify-center p-4">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <h1 className="text-4xl font-bold text-white mb-2">
+          <h1 className="text-4xl font-bold text-zinc-900 mb-2">
             Spotify Playlist Wallpaper Generator
           </h1>
-          <p className="text-zinc-400">
+          <p className="text-zinc-600">
             Generate beautiful wallpapers from your Spotify playlists
           </p>
         </div>
@@ -85,7 +97,7 @@ export default function Home() {
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               placeholder="Paste your Spotify playlist URL here"
-              className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-3 bg-white border border-zinc-300 rounded-lg text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
@@ -101,10 +113,10 @@ export default function Home() {
 
           {playlist && (
             <div className="space-y-4">
-              <div className="p-4 bg-zinc-800 border border-zinc-700 rounded-lg">
-                <h2 className="text-xl font-bold text-white">{playlist.name}</h2>
+              <div className="p-4 bg-white border border-zinc-300 rounded-lg">
+                <h2 className="text-xl font-bold text-zinc-900">{playlist.name}</h2>
                 {playlist.description && (
-                  <p className="text-zinc-400 text-sm mt-1">
+                  <p className="text-zinc-500 text-sm mt-1">
                     {playlist.description}
                   </p>
                 )}
@@ -122,18 +134,18 @@ export default function Home() {
                   ))}
                 </div>
               ) : (
-                <div className="p-4 bg-zinc-800 border border-zinc-700 rounded-lg text-center">
-                  <p className="text-zinc-400">No album artwork found</p>
+                <div className="p-4 bg-white border border-zinc-300 rounded-lg text-center">
+                  <p className="text-zinc-500">No album artwork found</p>
                 </div>
               )}
 
               {playlist.images.length > 0 && (
                 <>
                   <div>
-                    <label className="block text-xs text-zinc-400 mb-1">
+                    <label className="block text-xs text-zinc-600 mb-1">
                       Resolution
                     </label>
-                    <div className="flex rounded-lg overflow-hidden border border-zinc-700">
+                    <div className="flex rounded-lg overflow-hidden border border-zinc-300">
                       {Object.entries(RESOLUTIONS).map(([key, res]) => (
                         <button
                           key={key}
@@ -141,7 +153,7 @@ export default function Home() {
                           className={
                             resolution === key
                               ? "flex-1 py-2 text-sm font-medium bg-blue-600 text-white"
-                              : "flex-1 py-2 text-sm font-medium bg-zinc-800 text-zinc-400 hover:bg-zinc-700"
+                              : "flex-1 py-2 text-sm font-medium bg-white text-zinc-600 hover:bg-zinc-100"
                           }
                         >
                           {res.label}
@@ -151,9 +163,10 @@ export default function Home() {
                   </div>
 
                   <WallpaperPreview
-                    images={playlist.images}
+                    images={shuffledImages}
                     playlistName={playlist.name}
                     resolution={resolution}
+                    onReshuffle={handleReshuffle}
                   />
                 </>
               )}

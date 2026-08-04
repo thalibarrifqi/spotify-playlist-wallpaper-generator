@@ -11,6 +11,33 @@ function loadImage(src: string): Promise<HTMLImageElement> {
   });
 }
 
+function findBestColumns(
+  count: number,
+  width: number,
+  height: number
+): number {
+  let bestColumns = 1;
+  let bestSize = 0;
+  for (let columns = 1; columns <= count; columns++) {
+    const rows = Math.ceil(count / columns);
+    const size = Math.min(width / columns, height / rows);
+    if (size > bestSize) {
+      bestSize = size;
+      bestColumns = columns;
+    }
+  }
+  return bestColumns;
+}
+
+function padImages(images: AlbumImage[], targetCount: number): AlbumImage[] {
+  if (images.length >= targetCount) return images.slice(0, targetCount);
+  const padded = [...images];
+  while (padded.length < targetCount) {
+    padded.push(images[Math.floor(Math.random() * images.length)]);
+  }
+  return padded;
+}
+
 export async function drawWallpaper(
   images: AlbumImage[],
   canvas: HTMLCanvasElement,
@@ -24,10 +51,15 @@ export async function drawWallpaper(
   ctx.fillStyle = "#000000";
   ctx.fillRect(0, 0, config.width, config.height);
 
-  const cells = computeGridLayout(images.length, config.width, config.height);
+  const columns = findBestColumns(images.length, config.width, config.height);
+  const rows = Math.ceil(images.length / columns);
+  const targetCount = columns * rows;
+  const padded = padImages(images, targetCount);
+
+  const cells = computeGridLayout(padded.length, config.width, config.height);
 
   const loaded = await Promise.all(
-    images.map(async (image, index) => {
+    padded.map(async (image, index) => {
       try {
         const element = await loadImage(image.url);
         return { element, cell: cells[index] };
@@ -42,17 +74,23 @@ export async function drawWallpaper(
 
     const { element, cell } = item;
     const scale = Math.max(
-      cell.size / element.width,
-      cell.size / element.height
+      cell.width / element.width,
+      cell.height / element.height
     );
-    const width = element.width * scale;
-    const height = element.height * scale;
+    const drawW = element.width * scale;
+    const drawH = element.height * scale;
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(cell.x, cell.y, cell.width, cell.height);
+    ctx.clip();
     ctx.drawImage(
       element,
-      cell.x + cell.size / 2 - width / 2,
-      cell.y + cell.size / 2 - height / 2,
-      width,
-      height
+      cell.x + (cell.width - drawW) / 2,
+      cell.y + (cell.height - drawH) / 2,
+      drawW,
+      drawH
     );
+    ctx.restore();
   }
 }
