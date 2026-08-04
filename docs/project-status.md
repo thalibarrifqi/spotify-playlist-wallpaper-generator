@@ -1,7 +1,8 @@
 # Project Status
 
-**Last updated:** 2026-08-04
-**Commits:** 69593e9 → f98af8d (19 commits on main)
+**Last updated:** 2026-08-05
+**Commits:** 69593e9 → e6220e7 (25 commits on main)
+**Deployed:** Vercel
 
 ---
 
@@ -51,6 +52,27 @@ Legend: ✅ Complete | ⏳ Planned | 🔧 In Progress
 - **Review:** `docs/sprints/sprint-4-review.md`
 - **Verification:** 300 tests pass via vitest; lint passes; canvas aspect ratio matches resolution
 
+### Sprint 5 — Wizard UI + Wallpaper Themes ✅
+- **Date:** 2026-08-05
+- **Goal:** Multi-step wizard UI and wallpaper theme presets
+- **Status:** Complete — all acceptance criteria verified
+- **Review:** `docs/sprints/sprint-5-review.md`
+- **Verification:** 300 tests pass via vitest; lint passes
+
+### Sprint 6 — Advanced Backgrounds + Print Export ✅
+- **Date:** 2026-08-05
+- **Goal:** Gradient/blur backgrounds, 6 theme presets, print quality export
+- **Status:** Complete — all acceptance criteria verified
+- **Review:** `docs/sprints/sprint-6-review.md`
+- **Verification:** 300 tests pass via vitest; lint passes
+
+### Sprint 7 — Landing Page + Visual Polish ✅
+- **Date:** 2026-08-05
+- **Goal:** Landing page, background images, animations, responsive layout
+- **Status:** Complete — all acceptance criteria verified
+- **Review:** `docs/sprints/sprint-7-review.md`
+- **Verification:** 300 tests pass via vitest; lint passes
+
 ---
 
 ## Completed
@@ -65,7 +87,7 @@ Legend: ✅ Complete | ⏳ Planned | 🔧 In Progress
 - [x] README with setup instructions
 - [x] Documentation (PRD, implementation plan)
 - [x] Wallpaper generation (square-cell grid covering the full canvas, no stretched artwork)
-- [x] Resolution options (Mobile 1080x1920, Desktop 1920x1920, Custom)
+- [x] Resolution options (Mobile 1080x1920, Desktop 1920x1080, Custom)
 - [x] PNG wallpaper download
 - [x] Album artwork deduplication (one per album)
 - [x] Random image padding to fill grid and eliminate black spots
@@ -80,18 +102,32 @@ Legend: ✅ Complete | ⏳ Planned | 🔧 In Progress
 - [x] Error boundary component
 - [x] Status code constants in route handler
 - [x] Canvas preview aspect ratio matches resolution
+- [x] 4-step wizard UI (URL → Artwork → Settings → Download)
+- [x] Dark/Light theme presets
+- [x] Gradient background support (linear/radial, up to 3 colors)
+- [x] Blur background with artwork selector
+- [x] 6 theme presets (Dark, Light, Neon, Pastel, Minimal, Midnight)
+- [x] Print quality export (1x, 2x, 3x DPI)
+- [x] Album name in blur selector
+- [x] Artwork scale control (0.5x–2x)
+- [x] Full-screen landing page with Unsplash background
+- [x] Music-themed backgrounds for wizard steps
+- [x] Fade-in animations
+- [x] Custom Spotify green accent
+- [x] Responsive layout (side-by-side on desktop)
+- [x] Deployed to Vercel
 
 ---
 
 ## Current Task
 
-None — Sprint 4 complete.
+None — Project complete.
 
 ---
 
 ## Next Task
 
-Sprint 5: Multi-step wizard UI, multiple themes, final polish.
+None — Project complete.
 
 ---
 
