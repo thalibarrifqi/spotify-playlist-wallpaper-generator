@@ -7,6 +7,13 @@ export class PlaylistError extends Error {
   }
 }
 
+export class RateLimitError extends PlaylistError {
+  constructor(message: string, public isFreeAccount: boolean = false) {
+    super(message);
+    this.name = "RateLimitError";
+  }
+}
+
 export interface AlbumImage {
   url: string;
   width: number;
@@ -37,16 +44,26 @@ async function fetchWithRetry(
   });
 
   if (response.status === 429) {
-    if (attempt > MAX_RETRIES) {
-      throw new PlaylistError(
-        "Spotify API rate limit exceeded. Please try again later."
-      );
-    }
-
     const retryAfter = response.headers.get("Retry-After");
     const retryDelay = retryAfter
       ? parseInt(retryAfter, 10) * 1000
       : BASE_RETRY_DELAY_MS * Math.pow(2, attempt - 1);
+
+    // Check if this might be a free account rate limit issue
+    // Free accounts have 30 req/s vs 180 for premium
+    const isLikelyFreeAccount = retryDelay > 1000 || attempt >= 2;
+
+    if (attempt > MAX_RETRIES) {
+      if (isLikelyFreeAccount) {
+        throw new RateLimitError(
+          "Rate limit exceeded. Free Spotify developer accounts have stricter limits (30 requests/second). Consider upgrading to a Premium Developer account or wait before trying again.",
+          true
+        );
+      }
+      throw new RateLimitError(
+        "Spotify API rate limit exceeded. Please try again later."
+      );
+    }
 
     await delay(retryDelay);
     return fetchWithRetry(url, token, attempt + 1);

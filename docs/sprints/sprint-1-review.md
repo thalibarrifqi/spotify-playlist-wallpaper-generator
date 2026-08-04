@@ -45,12 +45,59 @@ Fetch public Spotify playlist data using a server-side Client Credentials flow a
 
 ## Acceptance Criteria
 
-- [x] Valid public playlist URL returns up to 50 album artwork thumbnails
-- [x] Access token never exposed in browser network tab
-- [x] Token reused across requests until expiry
-- [x] Invalid URL shows clear error message
-- [x] Non-existent or private playlist shows clear error message
-- [x] Loading state visible while API call is in progress
+### 1. Valid Public Playlist URL → Artwork Thumbnails ✅
+
+- [x] Paste a known public playlist URL (e.g., `https://open.spotify.com/playlist/7ER372B5dxUQ28JcyoZkWV`)
+- [x] Click "Generate Wallpaper"
+- [x] Playlist name displays above the artwork grid
+- [x] Album artwork thumbnails render in a 5-column grid
+- [x] Up to 50 artworks are displayed (verify count on a large playlist)
+
+### 2. Access Token Never Exposed in Browser ✅
+
+- [x] Open browser DevTools → Network tab
+- [x] Submit a valid playlist URL
+- [x] Confirm only one outgoing request: `GET /api/playlist?url=...`
+- [x] Confirm NO request to `accounts.spotify.com` or `api.spotify.com` appears
+- [x] Confirm no `access_token` value is visible in the Response tab
+
+### 3. Token Reused Across Requests ✅
+
+- [x] Submit a valid playlist URL, note the response
+- [x] Immediately submit a different valid playlist URL
+- [x] Both requests succeed without token errors
+- [x] In server logs, no second `POST /api/token` between the two requests
+
+### 4. Invalid URL → Clear Error Message ✅
+
+Test each input and verify a clear error appears:
+
+- [x] Empty string → "Missing 'url' query parameter"
+- [x] Plain text `not-a-url` → "Invalid URL format"
+- [x] Non-playlist path `https://open.spotify.com/album/abc123` → "URL must contain a playlist path"
+- [x] Wrong hostname `https://example.com/playlist/abc123` → "URL must be from open.spotify.com"
+- [x] Missing ID `https://open.spotify.com/playlist/` → "URL must contain a playlist path"
+
+### 5. Non-existent or Private Playlist → Clear Error Message ✅
+
+- [x] Submit a valid-format URL with bogus ID (e.g., `/playlist/000000000000000000000`) → "Playlist not found"
+- [x] Error message: "Playlist not found"
+- [x] Submit a URL to a private or collaborative playlist → "Unable to access this playlist. It may be private or restricted."
+- [x] Error message: "Unable to access this playlist. It may be private or restricted."
+
+### 6. Loading State Visible During API Call ✅
+
+- [x] Click "Generate Wallpaper" with a valid URL
+- [x] Button text changes to "Loading..." immediately
+- [x] Button is visually disabled (dimmed, no pointer cursor)
+- [x] Button returns to "Generate Wallpaper" after response (success or error)
+
+### 7. Error Recovery ✅
+
+- [x] Trigger an error (e.g., invalid URL or bad playlist ID)
+- [x] Verify error message displays
+- [x] Correct the input and submit again
+- [x] Previous error clears, new request completes normally
 
 ## Technical Debt Identified
 

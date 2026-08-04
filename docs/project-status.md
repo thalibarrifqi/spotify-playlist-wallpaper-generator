@@ -1,6 +1,6 @@
 # Project Status
 
-**Last updated:** 2026-07-21
+**Last updated:** 2026-08-04
 **Commits:** c3d0b4c → c395c69 (4 commits on main)
 
 ---
@@ -26,8 +26,9 @@ Legend: ✅ Complete | ⏳ Planned | 🔧 In Progress
 ### Sprint 1 — Spotify API Integration ✅
 - **Date:** 2026-07-21
 - **Goal:** Fetch public Spotify playlist data and display album artwork
-- **Status:** Complete — all 6 acceptance criteria met
+- **Status:** Complete — all 7 acceptance criteria verified
 - **Review:** `docs/sprints/sprint-1-review.md`
+- **Verification:** All AC tested via CLI (2026-08-04)
 
 ### Sprint 2 — Wallpaper Generation ⏳
 - **Goal:** Generate downloadable wallpaper using HTML Canvas

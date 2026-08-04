@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { parsePlaylistUrl, PlaylistUrlError } from "@/lib/spotify/parse-playlist-url";
-import { getPlaylist, PlaylistError } from "@/lib/spotify/playlists";
+import { getPlaylist, PlaylistError, RateLimitError } from "@/lib/spotify/playlists";
 
 export async function GET(request: NextRequest) {
   const url = request.nextUrl.searchParams.get("url");
@@ -29,6 +29,16 @@ export async function GET(request: NextRequest) {
     const playlist = await getPlaylist(playlistId);
     return NextResponse.json(playlist);
   } catch (error) {
+    if (error instanceof RateLimitError) {
+      return NextResponse.json(
+        { 
+          error: error.message,
+          code: "RATE_LIMIT_EXCEEDED",
+          isFreeAccount: error.isFreeAccount
+        },
+        { status: 429 }
+      );
+    }
     if (error instanceof PlaylistError) {
       const status = error.message.includes("not found")
         ? 404

@@ -13,6 +13,8 @@ interface PlaylistResponse {
   description: string;
   images: AlbumImage[];
   error?: string;
+  code?: string;
+  isFreeAccount?: boolean;
 }
 
 export default function Home() {
@@ -50,7 +52,11 @@ export default function Home() {
       const data: PlaylistResponse = await response.json();
 
       if (!response.ok) {
-        setError(data.error || "Failed to fetch playlist");
+        if (data.code === "RATE_LIMIT_EXCEEDED" && data.isFreeAccount) {
+          setError(`${data.error}`);
+        } else {
+          setError(data.error || "Failed to fetch playlist");
+        }
         return;
       }
 
