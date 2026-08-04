@@ -33,9 +33,9 @@ Legend: ✅ Complete | ⏳ Planned | 🔧 In Progress
 ### Sprint 2 — Wallpaper Generation ✅
 - **Date:** 2026-08-04
 - **Goal:** Generate downloadable wallpaper using HTML Canvas
-- **Status:** Complete — all 7 acceptance criteria verified
+- **Status:** Complete — all 6 acceptance criteria verified
 - **Review:** `docs/sprints/sprint-2-review.md`
-- **Verification:** Layout math tested via harness (counts 1-50, both resolutions, multiple seeds); lint and build pass
+- **Verification:** Layout math tested via harness (counts 1-50, both resolutions); lint and build pass
 
 ---
 
@@ -50,10 +50,9 @@ Legend: ✅ Complete | ⏳ Planned | 🔧 In Progress
 - [x] Environment variable setup (`.env.example`)
 - [x] README with setup instructions
 - [x] Documentation (PRD, implementation plan)
-- [x] Wallpaper generation (Grid and Random layouts)
+- [x] Wallpaper generation (square-cell grid, no stretched artwork)
 - [x] Resolution options (Mobile 1080x1920, Desktop 1920x1080)
 - [x] PNG wallpaper download
-- [x] Random layout reshuffle
 
 ---
 
@@ -65,7 +64,7 @@ None — Sprint 2 complete.
 
 ## Next Task
 
-Sprint 3: Canvas fitting to fill empty grid space, playlist title overlay, gradient/blur backgrounds, and in-repo layout tests.
+Sprint 3: Playlist title overlay, gradient/blur backgrounds, and in-repo layout tests.
 
 ---
 
@@ -77,8 +76,7 @@ Sprint 3: Canvas fitting to fill empty grid space, playlist title overlay, gradi
 4. No error boundary component
 5. No tests
 6. Layout math has no in-repo tests (harness lives outside the repo)
-7. Random-layout sizing/rotation constants are heuristic and undocumented
-8. Grid layout leaves partial last row empty instead of stretching cells to fill the canvas
+7. Small playlists leave large black margins
 
 ---
 

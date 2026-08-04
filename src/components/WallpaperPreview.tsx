@@ -3,16 +3,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { drawWallpaper } from "@/lib/wallpaper/render";
 import { RESOLUTIONS } from "@/lib/wallpaper/types";
-import type {
-  AlbumImage,
-  LayoutType,
-  ResolutionKey,
-} from "@/lib/wallpaper/types";
+import type { AlbumImage, ResolutionKey } from "@/lib/wallpaper/types";
 
 interface WallpaperPreviewProps {
   images: AlbumImage[];
   playlistName: string;
-  layout: LayoutType;
   resolution: ResolutionKey;
 }
 
@@ -28,17 +23,15 @@ function sanitizeFilename(name: string): string {
 export default function WallpaperPreview({
   images,
   playlistName,
-  layout,
   resolution,
 }: WallpaperPreviewProps) {
-  const [seed, setSeed] = useState(() => Math.floor(Math.random() * 2 ** 31));
   const [status, setStatus] = useState<{ key: string; error: string } | null>(
     null
   );
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   const { width, height } = RESOLUTIONS[resolution];
-  const renderKey = `${layout}:${width}x${height}:${seed}`;
+  const renderKey = `${width}x${height}`;
   const current = status?.key === renderKey ? status : null;
   const rendering = current === null;
   const error = current?.error ?? "";
@@ -52,10 +45,8 @@ export default function WallpaperPreview({
     const render = async () => {
       try {
         await drawWallpaper(images, canvas, {
-          layout,
           width,
           height,
-          seed,
         });
         if (cancelled) return;
         setStatus({ key: renderKey, error: "" });
@@ -75,11 +66,7 @@ export default function WallpaperPreview({
     return () => {
       cancelled = true;
     };
-  }, [images, layout, width, height, seed, renderKey]);
-
-  const handleReshuffle = useCallback(() => {
-    setSeed((currentSeed) => currentSeed + 1);
-  }, []);
+  }, [images, width, height, renderKey]);
 
   const handleDownload = useCallback(() => {
     const canvas = canvasRef.current;
@@ -117,15 +104,6 @@ export default function WallpaperPreview({
       />
 
       <div className="flex gap-2">
-        {layout === "random" && (
-          <button
-            onClick={handleReshuffle}
-            disabled={rendering}
-            className="flex-1 py-3 px-4 bg-zinc-800 hover:bg-zinc-700 text-white font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Reshuffle
-          </button>
-        )}
         <button
           onClick={handleDownload}
           disabled={rendering}

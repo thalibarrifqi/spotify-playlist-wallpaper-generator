@@ -19,8 +19,8 @@ Spotify users who want aesthetic wallpapers for their phones or desktops.
 
 ## Wallpaper Layout
 
-- Grid Layout
-- Random Layout
+- Square-cell grid that auto-selects column count to fill the canvas (no stretched artwork)
+- Artwork is cover-cropped (never distorted)
 
 ## Target Resolution
 

@@ -1,5 +1,4 @@
 import { computeGridLayout } from "./grid-layout";
-import { computeRandomLayout } from "./random-layout";
 import type { AlbumImage, WallpaperConfig } from "./types";
 
 function loadImage(src: string): Promise<HTMLImageElement> {
@@ -25,15 +24,7 @@ export async function drawWallpaper(
   ctx.fillStyle = "#000000";
   ctx.fillRect(0, 0, config.width, config.height);
 
-  const cells =
-    config.layout === "grid"
-      ? computeGridLayout(images.length, config.width, config.height)
-      : computeRandomLayout(
-          images.length,
-          config.width,
-          config.height,
-          config.seed
-        );
+  const cells = computeGridLayout(images.length, config.width, config.height);
 
   const loaded = await Promise.all(
     images.map(async (image, index) => {
@@ -50,20 +41,18 @@ export async function drawWallpaper(
     if (!item) continue;
 
     const { element, cell } = item;
-    const rad = (cell.rotation * Math.PI) / 180;
-
-    ctx.save();
-    ctx.translate(cell.x + cell.width / 2, cell.y + cell.height / 2);
-    ctx.rotate(rad);
-
     const scale = Math.max(
-      cell.width / element.width,
-      cell.height / element.height
+      cell.size / element.width,
+      cell.size / element.height
     );
     const width = element.width * scale;
     const height = element.height * scale;
-    ctx.drawImage(element, -width / 2, -height / 2, width, height);
-
-    ctx.restore();
+    ctx.drawImage(
+      element,
+      cell.x + cell.size / 2 - width / 2,
+      cell.y + cell.size / 2 - height / 2,
+      width,
+      height
+    );
   }
 }

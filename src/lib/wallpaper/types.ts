@@ -1,5 +1,3 @@
-export type LayoutType = "grid" | "random";
-
 export type ResolutionKey = "mobile" | "desktop";
 
 export interface AlbumImage {
@@ -11,16 +9,12 @@ export interface AlbumImage {
 export interface LayoutCell {
   x: number;
   y: number;
-  width: number;
-  height: number;
-  rotation: number;
+  size: number;
 }
 
 export interface WallpaperConfig {
-  layout: LayoutType;
   width: number;
   height: number;
-  seed?: number;
 }
 
 export const RESOLUTIONS: Record<

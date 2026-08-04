@@ -20,18 +20,9 @@ Wallpaper generation is complete. The app can:
 - Fetch playlist data via the Spotify Web API (Client Credentials flow)
 - Display album artwork thumbnails in a grid preview
 - Generate and download a PNG wallpaper with:
-  - Grid (5 columns) or Random layout
+  - A square-cell grid that auto-selects column count to fill the canvas (no stretched artwork)
   - Mobile (1080x1920) or Desktop (1920x1080) resolution
   - Black background behind artworks
-  - Reshuffle button to re-randomize the Random layout
-- Accept a Spotify playlist URL
-- Fetch playlist data via the Spotify Web API (Client Credentials flow)
-- Display album artwork thumbnails in a grid preview
-- Generate and download a PNG wallpaper with:
-  - Grid (5 columns) or Random layout
-  - Mobile (1080x1920) or Desktop (1920x1080) resolution
-  - Black background behind artworks
-  - Reshuffle button to re-randomize the Random layout
 
 ---
 
@@ -53,16 +44,15 @@ src/
     api/playlist/    BFF route handler for Spotify API
     page.tsx         Main page component
   components/
-    WallpaperPreview.tsx  Canvas preview, download, and reshuffle
+    WallpaperPreview.tsx  Canvas preview and download
   lib/
     spotify/
       parse-playlist-url.ts   URL parsing utility
       playlists.ts            Playlist fetch helper with rate-limit retry
       token.ts                OAuth token cache
     wallpaper/
-      types.ts                Layout/resolution types and resolutions
-      grid-layout.ts          Grid layout calculation
-      random-layout.ts        Random layout calculation
+      types.ts                Resolution types and resolutions
+      grid-layout.ts          Square-cell grid layout calculation
       render.ts               Canvas rendering logic
 docs/
   prd.md                     Product Requirements Document
