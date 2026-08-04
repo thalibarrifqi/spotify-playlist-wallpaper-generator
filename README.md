@@ -2,8 +2,6 @@
 
 Generate beautiful wallpapers from Spotify playlist album artworks.
 
-This project is being built as a learning project to explore AI-assisted software development using OpenCode. The focus is not only on delivering a working application but also on learning an effective AI coding workflow.
-
 ---
 
 ## Goals
@@ -11,7 +9,6 @@ This project is being built as a learning project to explore AI-assisted softwar
 - Generate wallpapers from Spotify playlist album artworks.
 - Support both mobile and desktop wallpaper sizes.
 - Keep the application simple and fast.
-- Learn AI-first software development with OpenCode.
 
 ---
 
@@ -53,9 +50,6 @@ docs/
   prd.md                     Product Requirements Document
   implementation-plan.md     Sprint-level implementation plan
   engineering-principles.md  Development workflow and principles
-  templates/                 Sprint, review, and ADR templates
-prompts/
-  Reusable prompts for OpenCode
 ```
 
 ---

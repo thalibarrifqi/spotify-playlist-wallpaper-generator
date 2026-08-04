@@ -47,7 +47,7 @@ Legend: ✅ Complete | ⏳ Planned | 🔧 In Progress
 - [x] Frontend with loading state and artwork grid
 - [x] Environment variable setup (`.env.example`)
 - [x] README with setup instructions
-- [x] Documentation (PRD, implementation plan, sprint templates)
+- [x] Documentation (PRD, implementation plan)
 
 ---
 
