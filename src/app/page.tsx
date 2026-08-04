@@ -18,6 +18,13 @@ interface PlaylistResponse {
   isFreeAccount?: boolean;
 }
 
+const STEP_BACKGROUNDS = {
+  fetch: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=1920&q=80",
+  artwork: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=1920&q=80",
+  settings: "https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=1920&q=80",
+  download: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=1920&q=80",
+};
+
 export default function Home() {
   const [step, setStep] = useState<0 | 1 | 2 | 3 | 4>(0);
   const [url, setUrl] = useState("");
@@ -145,240 +152,261 @@ export default function Home() {
     return <LandingPage onGetStarted={handleGetStarted} />;
   }
 
+  // Get background for current step
+  const getBackground = () => {
+    switch (step) {
+      case 1: return STEP_BACKGROUNDS.fetch;
+      case 2: return STEP_BACKGROUNDS.artwork;
+      case 3: return STEP_BACKGROUNDS.settings;
+      case 4: return STEP_BACKGROUNDS.download;
+      default: return STEP_BACKGROUNDS.fetch;
+    }
+  };
+
   // Wizard steps
   return (
-    <div className="min-h-screen bg-zinc-100 flex flex-col">
-      {/* Top bar */}
-      <header className="bg-white border-b border-zinc-200 px-4 sm:px-6 py-3 card-shadow">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <button
-            onClick={handleBackToLanding}
-            className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors font-medium"
-          >
-            ← Home
-          </button>
-          <h1 className="text-sm sm:text-base font-semibold text-zinc-900">
-            Spotify Wallpaper Generator
-          </h1>
-          <div className="w-16" />
-        </div>
-      </header>
+    <div className="min-h-screen relative flex flex-col">
+      {/* Background */}
+      <div
+        className="fixed inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url('${getBackground()}')` }}
+      />
+      <div className="fixed inset-0 bg-black/60" />
 
-      {/* Main content */}
-      <main className="flex-1 p-4 sm:p-6 lg:p-8">
-        {step === 1 && (
-          <div className="max-w-md mx-auto animate-fade-in">
-            <div className="bg-white rounded-xl p-6 card-shadow-lg">
-              <h2 className="text-2xl font-bold text-zinc-900 mb-2">
-                Paste your playlist
-              </h2>
-              <p className="text-zinc-500 mb-6">
-                Enter a Spotify playlist URL to get started
-              </p>
-              <div className="space-y-4">
-                <input
-                  type="text"
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleFetchPlaylist()}
-                  placeholder="https://open.spotify.com/playlist/..."
-                  className="w-full px-4 py-3 bg-zinc-50 border border-zinc-200 rounded-lg text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-[#1db954] focus:border-transparent transition-smooth"
-                  aria-label="Spotify playlist URL"
-                />
-                {error && (
-                  <div className="p-3 bg-red-50 border border-red-200 rounded-lg" role="alert">
-                    <p className="text-red-600 text-sm">{error}</p>
+      {/* Content */}
+      <div className="relative z-10 flex flex-col min-h-screen">
+        {/* Top bar */}
+        <header className="bg-black/30 backdrop-blur-md border-b border-white/10 px-4 sm:px-6 py-3">
+          <div className="max-w-6xl mx-auto flex items-center justify-between">
+            <button
+              onClick={handleBackToLanding}
+              className="text-sm text-white/70 hover:text-white transition-colors font-medium"
+            >
+              ← Home
+            </button>
+            <h1 className="text-sm sm:text-base font-semibold text-white">
+              Spotify Wallpaper Generator
+            </h1>
+            <div className="w-16" />
+          </div>
+        </header>
+
+        {/* Main content */}
+        <main className="flex-1 p-4 sm:p-6 lg:p-8">
+          {step === 1 && (
+            <div className="max-w-md mx-auto animate-fade-in">
+              <div className="bg-white/95 backdrop-blur-sm rounded-xl p-6 card-shadow-lg">
+                <h2 className="text-2xl font-bold text-zinc-900 mb-2">
+                  Paste your playlist
+                </h2>
+                <p className="text-zinc-500 mb-6">
+                  Enter a Spotify playlist URL to get started
+                </p>
+                <div className="space-y-4">
+                  <input
+                    type="text"
+                    value={url}
+                    onChange={(e) => setUrl(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleFetchPlaylist()}
+                    placeholder="https://open.spotify.com/playlist/..."
+                    className="w-full px-4 py-3 bg-zinc-50 border border-zinc-200 rounded-lg text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-[#1db954] focus:border-transparent transition-smooth"
+                    aria-label="Spotify playlist URL"
+                  />
+                  {error && (
+                    <div className="p-3 bg-red-50 border border-red-200 rounded-lg" role="alert">
+                      <p className="text-red-600 text-sm">{error}</p>
+                    </div>
+                  )}
+                  <button
+                    onClick={handleFetchPlaylist}
+                    disabled={loading}
+                    className="w-full py-3 px-4 bg-[#1db954] hover:bg-[#1ed760] text-white font-semibold rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed btn-press"
+                    aria-label={loading ? "Loading playlist..." : "Fetch playlist"}
+                  >
+                    {loading ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <svg className="animate-spin-slow w-5 h-5" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                        </svg>
+                        Loading...
+                      </span>
+                    ) : (
+                      "Fetch Playlist"
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {step === 2 && playlist && (
+            <div className="max-w-md mx-auto animate-fade-in">
+              <div className="bg-white/95 backdrop-blur-sm rounded-xl p-6 card-shadow-lg">
+                <button
+                  onClick={handleBackToStep1}
+                  className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors mb-4"
+                >
+                  ← Back
+                </button>
+                <div className="mb-4">
+                  <h2 className="text-xl font-bold text-zinc-900">{playlist.name}</h2>
+                  {playlist.description && (
+                    <p className="text-zinc-500 text-sm mt-1">{playlist.description}</p>
+                  )}
+                  <p className="text-zinc-400 text-xs mt-1">{playlist.images.length} album artworks</p>
+                </div>
+
+                {playlist.images.length > 0 ? (
+                  <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 mb-6">
+                    {playlist.images.map((image, index) => (
+                      <img
+                        key={index}
+                        src={image.url}
+                        alt={image.albumName || `Album artwork ${index + 1}`}
+                        className="w-full aspect-square object-cover rounded-lg transition-transform duration-200 hover:scale-105"
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="p-8 bg-zinc-50 border border-zinc-200 rounded-lg text-center mb-6">
+                    <p className="text-zinc-500">No album artwork found</p>
                   </div>
                 )}
+
                 <button
-                  onClick={handleFetchPlaylist}
-                  disabled={loading}
-                  className="w-full py-3 px-4 bg-[#1db954] hover:bg-[#1ed760] text-white font-semibold rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed btn-press"
-                  aria-label={loading ? "Loading playlist..." : "Fetch playlist"}
+                  onClick={handleGoToSettings}
+                  className="w-full py-3 px-4 bg-[#1db954] hover:bg-[#1ed760] text-white font-semibold rounded-lg transition-all duration-200 btn-press"
                 >
-                  {loading ? (
-                    <span className="flex items-center justify-center gap-2">
-                      <svg className="animate-spin-slow w-5 h-5" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                      </svg>
-                      Loading...
-                    </span>
-                  ) : (
-                    "Fetch Playlist"
-                  )}
+                  Proceed to Customize
                 </button>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {step === 2 && playlist && (
-          <div className="max-w-md mx-auto animate-fade-in">
-            <div className="bg-white rounded-xl p-6 card-shadow-lg">
+          {step === 3 && playlist && (
+            <div className="max-w-6xl mx-auto animate-fade-in">
               <button
-                onClick={handleBackToStep1}
-                className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors mb-4"
+                onClick={handleBackToStep2}
+                className="text-sm text-white/70 hover:text-white transition-colors mb-4"
               >
-                ← Back
+                ← Back to Artwork
               </button>
-              <div className="mb-4">
-                <h2 className="text-xl font-bold text-zinc-900">{playlist.name}</h2>
-                {playlist.description && (
-                  <p className="text-zinc-500 text-sm mt-1">{playlist.description}</p>
-                )}
-                <p className="text-zinc-400 text-xs mt-1">{playlist.images.length} album artworks</p>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Settings */}
+                <div>
+                  <SettingsPanel
+                    theme={theme}
+                    setTheme={setTheme}
+                    resolution={resolution}
+                    setResolution={setResolution}
+                    useCustom={useCustom}
+                    setUseCustom={setUseCustom}
+                    customWidth={customWidth}
+                    setCustomWidth={setCustomWidth}
+                    customHeight={customHeight}
+                    setCustomHeight={setCustomHeight}
+                    spacing={spacing}
+                    setSpacing={setSpacing}
+                    borderRadius={borderRadius}
+                    setBorderRadius={setBorderRadius}
+                    showTitle={showTitle}
+                    setShowTitle={setShowTitle}
+                    useGradient={useGradient}
+                    setUseGradient={setUseGradient}
+                    gradient={gradient}
+                    setGradient={setGradient}
+                    useBlur={useBlur}
+                    setUseBlur={setUseBlur}
+                    blurIntensity={blurIntensity}
+                    setBlurIntensity={setBlurIntensity}
+                    blurImageIndex={blurImageIndex}
+                    setBlurImageIndex={setBlurImageIndex}
+                    artworkScale={artworkScale}
+                    setArtworkScale={setArtworkScale}
+                    images={shuffledImages}
+                    onGenerate={handleGenerateWallpaper}
+                  />
+                </div>
+
+                {/* Preview */}
+                <div>
+                  {playlist.images.length > 0 && (
+                    <WallpaperPreview
+                      images={shuffledImages}
+                      playlistName={playlist.name}
+                      resolution={effectiveResolution}
+                      customWidth={useCustom ? canvasWidth : undefined}
+                      customHeight={useCustom ? canvasHeight : undefined}
+                      showTitle={showTitle}
+                      spacing={spacing}
+                      borderRadius={borderRadius}
+                      backgroundColor={useGradient ? gradient.colors[0] : (useBlur ? "#000000" : themeConfig.backgroundColor)}
+                      titleBarColor={themeConfig.titleBarColor}
+                      titleTextColor={themeConfig.titleTextColor}
+                      gradient={useGradient ? gradient : undefined}
+                      blur={useBlur}
+                      blurIntensity={blurIntensity}
+                      blurImageIndex={blurImageIndex}
+                      artworkScale={artworkScale}
+                      showReshuffle={true}
+                      showDownload={false}
+                      onReshuffle={handleReshuffle}
+                    />
+                  )}
+                </div>
               </div>
 
-              {playlist.images.length > 0 ? (
-                <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 mb-6">
-                  {playlist.images.map((image, index) => (
-                    <img
-                      key={index}
-                      src={image.url}
-                      alt={image.albumName || `Album artwork ${index + 1}`}
-                      className="w-full aspect-square object-cover rounded-lg transition-transform duration-200 hover:scale-105"
-                    />
-                  ))}
-                </div>
-              ) : (
-                <div className="p-8 bg-zinc-50 border border-zinc-200 rounded-lg text-center mb-6">
-                  <p className="text-zinc-500">No album artwork found</p>
-                </div>
+              {useCustom && (
+                <p className="text-xs text-white/50 text-center mt-4">
+                  Preview shows at {RESOLUTIONS[effectiveResolution].width}×{RESOLUTIONS[effectiveResolution].height}. Download will use {canvasWidth}×{canvasHeight}.
+                </p>
               )}
-
-              <button
-                onClick={handleGoToSettings}
-                className="w-full py-3 px-4 bg-[#1db954] hover:bg-[#1ed760] text-white font-semibold rounded-lg transition-all duration-200 btn-press"
-              >
-                Proceed to Customize
-              </button>
             </div>
-          </div>
-        )}
+          )}
 
-        {step === 3 && playlist && (
-          <div className="max-w-6xl mx-auto animate-fade-in">
-            <button
-              onClick={handleBackToStep2}
-              className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors mb-4"
-            >
-              ← Back to Artwork
-            </button>
+          {step === 4 && playlist && (
+            <div className="max-w-2xl mx-auto animate-fade-in">
+              <div className="bg-white/95 backdrop-blur-sm rounded-xl p-6 card-shadow-lg">
+                <button
+                  onClick={handleBackToStep3}
+                  className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors mb-4"
+                >
+                  ← Back to Settings
+                </button>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Settings */}
-              <div>
-                <SettingsPanel
-                  theme={theme}
-                  setTheme={setTheme}
-                  resolution={resolution}
-                  setResolution={setResolution}
-                  useCustom={useCustom}
-                  setUseCustom={setUseCustom}
-                  customWidth={customWidth}
-                  setCustomWidth={setCustomWidth}
-                  customHeight={customHeight}
-                  setCustomHeight={setCustomHeight}
-                  spacing={spacing}
-                  setSpacing={setSpacing}
-                  borderRadius={borderRadius}
-                  setBorderRadius={setBorderRadius}
-                  showTitle={showTitle}
-                  setShowTitle={setShowTitle}
-                  useGradient={useGradient}
-                  setUseGradient={setUseGradient}
-                  gradient={gradient}
-                  setGradient={setGradient}
-                  useBlur={useBlur}
-                  setUseBlur={setUseBlur}
-                  blurIntensity={blurIntensity}
-                  setBlurIntensity={setBlurIntensity}
-                  blurImageIndex={blurImageIndex}
-                  setBlurImageIndex={setBlurImageIndex}
-                  artworkScale={artworkScale}
-                  setArtworkScale={setArtworkScale}
+                <div className="mb-4">
+                  <h2 className="text-xl font-bold text-zinc-900">{playlist.name}</h2>
+                  <p className="text-zinc-400 text-xs mt-1">{playlist.images.length} tracks</p>
+                </div>
+
+                <WallpaperPreview
                   images={shuffledImages}
-                  onGenerate={handleGenerateWallpaper}
+                  playlistName={playlist.name}
+                  resolution={effectiveResolution}
+                  customWidth={useCustom ? canvasWidth : undefined}
+                  customHeight={useCustom ? canvasHeight : undefined}
+                  showTitle={showTitle}
+                  spacing={spacing}
+                  borderRadius={borderRadius}
+                  backgroundColor={useGradient ? gradient.colors[0] : (useBlur ? "#000000" : themeConfig.backgroundColor)}
+                  titleBarColor={themeConfig.titleBarColor}
+                  titleTextColor={themeConfig.titleTextColor}
+                  gradient={useGradient ? gradient : undefined}
+                  blur={useBlur}
+                  blurIntensity={blurIntensity}
+                  blurImageIndex={blurImageIndex}
+                  artworkScale={artworkScale}
+                  showReshuffle={false}
+                  showDownload={true}
+                  onReshuffle={handleReshuffle}
                 />
               </div>
-
-              {/* Preview */}
-              <div>
-                {playlist.images.length > 0 && (
-                  <WallpaperPreview
-                    images={shuffledImages}
-                    playlistName={playlist.name}
-                    resolution={effectiveResolution}
-                    customWidth={useCustom ? canvasWidth : undefined}
-                    customHeight={useCustom ? canvasHeight : undefined}
-                    showTitle={showTitle}
-                    spacing={spacing}
-                    borderRadius={borderRadius}
-                    backgroundColor={useGradient ? gradient.colors[0] : (useBlur ? "#000000" : themeConfig.backgroundColor)}
-                    titleBarColor={themeConfig.titleBarColor}
-                    titleTextColor={themeConfig.titleTextColor}
-                    gradient={useGradient ? gradient : undefined}
-                    blur={useBlur}
-                    blurIntensity={blurIntensity}
-                    blurImageIndex={blurImageIndex}
-                    artworkScale={artworkScale}
-                    showReshuffle={true}
-                    showDownload={false}
-                    onReshuffle={handleReshuffle}
-                  />
-                )}
-              </div>
             </div>
-
-            {useCustom && (
-              <p className="text-xs text-zinc-500 text-center mt-4">
-                Preview shows at {RESOLUTIONS[effectiveResolution].width}×{RESOLUTIONS[effectiveResolution].height}. Download will use {canvasWidth}×{canvasHeight}.
-              </p>
-            )}
-          </div>
-        )}
-
-        {step === 4 && playlist && (
-          <div className="max-w-2xl mx-auto animate-fade-in">
-            <div className="bg-white rounded-xl p-6 card-shadow-lg">
-              <button
-                onClick={handleBackToStep3}
-                className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors mb-4"
-              >
-                ← Back to Settings
-              </button>
-
-              <div className="mb-4">
-                <h2 className="text-xl font-bold text-zinc-900">{playlist.name}</h2>
-                <p className="text-zinc-400 text-xs mt-1">{playlist.images.length} tracks</p>
-              </div>
-
-              <WallpaperPreview
-                images={shuffledImages}
-                playlistName={playlist.name}
-                resolution={effectiveResolution}
-                customWidth={useCustom ? canvasWidth : undefined}
-                customHeight={useCustom ? canvasHeight : undefined}
-                showTitle={showTitle}
-                spacing={spacing}
-                borderRadius={borderRadius}
-                backgroundColor={useGradient ? gradient.colors[0] : (useBlur ? "#000000" : themeConfig.backgroundColor)}
-                titleBarColor={themeConfig.titleBarColor}
-                titleTextColor={themeConfig.titleTextColor}
-                gradient={useGradient ? gradient : undefined}
-                blur={useBlur}
-                blurIntensity={blurIntensity}
-                blurImageIndex={blurImageIndex}
-                artworkScale={artworkScale}
-                showReshuffle={false}
-                showDownload={true}
-                onReshuffle={handleReshuffle}
-              />
-            </div>
-          </div>
-        )}
-      </main>
+          )}
+        </main>
+      </div>
     </div>
   );
 }
