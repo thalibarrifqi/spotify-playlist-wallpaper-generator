@@ -33,6 +33,8 @@ interface SettingsPanelProps {
   setBlurIntensity: (i: number) => void;
   blurImageIndex: number;
   setBlurImageIndex: (i: number) => void;
+  artworkScale: number;
+  setArtworkScale: (s: number) => void;
   images: AlbumImage[];
   onGenerate: () => void;
 }
@@ -64,6 +66,8 @@ export default function SettingsPanel({
   setBlurIntensity,
   blurImageIndex,
   setBlurImageIndex,
+  artworkScale,
+  setArtworkScale,
   images,
   onGenerate,
 }: SettingsPanelProps) {
@@ -215,7 +219,9 @@ export default function SettingsPanel({
               className="w-full px-2 py-1.5 bg-white border border-zinc-300 rounded text-zinc-900 text-sm"
             >
               {images.map((img, i) => (
-                <option key={i} value={i}>Track {i + 1}</option>
+                <option key={i} value={i}>
+                  {img.albumName || `Artwork ${i + 1}`}
+                </option>
               ))}
             </select>
           </div>
@@ -234,6 +240,22 @@ export default function SettingsPanel({
           </div>
         </div>
       )}
+
+      <div>
+        <label className="block text-xs text-zinc-600 mb-1">
+          Artwork Scale: {artworkScale.toFixed(1)}x
+        </label>
+        <input
+          type="range"
+          min={0.5}
+          max={2}
+          step={0.1}
+          value={artworkScale}
+          onChange={(e) => setArtworkScale(Number(e.target.value))}
+          className="w-full"
+        />
+        <p className="text-xs text-zinc-500 mt-0.5">Zoom in/out on album artwork</p>
+      </div>
 
       <div>
         <label className="block text-xs text-zinc-600 mb-1">Resolution</label>

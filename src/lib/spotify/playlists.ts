@@ -18,6 +18,7 @@ export interface AlbumImage {
   url: string;
   width: number;
   height: number;
+  albumName?: string;
 }
 
 export interface PlaylistData {
@@ -117,7 +118,7 @@ export async function getPlaylist(playlistId: string): Promise<PlaylistData> {
         current.width > best.width ? current : best,
       album.images[0]
     );
-    images.push(bestImage);
+    images.push({ ...bestImage, albumName: album.name });
 
     if (images.length >= 50) break;
   }

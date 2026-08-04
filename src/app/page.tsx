@@ -41,6 +41,7 @@ export default function Home() {
   const [useBlur, setUseBlur] = useState(false);
   const [blurIntensity, setBlurIntensity] = useState(20);
   const [blurImageIndex, setBlurImageIndex] = useState(0);
+  const [artworkScale, setArtworkScale] = useState(1);
 
   const effectiveResolution: ResolutionKey = useCustom ? "desktop" : resolution;
   const themeConfig = THEMES[theme];
@@ -239,6 +240,8 @@ export default function Home() {
               setBlurIntensity={setBlurIntensity}
               blurImageIndex={blurImageIndex}
               setBlurImageIndex={setBlurImageIndex}
+              artworkScale={artworkScale}
+              setArtworkScale={setArtworkScale}
               images={shuffledImages}
               onGenerate={handleGenerateWallpaper}
             />
@@ -260,6 +263,7 @@ export default function Home() {
                 blur={useBlur}
                 blurIntensity={blurIntensity}
                 blurImageIndex={blurImageIndex}
+                artworkScale={artworkScale}
                 showReshuffle={true}
                 showDownload={false}
                 onReshuffle={handleReshuffle}
@@ -304,6 +308,7 @@ export default function Home() {
               blur={useBlur}
               blurIntensity={blurIntensity}
               blurImageIndex={blurImageIndex}
+              artworkScale={artworkScale}
               showReshuffle={false}
               showDownload={true}
               onReshuffle={handleReshuffle}

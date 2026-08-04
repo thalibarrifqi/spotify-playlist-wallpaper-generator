@@ -4,6 +4,7 @@ export interface AlbumImage {
   url: string;
   width: number;
   height: number;
+  albumName?: string;
 }
 
 export interface LayoutCell {
@@ -32,6 +33,7 @@ export interface WallpaperConfig {
   blur?: boolean;
   blurIntensity?: number;
   blurImageIndex?: number;
+  artworkScale?: number;
 }
 
 export const RESOLUTIONS: Record<

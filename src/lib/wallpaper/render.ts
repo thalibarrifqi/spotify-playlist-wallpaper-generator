@@ -89,7 +89,8 @@ async function drawBlurBackground(
   width: number,
   height: number,
   blurImageIndex: number,
-  blurIntensity: number
+  blurIntensity: number,
+  artworkScale: number
 ): Promise<void> {
   const index = Math.min(blurImageIndex, images.length - 1);
   const image = images[index];
@@ -100,7 +101,8 @@ async function drawBlurBackground(
   ctx.save();
   ctx.filter = `blur(${blurIntensity}px)`;
 
-  const scale = Math.max(width / img.width, height / img.height);
+  const baseScale = Math.max(width / img.width, height / img.height);
+  const scale = baseScale * artworkScale;
   const drawW = img.width * scale;
   const drawH = img.height * scale;
 
@@ -130,7 +132,8 @@ export async function drawWallpaper(
       config.width,
       config.height,
       config.blurImageIndex ?? 0,
-      config.blurIntensity ?? 20
+      config.blurIntensity ?? 20,
+      config.artworkScale ?? 1
     );
   } else if (config.gradient) {
     drawGradient(ctx, config.width, config.height, config.gradient);
@@ -161,10 +164,11 @@ export async function drawWallpaper(
     if (!item) continue;
 
     const { element, cell } = item;
+    const artworkScale = config.artworkScale ?? 1;
     const scale = Math.max(
       cell.width / element.width,
       cell.height / element.height
-    );
+    ) * artworkScale;
     const drawW = element.width * scale;
     const drawH = element.height * scale;
 

@@ -21,6 +21,7 @@ interface WallpaperPreviewProps {
   blur?: boolean;
   blurIntensity?: number;
   blurImageIndex?: number;
+  artworkScale?: number;
   showReshuffle?: boolean;
   showDownload?: boolean;
   onReshuffle: () => void;
@@ -51,6 +52,7 @@ export default function WallpaperPreview({
   blur,
   blurIntensity,
   blurImageIndex,
+  artworkScale = 1,
   showReshuffle = true,
   showDownload = true,
   onReshuffle,
@@ -64,7 +66,7 @@ export default function WallpaperPreview({
   const { width: presetWidth, height: presetHeight } = RESOLUTIONS[resolution];
   const width = customWidth ?? presetWidth;
   const height = customHeight ?? presetHeight;
-  const renderKey = `${width}x${height}${showTitle ? "-title" : ""}-s${spacing}-r${borderRadius}-bg${backgroundColor}-g${gradient?.type || "none"}-blur${blur || false}`;
+  const renderKey = `${width}x${height}${showTitle ? "-title" : ""}-s${spacing}-r${borderRadius}-bg${backgroundColor}-g${gradient?.type || "none"}-blur${blur || false}-scale${artworkScale}`;
   const current = status?.key === renderKey ? status : null;
   const rendering = current === null;
   const error = current?.error ?? "";
@@ -90,6 +92,7 @@ export default function WallpaperPreview({
           blur,
           blurIntensity,
           blurImageIndex,
+          artworkScale,
         });
         if (cancelled) return;
         setStatus({ key: renderKey, error: "" });
@@ -109,7 +112,7 @@ export default function WallpaperPreview({
     return () => {
       cancelled = true;
     };
-  }, [images, width, height, renderKey, showTitle, playlistName, spacing, borderRadius, backgroundColor, titleBarColor, titleTextColor, gradient, blur, blurIntensity, blurImageIndex]);
+  }, [images, width, height, renderKey, showTitle, playlistName, spacing, borderRadius, backgroundColor, titleBarColor, titleTextColor, gradient, blur, blurIntensity, blurImageIndex, artworkScale]);
 
   const handleDownload = useCallback(async () => {
     const canvas = canvasRef.current;
@@ -149,6 +152,7 @@ export default function WallpaperPreview({
         blur,
         blurIntensity: blurIntensity ? blurIntensity * dpiMultiplier : undefined,
         blurImageIndex,
+        artworkScale,
       });
 
       exportCanvas.toBlob((blob) => {
@@ -166,7 +170,7 @@ export default function WallpaperPreview({
     } catch {
       setStatus({ key: renderKey, error: "Failed to export high-res image" });
     }
-  }, [playlistName, renderKey, width, height, dpiMultiplier, images, showTitle, spacing, borderRadius, backgroundColor, titleBarColor, titleTextColor, gradient, blur, blurIntensity, blurImageIndex]);
+  }, [playlistName, renderKey, width, height, dpiMultiplier, images, showTitle, spacing, borderRadius, backgroundColor, titleBarColor, titleTextColor, gradient, blur, blurIntensity, blurImageIndex, artworkScale]);
 
   return (
     <div className="space-y-4">
