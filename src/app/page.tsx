@@ -21,6 +21,7 @@ export default function Home() {
   const [playlist, setPlaylist] = useState<PlaylistResponse | null>(null);
   const [resolution, setResolution] = useState<ResolutionKey>("mobile");
   const [shuffledImages, setShuffledImages] = useState<AlbumImage[]>([]);
+  const [showTitle, setShowTitle] = useState(false);
 
   const handleReshuffle = useCallback(() => {
     if (!playlist) return;
@@ -162,10 +163,24 @@ export default function Home() {
                     </div>
                   </div>
 
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id="show-title"
+                      checked={showTitle}
+                      onChange={(e) => setShowTitle(e.target.checked)}
+                      className="w-4 h-4 rounded border-zinc-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    <label htmlFor="show-title" className="text-sm text-zinc-600">
+                      Show playlist title on wallpaper
+                    </label>
+                  </div>
+
                   <WallpaperPreview
                     images={shuffledImages}
                     playlistName={playlist.name}
                     resolution={resolution}
+                    showTitle={showTitle}
                     onReshuffle={handleReshuffle}
                   />
                 </>

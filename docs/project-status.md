@@ -1,7 +1,7 @@
 # Project Status
 
 **Last updated:** 2026-08-04
-**Commits:** 69593e9 → 6179924 (14 commits on main)
+**Commits:** 69593e9 → 88dc5c0 (14 commits on main)
 
 ---
 
@@ -37,6 +37,13 @@ Legend: ✅ Complete | ⏳ Planned | 🔧 In Progress
 - **Review:** `docs/sprints/sprint-2-review.md`
 - **Verification:** Layout math tested via harness (44,500 assertions: counts 1-50, both resolutions, square cells, full-canvas coverage, zero overlaps within canvas); lint and build pass
 
+### Sprint 3 — Title Overlay & In-Repo Tests ✅
+- **Date:** 2026-08-04
+- **Goal:** Optional playlist title overlay and in-repo layout tests
+- **Status:** Complete — all acceptance criteria verified
+- **Review:** `docs/sprints/sprint-3-review.md`
+- **Verification:** 100 in-repo tests pass via vitest; lint passes
+
 ---
 
 ## Completed
@@ -57,18 +64,20 @@ Legend: ✅ Complete | ⏳ Planned | 🔧 In Progress
 - [x] Random image padding to fill grid and eliminate black spots
 - [x] Reshuffle button (randomizes artwork order and padding images)
 - [x] Light UI theme (black gaps visible during preview)
+- [x] Optional playlist title overlay (off by default, toggle in UI)
+- [x] In-repo layout tests (100 tests, vitest)
 
 ---
 
 ## Current Task
 
-None — Sprint 2 complete.
+None — Sprint 3 complete.
 
 ---
 
 ## Next Task
 
-Sprint 3: Playlist title overlay, gradient/blur backgrounds, and in-repo layout tests.
+Sprint 4: TBD (possible: gradient/blur backgrounds, multiple themes, custom spacing)
 
 ---
 
@@ -78,8 +87,8 @@ Sprint 3: Playlist title overlay, gradient/blur backgrounds, and in-repo layout 
 2. No concurrency protection on token refresh
 3. Duplicate client/server URL validation
 4. No error boundary component
-5. No tests
-6. Layout math has no in-repo tests (harness lives outside the repo)
+5. Google Fonts may fail in restricted network environments
+6. Pre-existing `<img>` lint warning in thumbnail grid
 
 ---
 

@@ -9,6 +9,7 @@ interface WallpaperPreviewProps {
   images: AlbumImage[];
   playlistName: string;
   resolution: ResolutionKey;
+  showTitle: boolean;
   onReshuffle: () => void;
 }
 
@@ -25,6 +26,7 @@ export default function WallpaperPreview({
   images,
   playlistName,
   resolution,
+  showTitle,
   onReshuffle,
 }: WallpaperPreviewProps) {
   const [status, setStatus] = useState<{ key: string; error: string } | null>(
@@ -33,7 +35,7 @@ export default function WallpaperPreview({
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   const { width, height } = RESOLUTIONS[resolution];
-  const renderKey = `${width}x${height}`;
+  const renderKey = `${width}x${height}${showTitle ? "-title" : ""}`;
   const current = status?.key === renderKey ? status : null;
   const rendering = current === null;
   const error = current?.error ?? "";
@@ -49,6 +51,7 @@ export default function WallpaperPreview({
         await drawWallpaper(images, canvas, {
           width,
           height,
+          title: showTitle ? playlistName : undefined,
         });
         if (cancelled) return;
         setStatus({ key: renderKey, error: "" });
@@ -68,7 +71,7 @@ export default function WallpaperPreview({
     return () => {
       cancelled = true;
     };
-  }, [images, width, height, renderKey]);
+  }, [images, width, height, renderKey, showTitle, playlistName]);
 
   const handleDownload = useCallback(() => {
     const canvas = canvasRef.current;

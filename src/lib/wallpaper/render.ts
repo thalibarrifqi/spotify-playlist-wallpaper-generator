@@ -93,4 +93,24 @@ export async function drawWallpaper(
     );
     ctx.restore();
   }
+
+  if (config.title) {
+    const fontSize = Math.round(config.width * 0.035);
+    const padding = Math.round(fontSize * 0.6);
+    const barHeight = fontSize + padding * 2;
+    const barY = config.height - barHeight;
+
+    ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
+    ctx.fillRect(0, barY, config.width, barHeight);
+
+    ctx.font = `bold ${fontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+    ctx.fillStyle = "#ffffff";
+    ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+    ctx.shadowBlur = 4;
+    ctx.shadowOffsetX = 1;
+    ctx.shadowOffsetY = 1;
+    ctx.textBaseline = "middle";
+    ctx.fillText(config.title, padding, barY + barHeight / 2);
+    ctx.shadowColor = "transparent";
+  }
 }

@@ -24,6 +24,7 @@ Wallpaper generation is complete. The app can:
   - Random image padding to fill the grid and eliminate black spots
   - Mobile (1080x1920) or Desktop (1920x1080) resolution
   - Black background behind artworks
+  - Optional playlist title overlay (toggle on/off)
 - Reshuffle button to randomize artwork order and padding images
 
 ---
@@ -46,7 +47,7 @@ src/
     api/playlist/    BFF route handler for Spotify API
     page.tsx         Main page component
   components/
-    WallpaperPreview.tsx  Canvas preview and download
+    WallpaperPreview.tsx  Canvas preview, reshuffle, and download
   lib/
     spotify/
       parse-playlist-url.ts   URL parsing utility
@@ -56,6 +57,8 @@ src/
       types.ts                Resolution types and resolutions
       grid-layout.ts          Square-cell grid layout calculation
       render.ts               Canvas rendering logic
+__tests__/
+  grid-layout.test.ts         Layout math tests (100 cases)
 docs/
   prd.md                     Product Requirements Document
   implementation-plan.md     Sprint-level implementation plan

@@ -16,6 +16,7 @@ export interface LayoutCell {
 export interface WallpaperConfig {
   width: number;
   height: number;
+  title?: string;
 }
 
 export const RESOLUTIONS: Record<
