@@ -12,7 +12,7 @@ Sprint 1 completed the data pipeline: the app can fetch and display album artwor
 
 - [x] Canvas compositing of album artworks into a single image
 - [x] Layout options: Grid (5 columns) and Random
-- [x] Random layout: fixed-size cells at random positions with rotation up to 90°
+- [x] Random layout: full-canvas collage with shuffled artwork order and small rotations (up to 25°) on a subset of artworks
 - [x] "Reshuffle" button re-randomizes the random layout
 - [x] Resolution options: Mobile (1080x1920) and Desktop (1920x1080)
 - [x] UI controls to select layout and resolution before generating
@@ -23,8 +23,8 @@ Sprint 1 completed the data pipeline: the app can fetch and display album artwor
 
 - [x] Clicking "Download Wallpaper" produces a PNG file
 - [x] The downloaded image matches the selected resolution (1080x1920 or 1920x1080)
-- [x] Grid layout arranges artworks in a 5-column grid
-- [x] Random layout places artworks at randomized, non-overlapping positions with rotation up to 90°
+- [x] Grid layout arranges artworks in a 5-column grid filling the canvas
+- [x] Random layout fills the canvas as a non-overlapping collage (shuffled order, small rotations up to 25°)
 - [x] "Reshuffle" regenerates the random layout
 - [x] All available artworks (up to 50) appear in the wallpaper
 - [x] Black background fills the canvas and any empty grid space

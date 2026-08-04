@@ -11,7 +11,8 @@ export interface AlbumImage {
 export interface LayoutCell {
   x: number;
   y: number;
-  size: number;
+  width: number;
+  height: number;
   rotation: number;
 }
 

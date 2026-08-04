@@ -53,12 +53,12 @@ export async function drawWallpaper(
     const rad = (cell.rotation * Math.PI) / 180;
 
     ctx.save();
-    ctx.translate(cell.x + cell.size / 2, cell.y + cell.size / 2);
+    ctx.translate(cell.x + cell.width / 2, cell.y + cell.height / 2);
     ctx.rotate(rad);
 
     const scale = Math.max(
-      cell.size / element.width,
-      cell.size / element.height
+      cell.width / element.width,
+      cell.height / element.height
     );
     const width = element.width * scale;
     const height = element.height * scale;
