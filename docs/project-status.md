@@ -1,7 +1,7 @@
 # Project Status
 
 **Last updated:** 2026-08-04
-**Commits:** 69593e9 → 88dc5c0 (14 commits on main)
+**Commits:** 69593e9 → f98af8d (19 commits on main)
 
 ---
 
@@ -44,6 +44,13 @@ Legend: ✅ Complete | ⏳ Planned | 🔧 In Progress
 - **Review:** `docs/sprints/sprint-3-review.md`
 - **Verification:** 100 in-repo tests pass via vitest; lint passes
 
+### Sprint 4 — Configuration & Tech Debt ✅
+- **Date:** 2026-08-04
+- **Goal:** Custom resolution, spacing, border radius, background color; tech debt cleanup
+- **Status:** Complete — all acceptance criteria verified
+- **Review:** `docs/sprints/sprint-4-review.md`
+- **Verification:** 300 tests pass via vitest; lint passes; canvas aspect ratio matches resolution
+
 ---
 
 ## Completed
@@ -58,37 +65,40 @@ Legend: ✅ Complete | ⏳ Planned | 🔧 In Progress
 - [x] README with setup instructions
 - [x] Documentation (PRD, implementation plan)
 - [x] Wallpaper generation (square-cell grid covering the full canvas, no stretched artwork)
-- [x] Resolution options (Mobile 1080x1920, Desktop 1920x1080)
+- [x] Resolution options (Mobile 1080x1920, Desktop 1920x1920, Custom)
 - [x] PNG wallpaper download
 - [x] Album artwork deduplication (one per album)
 - [x] Random image padding to fill grid and eliminate black spots
 - [x] Reshuffle button (randomizes artwork order and padding images)
 - [x] Light UI theme (black gaps visible during preview)
 - [x] Optional playlist title overlay (off by default, toggle in UI)
-- [x] In-repo layout tests (100 tests, vitest)
+- [x] In-repo layout tests (300 tests, vitest)
+- [x] Custom resolution input (width/height fields)
+- [x] Cell spacing control (0–20px slider)
+- [x] Border radius control (0–20px slider)
+- [x] Background color picker
+- [x] Error boundary component
+- [x] Status code constants in route handler
+- [x] Canvas preview aspect ratio matches resolution
 
 ---
 
 ## Current Task
 
-None — Sprint 3 complete.
+None — Sprint 4 complete.
 
 ---
 
 ## Next Task
 
-Sprint 4: TBD (possible: gradient/blur backgrounds, multiple themes, custom spacing)
+Sprint 5: Multi-step wizard UI, multiple themes, final polish.
 
 ---
 
 ## Technical Debt
 
-1. String-based status code mapping in route handler
-2. No concurrency protection on token refresh
-3. Duplicate client/server URL validation
-4. No error boundary component
-5. Google Fonts may fail in restricted network environments
-6. Pre-existing `<img>` lint warning in thumbnail grid
+1. Google Fonts may fail in restricted network environments
+2. Pre-existing `<img>` lint warning in thumbnail grid
 
 ---
 

@@ -22,7 +22,10 @@ Wallpaper generation is complete. The app can:
 - Generate and download a PNG wallpaper with:
   - A square-cell grid that auto-selects column count and scales to cover the whole canvas (no stretched artwork, no black margins)
   - Random image padding to fill the grid and eliminate black spots
-  - Mobile (1080x1920) or Desktop (1920x1080) resolution
+  - Mobile (1080x1920), Desktop (1920x1080), or Custom resolution
+  - Adjustable cell spacing (0–20px)
+  - Adjustable border radius (0–20px)
+  - Custom background color picker
   - Black background behind artworks
   - Optional playlist title overlay (toggle on/off)
 - Reshuffle button to randomize artwork order and padding images
