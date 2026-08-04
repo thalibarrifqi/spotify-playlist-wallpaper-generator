@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { drawWallpaper } from "@/lib/wallpaper/render";
 import { RESOLUTIONS } from "@/lib/wallpaper/types";
-import type { AlbumImage, ResolutionKey } from "@/lib/wallpaper/types";
+import type { AlbumImage, GradientConfig, ResolutionKey } from "@/lib/wallpaper/types";
 
 interface WallpaperPreviewProps {
   images: AlbumImage[];
@@ -17,6 +17,10 @@ interface WallpaperPreviewProps {
   backgroundColor: string;
   titleBarColor?: string;
   titleTextColor?: string;
+  gradient?: GradientConfig;
+  blur?: boolean;
+  blurIntensity?: number;
+  blurImageIndex?: number;
   showReshuffle?: boolean;
   showDownload?: boolean;
   onReshuffle: () => void;
@@ -43,6 +47,10 @@ export default function WallpaperPreview({
   backgroundColor,
   titleBarColor,
   titleTextColor,
+  gradient,
+  blur,
+  blurIntensity,
+  blurImageIndex,
   showReshuffle = true,
   showDownload = true,
   onReshuffle,
@@ -50,12 +58,13 @@ export default function WallpaperPreview({
   const [status, setStatus] = useState<{ key: string; error: string } | null>(
     null
   );
+  const [dpiMultiplier, setDpiMultiplier] = useState<1 | 2 | 3>(1);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   const { width: presetWidth, height: presetHeight } = RESOLUTIONS[resolution];
   const width = customWidth ?? presetWidth;
   const height = customHeight ?? presetHeight;
-  const renderKey = `${width}x${height}${showTitle ? "-title" : ""}-s${spacing}-r${borderRadius}-bg${backgroundColor}`;
+  const renderKey = `${width}x${height}${showTitle ? "-title" : ""}-s${spacing}-r${borderRadius}-bg${backgroundColor}-g${gradient?.type || "none"}-blur${blur || false}`;
   const current = status?.key === renderKey ? status : null;
   const rendering = current === null;
   const error = current?.error ?? "";
@@ -77,6 +86,10 @@ export default function WallpaperPreview({
           backgroundColor,
           titleBarColor,
           titleTextColor,
+          gradient,
+          blur,
+          blurIntensity,
+          blurImageIndex,
         });
         if (cancelled) return;
         setStatus({ key: renderKey, error: "" });
@@ -96,25 +109,64 @@ export default function WallpaperPreview({
     return () => {
       cancelled = true;
     };
-  }, [images, width, height, renderKey, showTitle, playlistName, spacing, borderRadius, backgroundColor, titleBarColor, titleTextColor]);
+  }, [images, width, height, renderKey, showTitle, playlistName, spacing, borderRadius, backgroundColor, titleBarColor, titleTextColor, gradient, blur, blurIntensity, blurImageIndex]);
 
-  const handleDownload = useCallback(() => {
+  const handleDownload = useCallback(async () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    canvas.toBlob((blob) => {
-      if (!blob) {
-        setStatus({ key: renderKey, error: "Failed to export image" });
-        return;
-      }
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `${sanitizeFilename(playlistName)}.png`;
-      link.click();
-      URL.revokeObjectURL(url);
-    }, "image/png");
-  }, [playlistName, renderKey]);
+    if (dpiMultiplier === 1) {
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          setStatus({ key: renderKey, error: "Failed to export image" });
+          return;
+        }
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `${sanitizeFilename(playlistName)}.png`;
+        link.click();
+        URL.revokeObjectURL(url);
+      }, "image/png");
+      return;
+    }
+
+    const exportCanvas = document.createElement("canvas");
+    exportCanvas.width = width * dpiMultiplier;
+    exportCanvas.height = height * dpiMultiplier;
+
+    try {
+      await drawWallpaper(images, exportCanvas, {
+        width: width * dpiMultiplier,
+        height: height * dpiMultiplier,
+        title: showTitle ? playlistName : undefined,
+        spacing: spacing * dpiMultiplier,
+        borderRadius: borderRadius * dpiMultiplier,
+        backgroundColor,
+        titleBarColor,
+        titleTextColor,
+        gradient,
+        blur,
+        blurIntensity: blurIntensity ? blurIntensity * dpiMultiplier : undefined,
+        blurImageIndex,
+      });
+
+      exportCanvas.toBlob((blob) => {
+        if (!blob) {
+          setStatus({ key: renderKey, error: "Failed to export image" });
+          return;
+        }
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `${sanitizeFilename(playlistName)}-${dpiMultiplier}x.png`;
+        link.click();
+        URL.revokeObjectURL(url);
+      }, "image/png");
+    } catch {
+      setStatus({ key: renderKey, error: "Failed to export high-res image" });
+    }
+  }, [playlistName, renderKey, width, height, dpiMultiplier, images, showTitle, spacing, borderRadius, backgroundColor, titleBarColor, titleTextColor, gradient, blur, blurIntensity, blurImageIndex]);
 
   return (
     <div className="space-y-4">
@@ -135,6 +187,32 @@ export default function WallpaperPreview({
         style={{ backgroundColor, aspectRatio: `${width} / ${height}` }}
       />
 
+      {showDownload && (
+        <div>
+          <label className="block text-xs text-zinc-600 mb-1">Export Quality</label>
+          <div className="flex rounded-lg overflow-hidden border border-zinc-300">
+            {([1, 2, 3] as const).map((dpi) => (
+              <button
+                key={dpi}
+                onClick={() => setDpiMultiplier(dpi)}
+                className={
+                  dpiMultiplier === dpi
+                    ? "flex-1 py-2 text-sm font-medium bg-blue-600 text-white"
+                    : "flex-1 py-2 text-sm font-medium bg-white text-zinc-600 hover:bg-zinc-100"
+                }
+              >
+                {dpi}x
+              </button>
+            ))}
+          </div>
+          <p className="text-xs text-zinc-500 mt-1">
+            {dpiMultiplier === 1 && "Screen quality"}
+            {dpiMultiplier === 2 && "High-res screens"}
+            {dpiMultiplier === 3 && "Print quality (300 DPI)"}
+          </p>
+        </div>
+      )}
+
       <div className="flex gap-2">
         {showReshuffle && (
           <button
@@ -151,7 +229,7 @@ export default function WallpaperPreview({
             disabled={rendering}
             className="flex-1 py-3 px-4 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Download
+            Download {dpiMultiplier > 1 ? `(${dpiMultiplier}x)` : ""}
           </button>
         )}
       </div>

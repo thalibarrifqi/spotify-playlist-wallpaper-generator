@@ -13,6 +13,12 @@ export interface LayoutCell {
   height: number;
 }
 
+export interface GradientConfig {
+  type: "linear" | "radial";
+  angle: number;
+  colors: string[];
+}
+
 export interface WallpaperConfig {
   width: number;
   height: number;
@@ -22,6 +28,10 @@ export interface WallpaperConfig {
   backgroundColor?: string;
   titleBarColor?: string;
   titleTextColor?: string;
+  gradient?: GradientConfig;
+  blur?: boolean;
+  blurIntensity?: number;
+  blurImageIndex?: number;
 }
 
 export const RESOLUTIONS: Record<

@@ -1,5 +1,5 @@
 import { computeGridLayout } from "./grid-layout";
-import type { AlbumImage, WallpaperConfig } from "./types";
+import type { AlbumImage, GradientConfig, WallpaperConfig } from "./types";
 
 function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
@@ -44,6 +44,71 @@ function padImages(images: AlbumImage[], targetCount: number): AlbumImage[] {
   return padded;
 }
 
+function drawGradient(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+  gradient: GradientConfig
+): void {
+  const angle = (gradient.angle * Math.PI) / 180;
+  const cos = Math.cos(angle);
+  const sin = Math.sin(angle);
+  const len = Math.max(width, height);
+
+  const centerX = width / 2;
+  const centerY = height / 2;
+
+  const x1 = centerX - cos * len;
+  const y1 = centerY - sin * len;
+  const x2 = centerX + cos * len;
+  const y2 = centerY + sin * len;
+
+  if (gradient.type === "radial") {
+    const grd = ctx.createRadialGradient(
+      centerX, centerY, 0,
+      centerX, centerY, Math.max(width, height) / 2
+    );
+    gradient.colors.forEach((color, i) => {
+      grd.addColorStop(i / (gradient.colors.length - 1), color);
+    });
+    ctx.fillStyle = grd;
+  } else {
+    const grd = ctx.createLinearGradient(x1, y1, x2, y2);
+    gradient.colors.forEach((color, i) => {
+      grd.addColorStop(i / (gradient.colors.length - 1), color);
+    });
+    ctx.fillStyle = grd;
+  }
+
+  ctx.fillRect(0, 0, width, height);
+}
+
+async function drawBlurBackground(
+  ctx: CanvasRenderingContext2D,
+  images: AlbumImage[],
+  width: number,
+  height: number,
+  blurImageIndex: number,
+  blurIntensity: number
+): Promise<void> {
+  const index = Math.min(blurImageIndex, images.length - 1);
+  const image = images[index];
+  if (!image) return;
+
+  const img = await loadImage(image.url);
+
+  ctx.save();
+  ctx.filter = `blur(${blurIntensity}px)`;
+
+  const scale = Math.max(width / img.width, height / img.height);
+  const drawW = img.width * scale;
+  const drawH = img.height * scale;
+
+  ctx.drawImage(img, (width - drawW) / 2, (height - drawH) / 2, drawW, drawH);
+  ctx.filter = "none";
+  ctx.restore();
+}
+
 export async function drawWallpaper(
   images: AlbumImage[],
   canvas: HTMLCanvasElement,
@@ -58,8 +123,21 @@ export async function drawWallpaper(
   const spacing = config.spacing ?? 0;
   const borderRadius = config.borderRadius ?? 0;
 
-  ctx.fillStyle = bgColor;
-  ctx.fillRect(0, 0, config.width, config.height);
+  if (config.blur) {
+    await drawBlurBackground(
+      ctx,
+      images,
+      config.width,
+      config.height,
+      config.blurImageIndex ?? 0,
+      config.blurIntensity ?? 20
+    );
+  } else if (config.gradient) {
+    drawGradient(ctx, config.width, config.height, config.gradient);
+  } else {
+    ctx.fillStyle = bgColor;
+    ctx.fillRect(0, 0, config.width, config.height);
+  }
 
   const columns = findBestColumns(images.length, config.width, config.height, spacing);
   const rows = Math.ceil(images.length / columns);

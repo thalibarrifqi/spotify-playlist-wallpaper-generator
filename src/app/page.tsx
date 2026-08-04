@@ -5,7 +5,7 @@ import WallpaperPreview from "@/components/WallpaperPreview";
 import SettingsPanel from "@/components/SettingsPanel";
 import { THEMES } from "@/lib/wallpaper/themes";
 import { RESOLUTIONS } from "@/lib/wallpaper/types";
-import type { AlbumImage, ResolutionKey } from "@/lib/wallpaper/types";
+import type { AlbumImage, GradientConfig, ResolutionKey } from "@/lib/wallpaper/types";
 import type { ThemeKey } from "@/lib/wallpaper/themes";
 
 interface PlaylistResponse {
@@ -32,6 +32,15 @@ export default function Home() {
   const [showTitle, setShowTitle] = useState(false);
   const [spacing, setSpacing] = useState(0);
   const [borderRadius, setBorderRadius] = useState(0);
+  const [useGradient, setUseGradient] = useState(false);
+  const [gradient, setGradient] = useState<GradientConfig>({
+    type: "linear",
+    angle: 135,
+    colors: ["#667eea", "#764ba2"],
+  });
+  const [useBlur, setUseBlur] = useState(false);
+  const [blurIntensity, setBlurIntensity] = useState(20);
+  const [blurImageIndex, setBlurImageIndex] = useState(0);
 
   const effectiveResolution: ResolutionKey = useCustom ? "desktop" : resolution;
   const themeConfig = THEMES[theme];
@@ -220,6 +229,17 @@ export default function Home() {
               setBorderRadius={setBorderRadius}
               showTitle={showTitle}
               setShowTitle={setShowTitle}
+              useGradient={useGradient}
+              setUseGradient={setUseGradient}
+              gradient={gradient}
+              setGradient={setGradient}
+              useBlur={useBlur}
+              setUseBlur={setUseBlur}
+              blurIntensity={blurIntensity}
+              setBlurIntensity={setBlurIntensity}
+              blurImageIndex={blurImageIndex}
+              setBlurImageIndex={setBlurImageIndex}
+              images={shuffledImages}
               onGenerate={handleGenerateWallpaper}
             />
 
@@ -233,9 +253,14 @@ export default function Home() {
                 showTitle={showTitle}
                 spacing={spacing}
                 borderRadius={borderRadius}
-                backgroundColor={themeConfig.backgroundColor}
+                backgroundColor={useGradient ? gradient.colors[0] : (useBlur ? "#000000" : themeConfig.backgroundColor)}
                 titleBarColor={themeConfig.titleBarColor}
                 titleTextColor={themeConfig.titleTextColor}
+                gradient={useGradient ? gradient : undefined}
+                blur={useBlur}
+                blurIntensity={blurIntensity}
+                blurImageIndex={blurImageIndex}
+                showReshuffle={true}
                 showDownload={false}
                 onReshuffle={handleReshuffle}
               />
@@ -272,9 +297,13 @@ export default function Home() {
               showTitle={showTitle}
               spacing={spacing}
               borderRadius={borderRadius}
-              backgroundColor={themeConfig.backgroundColor}
+              backgroundColor={useGradient ? gradient.colors[0] : (useBlur ? "#000000" : themeConfig.backgroundColor)}
               titleBarColor={themeConfig.titleBarColor}
               titleTextColor={themeConfig.titleTextColor}
+              gradient={useGradient ? gradient : undefined}
+              blur={useBlur}
+              blurIntensity={blurIntensity}
+              blurImageIndex={blurImageIndex}
               showReshuffle={false}
               showDownload={true}
               onReshuffle={handleReshuffle}
