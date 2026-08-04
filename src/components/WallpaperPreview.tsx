@@ -15,6 +15,10 @@ interface WallpaperPreviewProps {
   spacing: number;
   borderRadius: number;
   backgroundColor: string;
+  titleBarColor?: string;
+  titleTextColor?: string;
+  showReshuffle?: boolean;
+  showDownload?: boolean;
   onReshuffle: () => void;
 }
 
@@ -37,6 +41,10 @@ export default function WallpaperPreview({
   spacing,
   borderRadius,
   backgroundColor,
+  titleBarColor,
+  titleTextColor,
+  showReshuffle = true,
+  showDownload = true,
   onReshuffle,
 }: WallpaperPreviewProps) {
   const [status, setStatus] = useState<{ key: string; error: string } | null>(
@@ -67,6 +75,8 @@ export default function WallpaperPreview({
           spacing,
           borderRadius,
           backgroundColor,
+          titleBarColor,
+          titleTextColor,
         });
         if (cancelled) return;
         setStatus({ key: renderKey, error: "" });
@@ -86,7 +96,7 @@ export default function WallpaperPreview({
     return () => {
       cancelled = true;
     };
-  }, [images, width, height, renderKey, showTitle, playlistName, spacing, borderRadius, backgroundColor]);
+  }, [images, width, height, renderKey, showTitle, playlistName, spacing, borderRadius, backgroundColor, titleBarColor, titleTextColor]);
 
   const handleDownload = useCallback(() => {
     const canvas = canvasRef.current;
@@ -126,20 +136,24 @@ export default function WallpaperPreview({
       />
 
       <div className="flex gap-2">
-        <button
-          onClick={onReshuffle}
-          disabled={rendering}
-          className="flex-1 py-3 px-4 bg-zinc-600 hover:bg-zinc-700 text-white font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          Reshuffle
-        </button>
-        <button
-          onClick={handleDownload}
-          disabled={rendering}
-          className="flex-1 py-3 px-4 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          Download Wallpaper
-        </button>
+        {showReshuffle && (
+          <button
+            onClick={onReshuffle}
+            disabled={rendering}
+            className="flex-1 py-3 px-4 bg-zinc-600 hover:bg-zinc-700 text-white font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Reshuffle
+          </button>
+        )}
+        {showDownload && (
+          <button
+            onClick={handleDownload}
+            disabled={rendering}
+            className="flex-1 py-3 px-4 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Download
+          </button>
+        )}
       </div>
     </div>
   );

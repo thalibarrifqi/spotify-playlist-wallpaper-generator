@@ -2,8 +2,11 @@
 
 import { useCallback, useState } from "react";
 import WallpaperPreview from "@/components/WallpaperPreview";
+import SettingsPanel from "@/components/SettingsPanel";
+import { THEMES } from "@/lib/wallpaper/themes";
 import { RESOLUTIONS } from "@/lib/wallpaper/types";
 import type { AlbumImage, ResolutionKey } from "@/lib/wallpaper/types";
+import type { ThemeKey } from "@/lib/wallpaper/themes";
 
 interface PlaylistResponse {
   name: string;
@@ -15,10 +18,12 @@ interface PlaylistResponse {
 }
 
 export default function Home() {
+  const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [url, setUrl] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [playlist, setPlaylist] = useState<PlaylistResponse | null>(null);
+  const [theme, setTheme] = useState<ThemeKey>("dark");
   const [resolution, setResolution] = useState<ResolutionKey>("mobile");
   const [customWidth, setCustomWidth] = useState("");
   const [customHeight, setCustomHeight] = useState("");
@@ -27,9 +32,9 @@ export default function Home() {
   const [showTitle, setShowTitle] = useState(false);
   const [spacing, setSpacing] = useState(0);
   const [borderRadius, setBorderRadius] = useState(0);
-  const [backgroundColor, setBackgroundColor] = useState("#000000");
 
   const effectiveResolution: ResolutionKey = useCustom ? "desktop" : resolution;
+  const themeConfig = THEMES[theme];
 
   const handleReshuffle = useCallback(() => {
     if (!playlist) return;
@@ -47,7 +52,7 @@ export default function Home() {
     return spotifyPlaylistRegex.test(url);
   };
 
-  const handleGenerate = async () => {
+  const handleFetchPlaylist = async () => {
     setError("");
     setPlaylist(null);
 
@@ -80,11 +85,34 @@ export default function Home() {
 
       setPlaylist(data);
       setShuffledImages(data.images);
+      setStep(2);
     } catch {
       setError("Network error. Please check your connection and try again.");
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleGoToSettings = () => {
+    setStep(3);
+  };
+
+  const handleGenerateWallpaper = () => {
+    setStep(4);
+  };
+
+  const handleBackToStep1 = () => {
+    setStep(1);
+    setPlaylist(null);
+    setError("");
+  };
+
+  const handleBackToStep2 = () => {
+    setStep(2);
+  };
+
+  const handleBackToStep3 = () => {
+    setStep(3);
   };
 
   const canvasWidth = useCustom ? parseInt(customWidth) || 1920 : RESOLUTIONS[resolution].width;
@@ -102,197 +130,163 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="space-y-4">
-          <div>
+        {step === 1 && (
+          <div className="space-y-4">
             <input
               type="text"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleFetchPlaylist()}
               placeholder="Paste your Spotify playlist URL here"
               className="w-full px-4 py-3 bg-white border border-zinc-300 rounded-lg text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
+            {error && <p className="text-red-500 text-sm">{error}</p>}
+            <button
+              onClick={handleFetchPlaylist}
+              disabled={loading}
+              className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? "Loading..." : "Fetch Playlist"}
+            </button>
           </div>
+        )}
 
-          {error && <p className="text-red-500 text-sm">{error}</p>}
+        {step === 2 && playlist && (
+          <div className="space-y-4">
+            <button
+              onClick={handleBackToStep1}
+              className="text-sm text-zinc-500 hover:text-zinc-700"
+            >
+              ← Back to URL
+            </button>
 
-          <button
-            onClick={handleGenerate}
-            disabled={loading}
-            className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {loading ? "Loading..." : "Generate Wallpaper"}
-          </button>
-
-          {playlist && (
-            <div className="space-y-4">
-              <div className="p-4 bg-white border border-zinc-300 rounded-lg">
-                <h2 className="text-xl font-bold text-zinc-900">{playlist.name}</h2>
-                {playlist.description && (
-                  <p className="text-zinc-500 text-sm mt-1">
-                    {playlist.description}
-                  </p>
-                )}
-              </div>
-
-              {playlist.images.length > 0 ? (
-                <div className="grid grid-cols-5 gap-2">
-                  {playlist.images.map((image, index) => (
-                    <img
-                      key={index}
-                      src={image.url}
-                      alt={`Album artwork ${index + 1}`}
-                      className="w-full aspect-square object-cover rounded"
-                    />
-                  ))}
-                </div>
-              ) : (
-                <div className="p-4 bg-white border border-zinc-300 rounded-lg text-center">
-                  <p className="text-zinc-500">No album artwork found</p>
-                </div>
+            <div className="p-4 bg-white border border-zinc-300 rounded-lg">
+              <h2 className="text-xl font-bold text-zinc-900">{playlist.name}</h2>
+              {playlist.description && (
+                <p className="text-zinc-500 text-sm mt-1">{playlist.description}</p>
               )}
-
-              {playlist.images.length > 0 && (
-                <>
-                  <div className="p-4 bg-white border border-zinc-300 rounded-lg space-y-4">
-                    <div>
-                      <label className="block text-xs text-zinc-600 mb-1">
-                        Resolution
-                      </label>
-                      <div className="flex rounded-lg overflow-hidden border border-zinc-300">
-                        {Object.entries(RESOLUTIONS).map(([key, res]) => (
-                          <button
-                            key={key}
-                            onClick={() => {
-                              setResolution(key as ResolutionKey);
-                              setUseCustom(false);
-                            }}
-                            className={
-                              !useCustom && resolution === key
-                                ? "flex-1 py-2 text-sm font-medium bg-blue-600 text-white"
-                                : "flex-1 py-2 text-sm font-medium bg-white text-zinc-600 hover:bg-zinc-100"
-                            }
-                          >
-                            {res.label}
-                          </button>
-                        ))}
-                        <button
-                          onClick={() => setUseCustom(true)}
-                          className={
-                            useCustom
-                              ? "flex-1 py-2 text-sm font-medium bg-blue-600 text-white"
-                              : "flex-1 py-2 text-sm font-medium bg-white text-zinc-600 hover:bg-zinc-100"
-                          }
-                        >
-                          Custom
-                        </button>
-                      </div>
-                    </div>
-
-                    {useCustom && (
-                      <div className="flex gap-2 items-center">
-                        <input
-                          type="number"
-                          value={customWidth}
-                          onChange={(e) => setCustomWidth(e.target.value)}
-                          placeholder="Width"
-                          className="flex-1 px-3 py-2 bg-white border border-zinc-300 rounded-lg text-zinc-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                        <span className="text-zinc-400">×</span>
-                        <input
-                          type="number"
-                          value={customHeight}
-                          onChange={(e) => setCustomHeight(e.target.value)}
-                          placeholder="Height"
-                          className="flex-1 px-3 py-2 bg-white border border-zinc-300 rounded-lg text-zinc-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                      </div>
-                    )}
-
-                    <div>
-                      <label className="block text-xs text-zinc-600 mb-1">
-                        Cell Spacing: {spacing}px
-                      </label>
-                      <input
-                        type="range"
-                        min={0}
-                        max={20}
-                        value={spacing}
-                        onChange={(e) => setSpacing(Number(e.target.value))}
-                        className="w-full"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs text-zinc-600 mb-1">
-                        Border Radius: {borderRadius}px
-                      </label>
-                      <input
-                        type="range"
-                        min={0}
-                        max={20}
-                        value={borderRadius}
-                        onChange={(e) => setBorderRadius(Number(e.target.value))}
-                        className="w-full"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs text-zinc-600 mb-1">
-                        Background Color
-                      </label>
-                      <div className="flex gap-2 items-center">
-                        <input
-                          type="color"
-                          value={backgroundColor}
-                          onChange={(e) => setBackgroundColor(e.target.value)}
-                          className="w-10 h-10 rounded border border-zinc-300 cursor-pointer"
-                        />
-                        <input
-                          type="text"
-                          value={backgroundColor}
-                          onChange={(e) => setBackgroundColor(e.target.value)}
-                          className="flex-1 px-3 py-2 bg-white border border-zinc-300 rounded-lg text-zinc-900 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        id="show-title"
-                        checked={showTitle}
-                        onChange={(e) => setShowTitle(e.target.checked)}
-                        className="w-4 h-4 rounded border-zinc-300 text-blue-600 focus:ring-blue-500"
-                      />
-                      <label htmlFor="show-title" className="text-sm text-zinc-600">
-                        Show playlist title on wallpaper
-                      </label>
-                    </div>
-                  </div>
-
-                  <WallpaperPreview
-                    images={shuffledImages}
-                    playlistName={playlist.name}
-                    resolution={effectiveResolution}
-                    customWidth={useCustom ? canvasWidth : undefined}
-                    customHeight={useCustom ? canvasHeight : undefined}
-                    showTitle={showTitle}
-                    spacing={spacing}
-                    borderRadius={borderRadius}
-                    backgroundColor={backgroundColor}
-                    onReshuffle={handleReshuffle}
-                  />
-
-                  {useCustom && (
-                    <p className="text-xs text-zinc-500 text-center">
-                      Preview shows at {RESOLUTIONS[effectiveResolution].width}×{RESOLUTIONS[effectiveResolution].height}. Download will use {canvasWidth}×{canvasHeight}.
-                    </p>
-                  )}
-                </>
-              )}
+              <p className="text-zinc-400 text-xs mt-1">{playlist.images.length} tracks</p>
             </div>
-          )}
-        </div>
+
+            {playlist.images.length > 0 ? (
+              <div className="grid grid-cols-5 gap-2">
+                {playlist.images.map((image, index) => (
+                  <img
+                    key={index}
+                    src={image.url}
+                    alt={`Album artwork ${index + 1}`}
+                    className="w-full aspect-square object-cover rounded"
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="p-4 bg-white border border-zinc-300 rounded-lg text-center">
+                <p className="text-zinc-500">No album artwork found</p>
+              </div>
+            )}
+
+            <button
+              onClick={handleGoToSettings}
+              className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
+            >
+              Proceed to Wallpaper
+            </button>
+          </div>
+        )}
+
+        {step === 3 && playlist && (
+          <div className="space-y-4">
+            <button
+              onClick={handleBackToStep2}
+              className="text-sm text-zinc-500 hover:text-zinc-700"
+            >
+              ← Back to Artwork
+            </button>
+
+            <SettingsPanel
+              theme={theme}
+              setTheme={setTheme}
+              resolution={resolution}
+              setResolution={setResolution}
+              useCustom={useCustom}
+              setUseCustom={setUseCustom}
+              customWidth={customWidth}
+              setCustomWidth={setCustomWidth}
+              customHeight={customHeight}
+              setCustomHeight={setCustomHeight}
+              spacing={spacing}
+              setSpacing={setSpacing}
+              borderRadius={borderRadius}
+              setBorderRadius={setBorderRadius}
+              showTitle={showTitle}
+              setShowTitle={setShowTitle}
+              onGenerate={handleGenerateWallpaper}
+            />
+
+            {playlist.images.length > 0 && (
+              <WallpaperPreview
+                images={shuffledImages}
+                playlistName={playlist.name}
+                resolution={effectiveResolution}
+                customWidth={useCustom ? canvasWidth : undefined}
+                customHeight={useCustom ? canvasHeight : undefined}
+                showTitle={showTitle}
+                spacing={spacing}
+                borderRadius={borderRadius}
+                backgroundColor={themeConfig.backgroundColor}
+                titleBarColor={themeConfig.titleBarColor}
+                titleTextColor={themeConfig.titleTextColor}
+                showDownload={false}
+                onReshuffle={handleReshuffle}
+              />
+            )}
+
+            {useCustom && (
+              <p className="text-xs text-zinc-500 text-center">
+                Preview shows at {RESOLUTIONS[effectiveResolution].width}×{RESOLUTIONS[effectiveResolution].height}. Download will use {canvasWidth}×{canvasHeight}.
+              </p>
+            )}
+          </div>
+        )}
+
+        {step === 4 && playlist && (
+          <div className="space-y-4">
+            <button
+              onClick={handleBackToStep3}
+              className="text-sm text-zinc-500 hover:text-zinc-700"
+            >
+              ← Back to Settings
+            </button>
+
+            <div className="p-4 bg-white border border-zinc-300 rounded-lg">
+              <h2 className="text-xl font-bold text-zinc-900">{playlist.name}</h2>
+              <p className="text-zinc-400 text-xs mt-1">{playlist.images.length} tracks</p>
+            </div>
+
+            <WallpaperPreview
+              images={shuffledImages}
+              playlistName={playlist.name}
+              resolution={effectiveResolution}
+              customWidth={useCustom ? canvasWidth : undefined}
+              customHeight={useCustom ? canvasHeight : undefined}
+              showTitle={showTitle}
+              spacing={spacing}
+              borderRadius={borderRadius}
+              backgroundColor={themeConfig.backgroundColor}
+              titleBarColor={themeConfig.titleBarColor}
+              titleTextColor={themeConfig.titleTextColor}
+              showReshuffle={false}
+              showDownload={true}
+              onReshuffle={handleReshuffle}
+            />
+
+            {useCustom && (
+              <p className="text-xs text-zinc-500 text-center">
+                Preview shows at {RESOLUTIONS[effectiveResolution].width}×{RESOLUTIONS[effectiveResolution].height}. Download will use {canvasWidth}×{canvasHeight}.
+              </p>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

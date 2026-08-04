@@ -20,6 +20,8 @@ export interface WallpaperConfig {
   spacing?: number;
   borderRadius?: number;
   backgroundColor?: string;
+  titleBarColor?: string;
+  titleTextColor?: string;
 }
 
 export const RESOLUTIONS: Record<
