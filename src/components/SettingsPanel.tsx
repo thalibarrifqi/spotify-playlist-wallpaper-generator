@@ -83,18 +83,21 @@ export default function SettingsPanel({
   };
 
   return (
-    <div className="p-4 bg-white border border-zinc-300 rounded-lg space-y-4">
+    <div className="bg-white rounded-xl p-5 card-shadow-lg space-y-5">
+      <h2 className="text-lg font-bold text-zinc-900">Customize</h2>
+
+      {/* Theme */}
       <div>
-        <label className="block text-xs text-zinc-600 mb-1">Theme</label>
-        <div className="flex flex-wrap gap-1">
+        <label className="block text-xs font-medium text-zinc-600 mb-2">Theme</label>
+        <div className="flex flex-wrap gap-1.5">
           {(Object.keys(THEMES) as ThemeKey[]).map((key) => (
             <button
               key={key}
               onClick={() => handleThemeChange(key)}
               className={
                 theme === key
-                  ? "px-3 py-1.5 text-xs font-medium bg-blue-600 text-white rounded"
-                  : "px-3 py-1.5 text-xs font-medium bg-white text-zinc-600 border border-zinc-300 rounded hover:bg-zinc-100"
+                  ? "px-3 py-1.5 text-xs font-medium bg-[#1db954] text-white rounded-lg transition-all duration-150"
+                  : "px-3 py-1.5 text-xs font-medium bg-zinc-100 text-zinc-600 rounded-lg hover:bg-zinc-200 transition-colors"
               }
             >
               {THEMES[key].label}
@@ -103,42 +106,44 @@ export default function SettingsPanel({
         </div>
       </div>
 
+      {/* Background type */}
       <div>
-        <label className="block text-xs text-zinc-600 mb-1">Background</label>
-        <div className="flex rounded-lg overflow-hidden border border-zinc-300">
-          <button
-            onClick={() => { setUseGradient(false); setUseBlur(false); }}
-            className={!useGradient && !useBlur ? "flex-1 py-2 text-sm font-medium bg-blue-600 text-white" : "flex-1 py-2 text-sm font-medium bg-white text-zinc-600 hover:bg-zinc-100"}
-          >
-            Solid
-          </button>
-          <button
-            onClick={() => { setUseGradient(true); setUseBlur(false); }}
-            className={useGradient && !useBlur ? "flex-1 py-2 text-sm font-medium bg-blue-600 text-white" : "flex-1 py-2 text-sm font-medium bg-white text-zinc-600 hover:bg-zinc-100"}
-          >
-            Gradient
-          </button>
-          <button
-            onClick={() => { setUseBlur(true); setUseGradient(false); }}
-            className={useBlur ? "flex-1 py-2 text-sm font-medium bg-blue-600 text-white" : "flex-1 py-2 text-sm font-medium bg-white text-zinc-600 hover:bg-zinc-100"}
-          >
-            Blur
-          </button>
+        <label className="block text-xs font-medium text-zinc-600 mb-2">Background</label>
+        <div className="flex rounded-lg overflow-hidden border border-zinc-200">
+          {(["solid", "gradient", "blur"] as const).map((type) => (
+            <button
+              key={type}
+              onClick={() => {
+                setUseGradient(type === "gradient");
+                setUseBlur(type === "blur");
+              }}
+              className={
+                (type === "solid" && !useGradient && !useBlur) ||
+                (type === "gradient" && useGradient && !useBlur) ||
+                (type === "blur" && useBlur)
+                  ? "flex-1 py-2 text-sm font-medium bg-[#1db954] text-white transition-colors"
+                  : "flex-1 py-2 text-sm font-medium bg-white text-zinc-600 hover:bg-zinc-50 transition-colors"
+              }
+            >
+              {type.charAt(0).toUpperCase() + type.slice(1)}
+            </button>
+          ))}
         </div>
       </div>
 
+      {/* Gradient settings */}
       {useGradient && (
-        <div className="space-y-2 p-3 bg-zinc-50 rounded-lg">
-          <div className="flex rounded-lg overflow-hidden border border-zinc-300">
+        <div className="space-y-3 p-4 bg-zinc-50 rounded-lg border border-zinc-200">
+          <div className="flex rounded-lg overflow-hidden border border-zinc-200">
             <button
               onClick={() => setGradient({ ...gradient, type: "linear" })}
-              className={gradient.type === "linear" ? "flex-1 py-1.5 text-xs font-medium bg-blue-600 text-white" : "flex-1 py-1.5 text-xs font-medium bg-white text-zinc-600"}
+              className={gradient.type === "linear" ? "flex-1 py-1.5 text-xs font-medium bg-[#1db954] text-white" : "flex-1 py-1.5 text-xs font-medium bg-white text-zinc-600"}
             >
               Linear
             </button>
             <button
               onClick={() => setGradient({ ...gradient, type: "radial" })}
-              className={gradient.type === "radial" ? "flex-1 py-1.5 text-xs font-medium bg-blue-600 text-white" : "flex-1 py-1.5 text-xs font-medium bg-white text-zinc-600"}
+              className={gradient.type === "radial" ? "flex-1 py-1.5 text-xs font-medium bg-[#1db954] text-white" : "flex-1 py-1.5 text-xs font-medium bg-white text-zinc-600"}
             >
               Radial
             </button>
@@ -160,8 +165,8 @@ export default function SettingsPanel({
             </div>
           )}
 
-          <div className="space-y-1">
-            <label className="block text-xs text-zinc-600">Colors</label>
+          <div className="space-y-2">
+            <label className="block text-xs font-medium text-zinc-600">Colors</label>
             {gradient.colors.map((color, i) => (
               <div key={i} className="flex gap-2 items-center">
                 <input
@@ -172,7 +177,7 @@ export default function SettingsPanel({
                     colors[i] = e.target.value;
                     setGradient({ ...gradient, colors });
                   }}
-                  className="w-8 h-8 rounded border border-zinc-300 cursor-pointer"
+                  className="w-9 h-9 rounded-lg border border-zinc-200 cursor-pointer"
                 />
                 <input
                   type="text"
@@ -182,7 +187,7 @@ export default function SettingsPanel({
                     colors[i] = e.target.value;
                     setGradient({ ...gradient, colors });
                   }}
-                  className="flex-1 px-2 py-1 bg-white border border-zinc-300 rounded text-zinc-900 text-xs font-mono"
+                  className="flex-1 px-3 py-1.5 bg-white border border-zinc-200 rounded-lg text-zinc-900 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-[#1db954]"
                 />
                 {gradient.colors.length > 2 && (
                   <button
@@ -190,7 +195,8 @@ export default function SettingsPanel({
                       const colors = gradient.colors.filter((_, j) => j !== i);
                       setGradient({ ...gradient, colors });
                     }}
-                    className="text-red-500 text-xs hover:text-red-700"
+                    className="w-7 h-7 flex items-center justify-center text-zinc-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
+                    aria-label="Remove color"
                   >
                     ×
                   </button>
@@ -200,7 +206,7 @@ export default function SettingsPanel({
             {gradient.colors.length < 3 && (
               <button
                 onClick={() => setGradient({ ...gradient, colors: [...gradient.colors, "#ffffff"] })}
-                className="text-xs text-blue-600 hover:text-blue-800"
+                className="text-xs text-[#1db954] hover:text-[#1ed760] font-medium"
               >
                 + Add color
               </button>
@@ -209,14 +215,15 @@ export default function SettingsPanel({
         </div>
       )}
 
+      {/* Blur settings */}
       {useBlur && images.length > 0 && (
-        <div className="space-y-2 p-3 bg-zinc-50 rounded-lg">
+        <div className="space-y-3 p-4 bg-zinc-50 rounded-lg border border-zinc-200">
           <div>
-            <label className="block text-xs text-zinc-600 mb-1">Source Artwork</label>
+            <label className="block text-xs font-medium text-zinc-600 mb-1">Source Artwork</label>
             <select
               value={blurImageIndex}
               onChange={(e) => setBlurImageIndex(Number(e.target.value))}
-              className="w-full px-2 py-1.5 bg-white border border-zinc-300 rounded text-zinc-900 text-sm"
+              className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-lg text-zinc-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#1db954]"
             >
               {images.map((img, i) => (
                 <option key={i} value={i}>
@@ -241,8 +248,9 @@ export default function SettingsPanel({
         </div>
       )}
 
+      {/* Artwork Scale */}
       <div>
-        <label className="block text-xs text-zinc-600 mb-1">
+        <label className="block text-xs font-medium text-zinc-600 mb-2">
           Artwork Scale: {artworkScale.toFixed(1)}x
         </label>
         <input
@@ -254,12 +262,13 @@ export default function SettingsPanel({
           onChange={(e) => setArtworkScale(Number(e.target.value))}
           className="w-full"
         />
-        <p className="text-xs text-zinc-500 mt-0.5">Zoom in/out on album artwork</p>
+        <p className="text-xs text-zinc-400 mt-1">Zoom in/out on album artwork</p>
       </div>
 
+      {/* Resolution */}
       <div>
-        <label className="block text-xs text-zinc-600 mb-1">Resolution</label>
-        <div className="flex rounded-lg overflow-hidden border border-zinc-300">
+        <label className="block text-xs font-medium text-zinc-600 mb-2">Resolution</label>
+        <div className="flex rounded-lg overflow-hidden border border-zinc-200">
           {Object.entries(RESOLUTIONS).map(([key, res]) => (
             <button
               key={key}
@@ -269,8 +278,8 @@ export default function SettingsPanel({
               }}
               className={
                 !useCustom && resolution === key
-                  ? "flex-1 py-2 text-sm font-medium bg-blue-600 text-white"
-                  : "flex-1 py-2 text-sm font-medium bg-white text-zinc-600 hover:bg-zinc-100"
+                  ? "flex-1 py-2 text-sm font-medium bg-[#1db954] text-white transition-colors"
+                  : "flex-1 py-2 text-sm font-medium bg-white text-zinc-600 hover:bg-zinc-50 transition-colors"
               }
             >
               {res.label}
@@ -280,8 +289,8 @@ export default function SettingsPanel({
             onClick={() => setUseCustom(true)}
             className={
               useCustom
-                ? "flex-1 py-2 text-sm font-medium bg-blue-600 text-white"
-                : "flex-1 py-2 text-sm font-medium bg-white text-zinc-600 hover:bg-zinc-100"
+                ? "flex-1 py-2 text-sm font-medium bg-[#1db954] text-white transition-colors"
+                : "flex-1 py-2 text-sm font-medium bg-white text-zinc-600 hover:bg-zinc-50 transition-colors"
             }
           >
             Custom
@@ -296,7 +305,7 @@ export default function SettingsPanel({
             value={customWidth}
             onChange={(e) => setCustomWidth(e.target.value)}
             placeholder="Width"
-            className="flex-1 px-3 py-2 bg-white border border-zinc-300 rounded-lg text-zinc-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="flex-1 px-3 py-2 bg-white border border-zinc-200 rounded-lg text-zinc-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#1db954]"
           />
           <span className="text-zinc-400">×</span>
           <input
@@ -304,13 +313,14 @@ export default function SettingsPanel({
             value={customHeight}
             onChange={(e) => setCustomHeight(e.target.value)}
             placeholder="Height"
-            className="flex-1 px-3 py-2 bg-white border border-zinc-300 rounded-lg text-zinc-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="flex-1 px-3 py-2 bg-white border border-zinc-200 rounded-lg text-zinc-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#1db954]"
           />
         </div>
       )}
 
+      {/* Spacing */}
       <div>
-        <label className="block text-xs text-zinc-600 mb-1">
+        <label className="block text-xs font-medium text-zinc-600 mb-2">
           Cell Spacing: {spacing}px
         </label>
         <input
@@ -323,8 +333,9 @@ export default function SettingsPanel({
         />
       </div>
 
+      {/* Border Radius */}
       <div>
-        <label className="block text-xs text-zinc-600 mb-1">
+        <label className="block text-xs font-medium text-zinc-600 mb-2">
           Border Radius: {borderRadius}px
         </label>
         <input
@@ -337,22 +348,24 @@ export default function SettingsPanel({
         />
       </div>
 
-      <div className="flex items-center gap-2">
+      {/* Show Title */}
+      <div className="flex items-center gap-3 p-3 bg-zinc-50 rounded-lg border border-zinc-200">
         <input
           type="checkbox"
           id="show-title"
           checked={showTitle}
           onChange={(e) => setShowTitle(e.target.checked)}
-          className="w-4 h-4 rounded border-zinc-300 text-blue-600 focus:ring-blue-500"
+          className="w-4 h-4 rounded border-zinc-300 text-[#1db954] focus:ring-[#1db954]"
         />
-        <label htmlFor="show-title" className="text-sm text-zinc-600">
+        <label htmlFor="show-title" className="text-sm text-zinc-700 cursor-pointer">
           Show playlist title on wallpaper
         </label>
       </div>
 
+      {/* Generate Button */}
       <button
         onClick={onGenerate}
-        className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
+        className="w-full py-3 px-4 bg-[#1db954] hover:bg-[#1ed760] text-white font-semibold rounded-lg transition-all duration-200 btn-press"
       >
         Generate Wallpaper
       </button>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import LandingPage from "@/components/LandingPage";
 import WallpaperPreview from "@/components/WallpaperPreview";
 import SettingsPanel from "@/components/SettingsPanel";
 import { THEMES } from "@/lib/wallpaper/themes";
@@ -18,7 +19,7 @@ interface PlaylistResponse {
 }
 
 export default function Home() {
-  const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
+  const [step, setStep] = useState<0 | 1 | 2 | 3 | 4>(0);
   const [url, setUrl] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -60,6 +61,10 @@ export default function Home() {
     const spotifyPlaylistRegex =
       /^https?:\/\/open\.spotify\.com\/playlist\/[a-zA-Z0-9]+/;
     return spotifyPlaylistRegex.test(url);
+  };
+
+  const handleGetStarted = () => {
+    setStep(1);
   };
 
   const handleFetchPlaylist = async () => {
@@ -111,6 +116,13 @@ export default function Home() {
     setStep(4);
   };
 
+  const handleBackToLanding = () => {
+    setStep(0);
+    setPlaylist(null);
+    setError("");
+    setUrl("");
+  };
+
   const handleBackToStep1 = () => {
     setStep(1);
     setPlaylist(null);
@@ -128,125 +140,220 @@ export default function Home() {
   const canvasWidth = useCustom ? parseInt(customWidth) || 1920 : RESOLUTIONS[resolution].width;
   const canvasHeight = useCustom ? parseInt(customHeight) || 1080 : RESOLUTIONS[resolution].height;
 
-  return (
-    <div className="min-h-screen bg-zinc-200 flex flex-col items-center justify-center p-4">
-      <div className="max-w-md w-full space-y-8">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold text-zinc-900 mb-2">
-            Spotify Playlist Wallpaper Generator
-          </h1>
-          <p className="text-zinc-600">
-            Generate beautiful wallpapers from your Spotify playlists
-          </p>
-        </div>
+  // Landing page
+  if (step === 0) {
+    return <LandingPage onGetStarted={handleGetStarted} />;
+  }
 
+  // Wizard steps
+  return (
+    <div className="min-h-screen bg-zinc-100 flex flex-col">
+      {/* Top bar */}
+      <header className="bg-white border-b border-zinc-200 px-4 sm:px-6 py-3 card-shadow">
+        <div className="max-w-6xl mx-auto flex items-center justify-between">
+          <button
+            onClick={handleBackToLanding}
+            className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors font-medium"
+          >
+            ← Home
+          </button>
+          <h1 className="text-sm sm:text-base font-semibold text-zinc-900">
+            Spotify Wallpaper Generator
+          </h1>
+          <div className="w-16" />
+        </div>
+      </header>
+
+      {/* Main content */}
+      <main className="flex-1 p-4 sm:p-6 lg:p-8">
         {step === 1 && (
-          <div className="space-y-4">
-            <input
-              type="text"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleFetchPlaylist()}
-              placeholder="Paste your Spotify playlist URL here"
-              className="w-full px-4 py-3 bg-white border border-zinc-300 rounded-lg text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-            {error && <p className="text-red-500 text-sm">{error}</p>}
-            <button
-              onClick={handleFetchPlaylist}
-              disabled={loading}
-              className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? "Loading..." : "Fetch Playlist"}
-            </button>
+          <div className="max-w-md mx-auto animate-fade-in">
+            <div className="bg-white rounded-xl p-6 card-shadow-lg">
+              <h2 className="text-2xl font-bold text-zinc-900 mb-2">
+                Paste your playlist
+              </h2>
+              <p className="text-zinc-500 mb-6">
+                Enter a Spotify playlist URL to get started
+              </p>
+              <div className="space-y-4">
+                <input
+                  type="text"
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleFetchPlaylist()}
+                  placeholder="https://open.spotify.com/playlist/..."
+                  className="w-full px-4 py-3 bg-zinc-50 border border-zinc-200 rounded-lg text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-[#1db954] focus:border-transparent transition-smooth"
+                  aria-label="Spotify playlist URL"
+                />
+                {error && (
+                  <div className="p-3 bg-red-50 border border-red-200 rounded-lg" role="alert">
+                    <p className="text-red-600 text-sm">{error}</p>
+                  </div>
+                )}
+                <button
+                  onClick={handleFetchPlaylist}
+                  disabled={loading}
+                  className="w-full py-3 px-4 bg-[#1db954] hover:bg-[#1ed760] text-white font-semibold rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed btn-press"
+                  aria-label={loading ? "Loading playlist..." : "Fetch playlist"}
+                >
+                  {loading ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <svg className="animate-spin-slow w-5 h-5" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                      </svg>
+                      Loading...
+                    </span>
+                  ) : (
+                    "Fetch Playlist"
+                  )}
+                </button>
+              </div>
+            </div>
           </div>
         )}
 
         {step === 2 && playlist && (
-          <div className="space-y-4">
-            <button
-              onClick={handleBackToStep1}
-              className="text-sm text-zinc-500 hover:text-zinc-700"
-            >
-              ← Back to URL
-            </button>
+          <div className="max-w-md mx-auto animate-fade-in">
+            <div className="bg-white rounded-xl p-6 card-shadow-lg">
+              <button
+                onClick={handleBackToStep1}
+                className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors mb-4"
+              >
+                ← Back
+              </button>
+              <div className="mb-4">
+                <h2 className="text-xl font-bold text-zinc-900">{playlist.name}</h2>
+                {playlist.description && (
+                  <p className="text-zinc-500 text-sm mt-1">{playlist.description}</p>
+                )}
+                <p className="text-zinc-400 text-xs mt-1">{playlist.images.length} album artworks</p>
+              </div>
 
-            <div className="p-4 bg-white border border-zinc-300 rounded-lg">
-              <h2 className="text-xl font-bold text-zinc-900">{playlist.name}</h2>
-              {playlist.description && (
-                <p className="text-zinc-500 text-sm mt-1">{playlist.description}</p>
+              {playlist.images.length > 0 ? (
+                <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 mb-6">
+                  {playlist.images.map((image, index) => (
+                    <img
+                      key={index}
+                      src={image.url}
+                      alt={image.albumName || `Album artwork ${index + 1}`}
+                      className="w-full aspect-square object-cover rounded-lg transition-transform duration-200 hover:scale-105"
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="p-8 bg-zinc-50 border border-zinc-200 rounded-lg text-center mb-6">
+                  <p className="text-zinc-500">No album artwork found</p>
+                </div>
               )}
-              <p className="text-zinc-400 text-xs mt-1">{playlist.images.length} tracks</p>
+
+              <button
+                onClick={handleGoToSettings}
+                className="w-full py-3 px-4 bg-[#1db954] hover:bg-[#1ed760] text-white font-semibold rounded-lg transition-all duration-200 btn-press"
+              >
+                Proceed to Customize
+              </button>
             </div>
-
-            {playlist.images.length > 0 ? (
-              <div className="grid grid-cols-5 gap-2">
-                {playlist.images.map((image, index) => (
-                  <img
-                    key={index}
-                    src={image.url}
-                    alt={`Album artwork ${index + 1}`}
-                    className="w-full aspect-square object-cover rounded"
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="p-4 bg-white border border-zinc-300 rounded-lg text-center">
-                <p className="text-zinc-500">No album artwork found</p>
-              </div>
-            )}
-
-            <button
-              onClick={handleGoToSettings}
-              className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
-            >
-              Proceed to Wallpaper
-            </button>
           </div>
         )}
 
         {step === 3 && playlist && (
-          <div className="space-y-4">
+          <div className="max-w-6xl mx-auto animate-fade-in">
             <button
               onClick={handleBackToStep2}
-              className="text-sm text-zinc-500 hover:text-zinc-700"
+              className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors mb-4"
             >
               ← Back to Artwork
             </button>
 
-            <SettingsPanel
-              theme={theme}
-              setTheme={setTheme}
-              resolution={resolution}
-              setResolution={setResolution}
-              useCustom={useCustom}
-              setUseCustom={setUseCustom}
-              customWidth={customWidth}
-              setCustomWidth={setCustomWidth}
-              customHeight={customHeight}
-              setCustomHeight={setCustomHeight}
-              spacing={spacing}
-              setSpacing={setSpacing}
-              borderRadius={borderRadius}
-              setBorderRadius={setBorderRadius}
-              showTitle={showTitle}
-              setShowTitle={setShowTitle}
-              useGradient={useGradient}
-              setUseGradient={setUseGradient}
-              gradient={gradient}
-              setGradient={setGradient}
-              useBlur={useBlur}
-              setUseBlur={setUseBlur}
-              blurIntensity={blurIntensity}
-              setBlurIntensity={setBlurIntensity}
-              blurImageIndex={blurImageIndex}
-              setBlurImageIndex={setBlurImageIndex}
-              artworkScale={artworkScale}
-              setArtworkScale={setArtworkScale}
-              images={shuffledImages}
-              onGenerate={handleGenerateWallpaper}
-            />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Settings */}
+              <div>
+                <SettingsPanel
+                  theme={theme}
+                  setTheme={setTheme}
+                  resolution={resolution}
+                  setResolution={setResolution}
+                  useCustom={useCustom}
+                  setUseCustom={setUseCustom}
+                  customWidth={customWidth}
+                  setCustomWidth={setCustomWidth}
+                  customHeight={customHeight}
+                  setCustomHeight={setCustomHeight}
+                  spacing={spacing}
+                  setSpacing={setSpacing}
+                  borderRadius={borderRadius}
+                  setBorderRadius={setBorderRadius}
+                  showTitle={showTitle}
+                  setShowTitle={setShowTitle}
+                  useGradient={useGradient}
+                  setUseGradient={setUseGradient}
+                  gradient={gradient}
+                  setGradient={setGradient}
+                  useBlur={useBlur}
+                  setUseBlur={setUseBlur}
+                  blurIntensity={blurIntensity}
+                  setBlurIntensity={setBlurIntensity}
+                  blurImageIndex={blurImageIndex}
+                  setBlurImageIndex={setBlurImageIndex}
+                  artworkScale={artworkScale}
+                  setArtworkScale={setArtworkScale}
+                  images={shuffledImages}
+                  onGenerate={handleGenerateWallpaper}
+                />
+              </div>
 
-            {playlist.images.length > 0 && (
+              {/* Preview */}
+              <div>
+                {playlist.images.length > 0 && (
+                  <WallpaperPreview
+                    images={shuffledImages}
+                    playlistName={playlist.name}
+                    resolution={effectiveResolution}
+                    customWidth={useCustom ? canvasWidth : undefined}
+                    customHeight={useCustom ? canvasHeight : undefined}
+                    showTitle={showTitle}
+                    spacing={spacing}
+                    borderRadius={borderRadius}
+                    backgroundColor={useGradient ? gradient.colors[0] : (useBlur ? "#000000" : themeConfig.backgroundColor)}
+                    titleBarColor={themeConfig.titleBarColor}
+                    titleTextColor={themeConfig.titleTextColor}
+                    gradient={useGradient ? gradient : undefined}
+                    blur={useBlur}
+                    blurIntensity={blurIntensity}
+                    blurImageIndex={blurImageIndex}
+                    artworkScale={artworkScale}
+                    showReshuffle={true}
+                    showDownload={false}
+                    onReshuffle={handleReshuffle}
+                  />
+                )}
+              </div>
+            </div>
+
+            {useCustom && (
+              <p className="text-xs text-zinc-500 text-center mt-4">
+                Preview shows at {RESOLUTIONS[effectiveResolution].width}×{RESOLUTIONS[effectiveResolution].height}. Download will use {canvasWidth}×{canvasHeight}.
+              </p>
+            )}
+          </div>
+        )}
+
+        {step === 4 && playlist && (
+          <div className="max-w-2xl mx-auto animate-fade-in">
+            <div className="bg-white rounded-xl p-6 card-shadow-lg">
+              <button
+                onClick={handleBackToStep3}
+                className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors mb-4"
+              >
+                ← Back to Settings
+              </button>
+
+              <div className="mb-4">
+                <h2 className="text-xl font-bold text-zinc-900">{playlist.name}</h2>
+                <p className="text-zinc-400 text-xs mt-1">{playlist.images.length} tracks</p>
+              </div>
+
               <WallpaperPreview
                 images={shuffledImages}
                 playlistName={playlist.name}
@@ -264,64 +371,14 @@ export default function Home() {
                 blurIntensity={blurIntensity}
                 blurImageIndex={blurImageIndex}
                 artworkScale={artworkScale}
-                showReshuffle={true}
-                showDownload={false}
+                showReshuffle={false}
+                showDownload={true}
                 onReshuffle={handleReshuffle}
               />
-            )}
-
-            {useCustom && (
-              <p className="text-xs text-zinc-500 text-center">
-                Preview shows at {RESOLUTIONS[effectiveResolution].width}×{RESOLUTIONS[effectiveResolution].height}. Download will use {canvasWidth}×{canvasHeight}.
-              </p>
-            )}
-          </div>
-        )}
-
-        {step === 4 && playlist && (
-          <div className="space-y-4">
-            <button
-              onClick={handleBackToStep3}
-              className="text-sm text-zinc-500 hover:text-zinc-700"
-            >
-              ← Back to Settings
-            </button>
-
-            <div className="p-4 bg-white border border-zinc-300 rounded-lg">
-              <h2 className="text-xl font-bold text-zinc-900">{playlist.name}</h2>
-              <p className="text-zinc-400 text-xs mt-1">{playlist.images.length} tracks</p>
             </div>
-
-            <WallpaperPreview
-              images={shuffledImages}
-              playlistName={playlist.name}
-              resolution={effectiveResolution}
-              customWidth={useCustom ? canvasWidth : undefined}
-              customHeight={useCustom ? canvasHeight : undefined}
-              showTitle={showTitle}
-              spacing={spacing}
-              borderRadius={borderRadius}
-              backgroundColor={useGradient ? gradient.colors[0] : (useBlur ? "#000000" : themeConfig.backgroundColor)}
-              titleBarColor={themeConfig.titleBarColor}
-              titleTextColor={themeConfig.titleTextColor}
-              gradient={useGradient ? gradient : undefined}
-              blur={useBlur}
-              blurIntensity={blurIntensity}
-              blurImageIndex={blurImageIndex}
-              artworkScale={artworkScale}
-              showReshuffle={false}
-              showDownload={true}
-              onReshuffle={handleReshuffle}
-            />
-
-            {useCustom && (
-              <p className="text-xs text-zinc-500 text-center">
-                Preview shows at {RESOLUTIONS[effectiveResolution].width}×{RESOLUTIONS[effectiveResolution].height}. Download will use {canvasWidth}×{canvasHeight}.
-              </p>
-            )}
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 }
