@@ -5,9 +5,18 @@ import { THEMES } from "@/lib/wallpaper/themes";
 import { RESOLUTIONS } from "@/lib/wallpaper/types";
 import type { ResolutionKey } from "@/lib/wallpaper/types";
 import type { ThemeKey } from "@/lib/wallpaper/themes";
-import type { AlbumImage, GradientConfig, TextStyle, WallpaperEffects } from "@/lib/wallpaper/types";
+import type {
+  AlbumImage,
+  GradientConfig,
+  TemplateId,
+  TextStyle,
+  WallpaperEffects,
+} from "@/lib/wallpaper/types";
+import { defaultTemplateSettings, getTemplate } from "@/lib/wallpaper/templates";
+import type { TemplateSettings } from "@/lib/wallpaper/templates";
 import TextSettings from "./TextSettings";
 import EffectsPanel from "./EffectsPanel";
+import TemplateSelector from "./TemplateSelector";
 
 interface SettingsPanelProps {
   theme: ThemeKey;
@@ -42,6 +51,10 @@ interface SettingsPanelProps {
   setArtworkScale: (s: number) => void;
   effects: WallpaperEffects;
   setEffects: (e: WallpaperEffects) => void;
+  template: TemplateId;
+  setTemplate: (t: TemplateId) => void;
+  templateSettings: TemplateSettings;
+  setTemplateSettings: (s: TemplateSettings) => void;
   images: AlbumImage[];
   onGenerate: () => void;
 }
@@ -88,6 +101,10 @@ export default function SettingsPanel({
   setArtworkScale,
   effects,
   setEffects,
+  template,
+  setTemplate,
+  templateSettings,
+  setTemplateSettings,
   images,
   onGenerate,
 }: SettingsPanelProps) {
@@ -375,6 +392,81 @@ export default function SettingsPanel({
     </div>
   );
 
+  const templateDef = getTemplate(template);
+
+  const templateSection = (
+    <>
+      <div>
+        <label className="block text-xs font-medium text-zinc-600 mb-2">
+          Template
+        </label>
+        <TemplateSelector value={template} onChange={setTemplate} />
+      </div>
+
+      {templateDef.settings.length > 0 && (
+        <div className="space-y-3 p-4 bg-zinc-50 rounded-lg border border-zinc-200">
+          {templateDef.settings.map((def) => {
+            const val = templateSettings[def.key] ?? def.defaultValue;
+            const isToggle = def.min === 0 && def.max === 1 && def.step === 1;
+            return (
+              <div key={def.key}>
+                {isToggle ? (
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-medium text-zinc-600">
+                      {def.label}
+                    </label>
+                    <button
+                      onClick={() =>
+                        setTemplateSettings({
+                          ...templateSettings,
+                          [def.key]: val > 0.5 ? 0 : 1,
+                        })
+                      }
+                      className={`px-3 py-1 text-xs font-medium rounded-lg transition-colors ${
+                        val > 0.5
+                          ? "bg-[#1db954] text-white"
+                          : "bg-zinc-200 text-zinc-600"
+                      }`}
+                    >
+                      {val > 0.5 ? "On" : "Off"}
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <label className="block text-xs text-zinc-600 mb-1">
+                      {def.label}: {val}
+                      {def.unit ?? ""}
+                    </label>
+                    <input
+                      type="range"
+                      min={def.min}
+                      max={def.max}
+                      step={def.step}
+                      value={val}
+                      onChange={(e) =>
+                        setTemplateSettings({
+                          ...templateSettings,
+                          [def.key]: Number(e.target.value),
+                        })
+                      }
+                      className="w-full"
+                    />
+                  </>
+                )}
+              </div>
+            );
+          })}
+          <button
+            onClick={() => setTemplateSettings(defaultTemplateSettings(template))}
+            className="text-xs text-zinc-500 hover:text-zinc-900 font-medium"
+          >
+            Reset settings
+          </button>
+        </div>
+      )}
+    </>
+  );
+
   const effectsSection = <EffectsPanel effects={effects} onChange={setEffects} />;
 
   const showTitleSection = (
@@ -396,22 +488,8 @@ export default function SettingsPanel({
     <TextSettings textStyle={textStyle} onChange={setTextStyle} />
   );
 
-  const desktopSections = (
-    <div className="hidden lg:block space-y-5">
-      {themeSection}
-      {backgroundSection}
-      {artworkScaleSection}
-      {resolutionSection}
-      {spacingSection}
-      {borderRadiusSection}
-      {effectsSection}
-      {showTitleSection}
-      {textSection}
-    </div>
-  );
-
-  const mobileSections = (
-    <div className="lg:hidden space-y-5">
+  const tabSections = (
+    <div className="space-y-5">
       {activeTab === "background" && (
         <>
           {themeSection}
@@ -421,6 +499,7 @@ export default function SettingsPanel({
       )}
       {activeTab === "layout" && (
         <>
+          {templateSection}
           {resolutionSection}
           {spacingSection}
           {borderRadiusSection}
@@ -440,16 +519,16 @@ export default function SettingsPanel({
     <div className="bg-white rounded-xl p-5 card-shadow-lg space-y-5">
       <h2 className="text-lg font-bold text-zinc-900">Customize</h2>
 
-      {/* Mobile pagination tabs */}
-      <div className="lg:hidden flex rounded-lg overflow-hidden border border-zinc-200">
+      {/* Pagination tabs */}
+      <div className="flex rounded-lg overflow-hidden border border-zinc-200">
         {TABS.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className={
               activeTab === tab.id
-                ? "flex-1 py-2 text-xs font-medium bg-[#1db954] text-white transition-colors"
-                : "flex-1 py-2 text-xs font-medium bg-white text-zinc-600 hover:bg-zinc-50 transition-colors"
+                ? "flex-1 py-2 text-xs sm:text-sm font-medium bg-[#1db954] text-white transition-colors"
+                : "flex-1 py-2 text-xs sm:text-sm font-medium bg-white text-zinc-600 hover:bg-zinc-50 transition-colors"
             }
           >
             {tab.label}
@@ -457,8 +536,7 @@ export default function SettingsPanel({
         ))}
       </div>
 
-      {mobileSections}
-      {desktopSections}
+      {tabSections}
 
       {/* Generate Button */}
       <button

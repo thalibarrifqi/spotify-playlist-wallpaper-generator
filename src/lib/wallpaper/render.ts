@@ -1,4 +1,4 @@
-import { computeGridLayout } from "./grid-layout";
+import { defaultTemplateSettings, getTemplate } from "./templates";
 import { WALLPAPER_FONTS, getFont } from "./fonts";
 import type { WallpaperFont } from "./fonts";
 import {
@@ -18,6 +18,7 @@ import type {
   AlbumImage,
   FontWeight,
   GradientConfig,
+  LayoutCell,
   WallpaperConfig,
 } from "./types";
 
@@ -29,30 +30,6 @@ function loadImage(src: string): Promise<HTMLImageElement> {
     img.onerror = () => reject(new Error(`Failed to load image: ${src}`));
     img.src = src;
   });
-}
-
-function findBestColumns(
-  count: number,
-  width: number,
-  height: number,
-  spacing: number
-): number {
-  const gapX = spacing * (Math.min(count, Math.ceil(width / height)) + 1);
-  const gapY = spacing * (Math.ceil(count / Math.min(count, Math.ceil(width / height))) + 1);
-  const availW = width - gapX;
-  const availH = height - gapY;
-
-  let bestColumns = 1;
-  let bestSize = 0;
-  for (let columns = 1; columns <= count; columns++) {
-    const rows = Math.ceil(count / columns);
-    const size = Math.min(availW / columns, availH / rows);
-    if (size > bestSize) {
-      bestSize = size;
-      bestColumns = columns;
-    }
-  }
-  return bestColumns;
 }
 
 function padImages(images: AlbumImage[], targetCount: number): AlbumImage[] {
@@ -293,12 +270,21 @@ async function renderBase(
     ctx.fillRect(0, 0, config.width, config.height);
   }
 
-  const columns = findBestColumns(images.length, config.width, config.height, spacing);
-  const rows = Math.ceil(images.length / columns);
-  const targetCount = columns * rows;
-  const padded = padImages(images, targetCount);
+  if (images.length === 0) return;
 
-  const cells = computeGridLayout(padded.length, config.width, config.height, spacing);
+  const template = getTemplate(config.template ?? "grid");
+  const settings = {
+    ...defaultTemplateSettings(template.id),
+    ...config.templateSettings,
+  };
+  const cells = template.computeLayout(
+    images.length,
+    config.width,
+    config.height,
+    settings,
+    spacing
+  );
+  const padded = padImages(images, cells.length);
 
   const loaded = await Promise.all(
     padded.map(async (image, index) => {
@@ -313,34 +299,40 @@ async function renderBase(
 
   for (const item of loaded) {
     if (!item) continue;
-
-    const { element, cell } = item;
-    const artworkScale = config.artworkScale ?? 1;
-    const scale = Math.max(
-      cell.width / element.width,
-      cell.height / element.height
-    ) * artworkScale;
-    const drawW = element.width * scale;
-    const drawH = element.height * scale;
-
-    ctx.save();
-    if (borderRadius > 0) {
-      const r = Math.min(borderRadius, cell.width / 2, cell.height / 2);
-      ctx.beginPath();
-      ctx.roundRect(cell.x, cell.y, cell.width, cell.height, r);
-      ctx.clip();
-    } else {
-      ctx.beginPath();
-      ctx.rect(cell.x, cell.y, cell.width, cell.height);
-      ctx.clip();
-    }
-    ctx.drawImage(
-      element,
-      cell.x + (cell.width - drawW) / 2,
-      cell.y + (cell.height - drawH) / 2,
-      drawW,
-      drawH
-    );
-    ctx.restore();
+    drawArtwork(ctx, item.element, item.cell, borderRadius, config.artworkScale ?? 1);
   }
+}
+
+function drawArtwork(
+  ctx: CanvasRenderingContext2D,
+  element: HTMLImageElement,
+  cell: LayoutCell,
+  borderRadius: number,
+  artworkScale: number
+): void {
+  const radius = Math.min(borderRadius, cell.width / 2, cell.height / 2);
+  const halfW = cell.width / 2;
+  const halfH = cell.height / 2;
+
+  ctx.save();
+  ctx.translate(cell.x + halfW, cell.y + halfH);
+  if (cell.rotation) {
+    ctx.rotate(cell.rotation);
+  }
+
+  ctx.beginPath();
+  if (radius > 0) {
+    ctx.roundRect(-halfW, -halfH, cell.width, cell.height, radius);
+  } else {
+    ctx.rect(-halfW, -halfH, cell.width, cell.height);
+  }
+  ctx.clip();
+
+  const scale =
+    Math.max(cell.width / element.width, cell.height / element.height) *
+    artworkScale;
+  const drawW = element.width * scale;
+  const drawH = element.height * scale;
+  ctx.drawImage(element, -drawW / 2, -drawH / 2, drawW, drawH);
+  ctx.restore();
 }

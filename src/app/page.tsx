@@ -8,8 +8,10 @@ import { THEMES } from "@/lib/wallpaper/themes";
 import { DEFAULT_TEXT_STYLE } from "@/lib/wallpaper/text-layout";
 import { DEFAULT_EFFECTS } from "@/lib/wallpaper/effects";
 import { RESOLUTIONS } from "@/lib/wallpaper/types";
-import type { AlbumImage, GradientConfig, ResolutionKey, TextStyle, WallpaperEffects } from "@/lib/wallpaper/types";
+import type { AlbumImage, GradientConfig, ResolutionKey, TemplateId, TextStyle, WallpaperEffects } from "@/lib/wallpaper/types";
 import type { ThemeKey } from "@/lib/wallpaper/themes";
+import { defaultTemplateSettings } from "@/lib/wallpaper/templates";
+import type { TemplateSettings } from "@/lib/wallpaper/templates";
 
 interface PlaylistResponse {
   name: string;
@@ -54,9 +56,16 @@ export default function Home() {
   const [blurImageIndex, setBlurImageIndex] = useState(0);
   const [artworkScale, setArtworkScale] = useState(1);
   const [effects, setEffects] = useState<WallpaperEffects>(DEFAULT_EFFECTS);
+  const [template, setTemplate] = useState<TemplateId>("grid");
+  const [templateSettings, setTemplateSettings] = useState<TemplateSettings>({});
 
   const effectiveResolution: ResolutionKey = useCustom ? "desktop" : resolution;
   const themeConfig = THEMES[theme];
+
+  const handleTemplateChange = (id: TemplateId) => {
+    setTemplate(id);
+    setTemplateSettings(defaultTemplateSettings(id));
+  };
 
   const handleReshuffle = useCallback(() => {
     if (!playlist) return;
@@ -333,6 +342,10 @@ export default function Home() {
                     setArtworkScale={setArtworkScale}
                     effects={effects}
                     setEffects={setEffects}
+                    template={template}
+                    setTemplate={handleTemplateChange}
+                    templateSettings={templateSettings}
+                    setTemplateSettings={setTemplateSettings}
                     images={shuffledImages}
                     onGenerate={handleGenerateWallpaper}
                   />
@@ -360,6 +373,8 @@ export default function Home() {
                       blurImageIndex={blurImageIndex}
                       artworkScale={artworkScale}
                       effects={effects}
+                      template={template}
+                      templateSettings={templateSettings}
                       showReshuffle={true}
                       showDownload={false}
                       onReshuffle={handleReshuffle}
@@ -410,6 +425,8 @@ export default function Home() {
                   blurImageIndex={blurImageIndex}
                   artworkScale={artworkScale}
                   effects={effects}
+                  template={template}
+                  templateSettings={templateSettings}
                   showReshuffle={false}
                   showDownload={true}
                   onReshuffle={handleReshuffle}

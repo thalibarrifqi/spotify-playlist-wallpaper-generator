@@ -41,7 +41,16 @@ export interface LayoutCell {
   y: number;
   width: number;
   height: number;
+  rotation?: number;
 }
+
+export type TemplateId =
+  | "grid"
+  | "collage"
+  | "mosaic"
+  | "diagonal"
+  | "border"
+  | "filmstrip";
 
 export interface GradientConfig {
   type: "linear" | "radial";
@@ -79,6 +88,8 @@ export interface WallpaperConfig {
   blurImageIndex?: number;
   artworkScale?: number;
   effects?: WallpaperEffects;
+  template?: TemplateId;
+  templateSettings?: Record<string, number>;
 }
 
 export const RESOLUTIONS: Record<

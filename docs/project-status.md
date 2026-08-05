@@ -87,6 +87,13 @@ Legend: ✅ Complete | ⏳ Planned | 🔧 In Progress
 - **Review:** `docs/sprints/sprint-9-review.md`
 - **Verification:** 350 tests pass via vitest; lint passes; production build succeeds
 
+### Sprint 10 — Wallpaper Templates ✅
+- **Date:** 2026-08-05
+- **Goal:** Predefined layout templates beyond the basic grid
+- **Status:** Complete — all acceptance criteria verified
+- **Review:** `docs/sprints/sprint-10-review.md`
+- **Verification:** 380 tests pass via vitest; lint passes; production build succeeds; all 6 templates render distinctly in headless browser
+
 ---
 
 ## Completed
@@ -151,16 +158,21 @@ Legend: ✅ Complete | ⏳ Planned | 🔧 In Progress
 - [x] Landing page mobile layout (tap-friendly Get Started, feature cards)
 - [x] `touch-action: manipulation` on buttons/links
 - [x] Mobile download fix (DOM link + deferred revoke)
+- [x] Template registry (6 templates: Grid, Collage, Mosaic, Diagonal, Border, Film Strip)
+- [x] Template picker with visual thumbnails + localStorage persistence
+- [x] Template-specific settings (rotation, thickness, variation, overlap, orientation)
+- [x] Rotation-aware cell rendering for the Diagonal template
+- [x] Template tests (30 cases, 380 total)
 
 ---
 
 ## Current Task
 
-Mobile UX polish complete (sticky header, settings pagination, landing layout, download fix).
+Sprint 10 (Wallpaper Templates) complete.
 
 ## Next Task
 
-Sprint 10 — Wallpaper Templates (predefined layout presets).
+Sprint 11 — per plan in `docs/sprints/sprint-11-plan.md`.
 
 ---
 

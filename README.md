@@ -41,6 +41,11 @@ Wallpaper generation is complete. The app can:
   - Vignette and noise/grain overlays with intensity controls
   - 5 presets: Vibrant, Muted, Vintage, B&W, Neon
   - Effects preview in real-time and apply to exported wallpapers at any DPI
+- Layout templates for the artwork:
+  - 6 templates: Grid, Collage, Mosaic, Diagonal, Border, Film Strip
+  - Visual thumbnail picker with last-used template remembered
+  - Template-specific settings (rotation angle, border thickness, variation, overlap, orientation)
+  - Works with all background modes and effects at any resolution
 - Reshuffle button to randomize artwork order and padding images
 
 ---
@@ -64,16 +69,17 @@ src/
     page.tsx         Main page component
   components/
     WallpaperPreview.tsx  Canvas preview, reshuffle, and download
-    SettingsPanel.tsx     Wallpaper settings (theme, background, resolution)
+    SettingsPanel.tsx     Wallpaper settings (theme, background, resolution, template)
     TextSettings.tsx      Title text customization panel
     EffectsPanel.tsx      Image effects controls
+    TemplateSelector.tsx  Layout template picker with thumbnails
   lib/
     spotify/
       parse-playlist-url.ts   URL parsing utility
       playlists.ts            Playlist fetch helper with rate-limit retry
       token.ts                OAuth token cache
     wallpaper/
-      types.ts                Resolution, text style, and effects types
+      types.ts                Resolution, text style, template, and effects types
       grid-layout.ts          Square-cell grid layout calculation
       render.ts               Canvas rendering + filter pipeline
       themes.ts               Wallpaper theme presets
@@ -81,12 +87,21 @@ src/
       text-layout.ts          Text layout math and presets
       effects.ts              Filter logic, overlays, and helpers
       presets.ts              Image effect presets
+      templates/
+        index.ts              Template registry and helpers
+        grid.ts               Grid template
+        collage.ts            Collage template
+        mosaic.ts             Mosaic template
+        diagonal.ts           Diagonal template
+        border.ts             Border template
+        filmstrip.ts          Film strip template
 __tests__/
   grid-layout.test.ts         Layout math tests (300 cases)
   fonts.test.ts               Font definition tests
   text-layout.test.ts         Text layout math tests
   effects.test.ts             Filter and overlay helper tests
   presets.test.ts             Effect preset tests
+  templates.test.ts           Template layout tests
 docs/
   prd.md                     Product Requirements Document
   implementation-plan.md     Sprint-level implementation plan
