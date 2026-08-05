@@ -5,8 +5,9 @@ import LandingPage from "@/components/LandingPage";
 import WallpaperPreview from "@/components/WallpaperPreview";
 import SettingsPanel from "@/components/SettingsPanel";
 import { THEMES } from "@/lib/wallpaper/themes";
+import { DEFAULT_TEXT_STYLE } from "@/lib/wallpaper/text-layout";
 import { RESOLUTIONS } from "@/lib/wallpaper/types";
-import type { AlbumImage, GradientConfig, ResolutionKey } from "@/lib/wallpaper/types";
+import type { AlbumImage, GradientConfig, ResolutionKey, TextStyle } from "@/lib/wallpaper/types";
 import type { ThemeKey } from "@/lib/wallpaper/themes";
 
 interface PlaylistResponse {
@@ -38,6 +39,7 @@ export default function Home() {
   const [useCustom, setUseCustom] = useState(false);
   const [shuffledImages, setShuffledImages] = useState<AlbumImage[]>([]);
   const [showTitle, setShowTitle] = useState(false);
+  const [textStyle, setTextStyle] = useState<TextStyle>(DEFAULT_TEXT_STYLE);
   const [spacing, setSpacing] = useState(0);
   const [borderRadius, setBorderRadius] = useState(0);
   const [useGradient, setUseGradient] = useState(false);
@@ -313,6 +315,8 @@ export default function Home() {
                     setBorderRadius={setBorderRadius}
                     showTitle={showTitle}
                     setShowTitle={setShowTitle}
+                    textStyle={textStyle}
+                    setTextStyle={setTextStyle}
                     useGradient={useGradient}
                     setUseGradient={setUseGradient}
                     gradient={gradient}
@@ -345,6 +349,7 @@ export default function Home() {
                       backgroundColor={useGradient ? gradient.colors[0] : (useBlur ? "#000000" : themeConfig.backgroundColor)}
                       titleBarColor={themeConfig.titleBarColor}
                       titleTextColor={themeConfig.titleTextColor}
+                      textStyle={textStyle}
                       gradient={useGradient ? gradient : undefined}
                       blur={useBlur}
                       blurIntensity={blurIntensity}
@@ -393,6 +398,7 @@ export default function Home() {
                   backgroundColor={useGradient ? gradient.colors[0] : (useBlur ? "#000000" : themeConfig.backgroundColor)}
                   titleBarColor={themeConfig.titleBarColor}
                   titleTextColor={themeConfig.titleTextColor}
+                  textStyle={textStyle}
                   gradient={useGradient ? gradient : undefined}
                   blur={useBlur}
                   blurIntensity={blurIntensity}

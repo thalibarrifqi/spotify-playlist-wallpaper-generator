@@ -1,5 +1,14 @@
 import { computeGridLayout } from "./grid-layout";
-import type { AlbumImage, GradientConfig, WallpaperConfig } from "./types";
+import { WALLPAPER_FONTS, getFont } from "./fonts";
+import type { WallpaperFont } from "./fonts";
+import {
+  DEFAULT_TEXT_STYLE,
+  buildCanvasFont,
+  computeTitleLayout,
+  scaleForCanvas,
+  withAlpha,
+} from "./text-layout";
+import type { AlbumImage, FontWeight, GradientConfig, WallpaperConfig } from "./types";
 
 function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
@@ -111,6 +120,26 @@ async function drawBlurBackground(
   ctx.restore();
 }
 
+async function ensureFontLoaded(
+  font: WallpaperFont,
+  weight: FontWeight,
+  size: number,
+  text: string
+): Promise<void> {
+  if (font.category !== "google") return;
+  if (typeof document === "undefined" || typeof document.fonts === "undefined") {
+    return;
+  }
+  try {
+    const fontSpec = `${weight} ${size}px "${font.family}"`;
+    if (!document.fonts.check(fontSpec, text)) {
+      await document.fonts.load(fontSpec, text);
+    }
+  } catch {
+    // Font loading is best-effort; rendering falls back to a system font.
+  }
+}
+
 export async function drawWallpaper(
   images: AlbumImage[],
   canvas: HTMLCanvasElement,
@@ -194,23 +223,65 @@ export async function drawWallpaper(
   }
 
   if (config.title) {
-    const isDesktop = config.width > config.height;
-    const fontSize = Math.round(config.width * (isDesktop ? 0.02 : 0.035));
-    const padding = Math.round(fontSize * 0.5);
-    const barHeight = fontSize + padding * 2;
-    const barY = config.height - barHeight;
+    const textStyle = config.textStyle ?? DEFAULT_TEXT_STYLE;
+    const font = getFont(textStyle.fontFamilyId) ?? WALLPAPER_FONTS[0];
+    const fontSize = Math.round(scaleForCanvas(textStyle.fontSize, config.width));
+    const padding = Math.round(scaleForCanvas(textStyle.padding, config.width));
+    const canvasFont = buildCanvasFont(textStyle.fontWeight, fontSize, font);
 
-    ctx.fillStyle = config.titleBarColor ?? "rgba(0, 0, 0, 0.6)";
-    ctx.fillRect(0, barY, config.width, barHeight);
+    await ensureFontLoaded(font, textStyle.fontWeight, fontSize, config.title);
 
-    ctx.font = `bold ${fontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
-    ctx.fillStyle = config.titleTextColor ?? "#ffffff";
-    ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
-    ctx.shadowBlur = 4;
-    ctx.shadowOffsetX = 1;
-    ctx.shadowOffsetY = 1;
-    ctx.textBaseline = "middle";
-    ctx.fillText(config.title, padding, barY + barHeight / 2);
-    ctx.shadowColor = "transparent";
+    ctx.save();
+    ctx.font = canvasFont;
+
+    const textWidth = ctx.measureText(config.title).width;
+    const layout = computeTitleLayout(
+      textStyle.position,
+      config.width,
+      config.height,
+      textWidth,
+      fontSize,
+      padding,
+      textStyle.showBackground
+    );
+
+    if (textStyle.showBackground) {
+      const stripFill = withAlpha(
+        config.titleBarColor ?? "#000000",
+        textStyle.backgroundOpacity / 100
+      );
+      ctx.fillStyle = stripFill;
+      ctx.beginPath();
+      ctx.roundRect(
+        layout.stripX,
+        layout.stripY,
+        layout.stripWidth,
+        layout.stripHeight,
+        layout.radius
+      );
+      ctx.fill();
+    }
+
+    ctx.textAlign = layout.align;
+    ctx.textBaseline = layout.baseline;
+
+    ctx.shadowColor = textStyle.shadow.color;
+    ctx.shadowBlur = scaleForCanvas(textStyle.shadow.blur, config.width);
+    const shadowOffset = Math.max(1, scaleForCanvas(1, config.width));
+    ctx.shadowOffsetX = shadowOffset;
+    ctx.shadowOffsetY = shadowOffset;
+
+    const strokeWidth = scaleForCanvas(textStyle.strokeWidth, config.width);
+    if (strokeWidth > 0) {
+      ctx.lineWidth = strokeWidth;
+      ctx.strokeStyle = textStyle.strokeColor;
+      ctx.lineJoin = "round";
+      ctx.miterLimit = 2;
+      ctx.strokeText(config.title, layout.textX, layout.textY);
+    }
+
+    ctx.fillStyle = textStyle.color;
+    ctx.fillText(config.title, layout.textX, layout.textY);
+    ctx.restore();
   }
 }

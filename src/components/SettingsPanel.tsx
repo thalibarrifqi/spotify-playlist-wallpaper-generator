@@ -4,7 +4,8 @@ import { THEMES } from "@/lib/wallpaper/themes";
 import { RESOLUTIONS } from "@/lib/wallpaper/types";
 import type { ResolutionKey } from "@/lib/wallpaper/types";
 import type { ThemeKey } from "@/lib/wallpaper/themes";
-import type { AlbumImage, GradientConfig } from "@/lib/wallpaper/types";
+import type { AlbumImage, GradientConfig, TextStyle } from "@/lib/wallpaper/types";
+import TextSettings from "./TextSettings";
 
 interface SettingsPanelProps {
   theme: ThemeKey;
@@ -23,6 +24,8 @@ interface SettingsPanelProps {
   setBorderRadius: (r: number) => void;
   showTitle: boolean;
   setShowTitle: (show: boolean) => void;
+  textStyle: TextStyle;
+  setTextStyle: (style: TextStyle) => void;
   useGradient: boolean;
   setUseGradient: (use: boolean) => void;
   gradient: GradientConfig;
@@ -56,6 +59,8 @@ export default function SettingsPanel({
   setBorderRadius,
   showTitle,
   setShowTitle,
+  textStyle,
+  setTextStyle,
   useGradient,
   setUseGradient,
   gradient,
@@ -80,6 +85,7 @@ export default function SettingsPanel({
     } else {
       setUseGradient(false);
     }
+    setTextStyle({ ...textStyle, color: t.titleTextColor });
   };
 
   return (
@@ -361,6 +367,11 @@ export default function SettingsPanel({
           Show playlist title on wallpaper
         </label>
       </div>
+
+      {/* Text customization */}
+      {showTitle && (
+        <TextSettings textStyle={textStyle} onChange={setTextStyle} />
+      )}
 
       {/* Generate Button */}
       <button

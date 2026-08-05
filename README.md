@@ -28,6 +28,12 @@ Wallpaper generation is complete. The app can:
   - Custom background color picker
   - Black background behind artworks
   - Optional playlist title overlay (toggle on/off)
+- Text customization for the title overlay:
+  - 8 fonts (Inter, Roboto, Playfair Display, Montserrat, Poppins + system fonts), self-hosted via next/font
+  - Font weight (Regular, Medium, Bold) and size presets (Small → Extra Large)
+  - 6 title positions (top/bottom × left/center/right) with padding control
+  - Text color, outline/stroke width, shadow blur and color
+  - Optional background strip behind text with opacity slider
 - Reshuffle button to randomize artwork order and padding images
 
 ---
@@ -51,17 +57,23 @@ src/
     page.tsx         Main page component
   components/
     WallpaperPreview.tsx  Canvas preview, reshuffle, and download
+    TextSettings.tsx      Title text customization panel
   lib/
     spotify/
       parse-playlist-url.ts   URL parsing utility
       playlists.ts            Playlist fetch helper with rate-limit retry
       token.ts                OAuth token cache
     wallpaper/
-      types.ts                Resolution types and resolutions
+      types.ts                Resolution and text style types
       grid-layout.ts          Square-cell grid layout calculation
       render.ts               Canvas rendering logic
+      themes.ts               Wallpaper theme presets
+      fonts.ts                Font definitions
+      text-layout.ts          Text layout math and presets
 __tests__/
-  grid-layout.test.ts         Layout math tests (100 cases)
+  grid-layout.test.ts         Layout math tests (300 cases)
+  fonts.test.ts               Font definition tests
+  text-layout.test.ts         Text layout math tests
 docs/
   prd.md                     Product Requirements Document
   implementation-plan.md     Sprint-level implementation plan

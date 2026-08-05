@@ -1,5 +1,34 @@
 export type ResolutionKey = "mobile" | "desktop";
 
+export type FontWeight = 400 | 500 | 700;
+
+export type TextPosition =
+  | "top-left"
+  | "top-center"
+  | "top-right"
+  | "bottom-left"
+  | "bottom-center"
+  | "bottom-right";
+
+export interface TextShadow {
+  blur: number;
+  color: string;
+}
+
+export interface TextStyle {
+  fontFamilyId: string;
+  fontWeight: FontWeight;
+  fontSize: number;
+  color: string;
+  strokeColor: string;
+  strokeWidth: number;
+  shadow: TextShadow;
+  position: TextPosition;
+  padding: number;
+  showBackground: boolean;
+  backgroundOpacity: number;
+}
+
 export interface AlbumImage {
   url: string;
   width: number;
@@ -29,6 +58,7 @@ export interface WallpaperConfig {
   backgroundColor?: string;
   titleBarColor?: string;
   titleTextColor?: string;
+  textStyle?: TextStyle;
   gradient?: GradientConfig;
   blur?: boolean;
   blurIntensity?: number;

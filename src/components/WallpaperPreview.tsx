@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { drawWallpaper } from "@/lib/wallpaper/render";
 import { RESOLUTIONS } from "@/lib/wallpaper/types";
-import type { AlbumImage, GradientConfig, ResolutionKey } from "@/lib/wallpaper/types";
+import type { AlbumImage, GradientConfig, ResolutionKey, TextStyle } from "@/lib/wallpaper/types";
 
 interface WallpaperPreviewProps {
   images: AlbumImage[];
@@ -17,6 +17,7 @@ interface WallpaperPreviewProps {
   backgroundColor: string;
   titleBarColor?: string;
   titleTextColor?: string;
+  textStyle?: TextStyle;
   gradient?: GradientConfig;
   blur?: boolean;
   blurIntensity?: number;
@@ -48,6 +49,7 @@ export default function WallpaperPreview({
   backgroundColor,
   titleBarColor,
   titleTextColor,
+  textStyle,
   gradient,
   blur,
   blurIntensity,
@@ -66,7 +68,7 @@ export default function WallpaperPreview({
   const { width: presetWidth, height: presetHeight } = RESOLUTIONS[resolution];
   const width = customWidth ?? presetWidth;
   const height = customHeight ?? presetHeight;
-  const renderKey = `${width}x${height}${showTitle ? "-title" : ""}-s${spacing}-r${borderRadius}-bg${backgroundColor}-g${gradient?.type || "none"}-blur${blur || false}-scale${artworkScale}`;
+  const renderKey = `${width}x${height}${showTitle ? "-title" : ""}-s${spacing}-r${borderRadius}-bg${backgroundColor}-g${gradient?.type || "none"}-blur${blur || false}-scale${artworkScale}-text${showTitle ? JSON.stringify(textStyle) : ""}`;
   const current = status?.key === renderKey ? status : null;
   const rendering = current === null;
   const error = current?.error ?? "";
@@ -88,6 +90,7 @@ export default function WallpaperPreview({
           backgroundColor,
           titleBarColor,
           titleTextColor,
+          textStyle,
           gradient,
           blur,
           blurIntensity,
@@ -112,7 +115,7 @@ export default function WallpaperPreview({
     return () => {
       cancelled = true;
     };
-  }, [images, width, height, renderKey, showTitle, playlistName, spacing, borderRadius, backgroundColor, titleBarColor, titleTextColor, gradient, blur, blurIntensity, blurImageIndex, artworkScale]);
+  }, [images, width, height, renderKey, showTitle, playlistName, spacing, borderRadius, backgroundColor, titleBarColor, titleTextColor, textStyle, gradient, blur, blurIntensity, blurImageIndex, artworkScale]);
 
   const handleDownload = useCallback(async () => {
     const canvas = canvasRef.current;
@@ -148,6 +151,7 @@ export default function WallpaperPreview({
         backgroundColor,
         titleBarColor,
         titleTextColor,
+        textStyle,
         gradient,
         blur,
         blurIntensity: blurIntensity ? blurIntensity * dpiMultiplier : undefined,
@@ -170,7 +174,7 @@ export default function WallpaperPreview({
     } catch {
       setStatus({ key: renderKey, error: "Failed to export high-res image" });
     }
-  }, [playlistName, renderKey, width, height, dpiMultiplier, images, showTitle, spacing, borderRadius, backgroundColor, titleBarColor, titleTextColor, gradient, blur, blurIntensity, blurImageIndex, artworkScale]);
+  }, [playlistName, renderKey, width, height, dpiMultiplier, images, showTitle, spacing, borderRadius, backgroundColor, titleBarColor, titleTextColor, textStyle, gradient, blur, blurIntensity, blurImageIndex, artworkScale]);
 
   return (
     <div className="bg-white rounded-xl p-5 card-shadow-lg space-y-4">

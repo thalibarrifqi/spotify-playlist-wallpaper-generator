@@ -73,6 +73,13 @@ Legend: ✅ Complete | ⏳ Planned | 🔧 In Progress
 - **Review:** `docs/sprints/sprint-7-review.md`
 - **Verification:** 300 tests pass via vitest; lint passes
 
+### Sprint 8 — Text Customization ✅
+- **Date:** 2026-08-05
+- **Goal:** Font selection, text positioning, and styling options for the title overlay
+- **Status:** Complete — all acceptance criteria verified
+- **Review:** `docs/sprints/sprint-8-review.md`
+- **Verification:** 324 tests pass via vitest; lint passes; production build succeeds with self-hosted Google Fonts
+
 ---
 
 ## Completed
@@ -116,18 +123,25 @@ Legend: ✅ Complete | ⏳ Planned | 🔧 In Progress
 - [x] Custom Spotify green accent
 - [x] Responsive layout (side-by-side on desktop)
 - [x] Deployed to Vercel
+- [x] Font picker (8 fonts, Google Fonts self-hosted + system fonts)
+- [x] Font weight selection (Regular, Medium, Bold)
+- [x] 6 title positions with visual picker
+- [x] Text padding/margin control
+- [x] Text color picker with presets
+- [x] Text stroke/outline with width slider
+- [x] Text shadow (blur + color)
+- [x] Background strip behind text (toggle + opacity slider)
+- [x] Font size slider with Small/Medium/Large/Extra Large presets
 
 ---
 
 ## Current Task
 
-None — Project complete.
-
----
+Sprint 8 (Text Customization) complete.
 
 ## Next Task
 
-None — Project complete.
+Sprint 9 — Image Effects (post-processing filters for artwork).
 
 ---
 
