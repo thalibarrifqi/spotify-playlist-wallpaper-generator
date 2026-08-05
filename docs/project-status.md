@@ -146,12 +146,17 @@ Legend: ✅ Complete | ⏳ Planned | 🔧 In Progress
 - [x] Noise/grain overlay (toggle + intensity)
 - [x] 5 effect presets (Vibrant, Muted, Vintage, B&W, Neon)
 - [x] Real-time effect preview and DPI-scaled effect export
+- [x] Sticky header on wizard steps
+- [x] Mobile settings pagination (Background/Layout/Effects/Text tabs)
+- [x] Landing page mobile layout (tap-friendly Get Started, feature cards)
+- [x] `touch-action: manipulation` on buttons/links
+- [x] Mobile download fix (DOM link + deferred revoke)
 
 ---
 
 ## Current Task
 
-Sprint 9 (Image Effects) complete.
+Mobile UX polish complete (sticky header, settings pagination, landing layout, download fix).
 
 ## Next Task
 
