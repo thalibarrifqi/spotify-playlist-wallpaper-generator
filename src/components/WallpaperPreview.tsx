@@ -39,6 +39,16 @@ function sanitizeFilename(name: string): string {
   );
 }
 
+function triggerDownload(url: string, filename: string): void {
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
 export default function WallpaperPreview({
   images,
   playlistName,
@@ -132,11 +142,7 @@ export default function WallpaperPreview({
           return;
         }
         const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = `${sanitizeFilename(playlistName)}.png`;
-        link.click();
-        URL.revokeObjectURL(url);
+        triggerDownload(url, `${sanitizeFilename(playlistName)}.png`);
       }, "image/png");
       return;
     }
@@ -170,11 +176,10 @@ export default function WallpaperPreview({
           return;
         }
         const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = `${sanitizeFilename(playlistName)}-${dpiMultiplier}x.png`;
-        link.click();
-        URL.revokeObjectURL(url);
+        triggerDownload(
+          url,
+          `${sanitizeFilename(playlistName)}-${dpiMultiplier}x.png`
+        );
       }, "image/png");
     } catch {
       setStatus({ key: renderKey, error: "Failed to export high-res image" });

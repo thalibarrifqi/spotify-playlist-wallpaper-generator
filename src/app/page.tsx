@@ -180,7 +180,7 @@ export default function Home() {
       {/* Content */}
       <div className="relative z-10 flex flex-col min-h-screen">
         {/* Top bar */}
-        <header className="bg-black/30 backdrop-blur-md border-b border-white/10 px-4 sm:px-6 py-3">
+        <header className="sticky top-0 z-40 bg-black/30 backdrop-blur-md border-b border-white/10 px-4 sm:px-6 py-3">
           <div className="max-w-6xl mx-auto flex items-center justify-between">
             <button
               onClick={handleBackToLanding}

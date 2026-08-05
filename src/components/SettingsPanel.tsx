@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { THEMES } from "@/lib/wallpaper/themes";
 import { RESOLUTIONS } from "@/lib/wallpaper/types";
 import type { ResolutionKey } from "@/lib/wallpaper/types";
@@ -45,6 +46,15 @@ interface SettingsPanelProps {
   onGenerate: () => void;
 }
 
+type SettingsTab = "background" | "layout" | "effects" | "text";
+
+const TABS: { id: SettingsTab; label: string }[] = [
+  { id: "background", label: "Background" },
+  { id: "layout", label: "Layout" },
+  { id: "effects", label: "Effects" },
+  { id: "text", label: "Text" },
+];
+
 export default function SettingsPanel({
   theme,
   setTheme,
@@ -81,6 +91,8 @@ export default function SettingsPanel({
   images,
   onGenerate,
 }: SettingsPanelProps) {
+  const [activeTab, setActiveTab] = useState<SettingsTab>("background");
+
   const handleThemeChange = (key: ThemeKey) => {
     setTheme(key);
     const t = THEMES[key];
@@ -93,31 +105,29 @@ export default function SettingsPanel({
     setTextStyle({ ...textStyle, color: t.titleTextColor });
   };
 
-  return (
-    <div className="bg-white rounded-xl p-5 card-shadow-lg space-y-5">
-      <h2 className="text-lg font-bold text-zinc-900">Customize</h2>
-
-      {/* Theme */}
-      <div>
-        <label className="block text-xs font-medium text-zinc-600 mb-2">Theme</label>
-        <div className="flex flex-wrap gap-1.5">
-          {(Object.keys(THEMES) as ThemeKey[]).map((key) => (
-            <button
-              key={key}
-              onClick={() => handleThemeChange(key)}
-              className={
-                theme === key
-                  ? "px-3 py-1.5 text-xs font-medium bg-[#1db954] text-white rounded-lg transition-all duration-150"
-                  : "px-3 py-1.5 text-xs font-medium bg-zinc-100 text-zinc-600 rounded-lg hover:bg-zinc-200 transition-colors"
-              }
-            >
-              {THEMES[key].label}
-            </button>
-          ))}
-        </div>
+  const themeSection = (
+    <div>
+      <label className="block text-xs font-medium text-zinc-600 mb-2">Theme</label>
+      <div className="flex flex-wrap gap-1.5">
+        {(Object.keys(THEMES) as ThemeKey[]).map((key) => (
+          <button
+            key={key}
+            onClick={() => handleThemeChange(key)}
+            className={
+              theme === key
+                ? "px-3 py-1.5 text-xs font-medium bg-[#1db954] text-white rounded-lg transition-all duration-150"
+                : "px-3 py-1.5 text-xs font-medium bg-zinc-100 text-zinc-600 rounded-lg hover:bg-zinc-200 transition-colors"
+            }
+          >
+            {THEMES[key].label}
+          </button>
+        ))}
       </div>
+    </div>
+  );
 
-      {/* Background type */}
+  const backgroundSection = (
+    <>
       <div>
         <label className="block text-xs font-medium text-zinc-600 mb-2">Background</label>
         <div className="flex rounded-lg overflow-hidden border border-zinc-200">
@@ -142,7 +152,6 @@ export default function SettingsPanel({
         </div>
       </div>
 
-      {/* Gradient settings */}
       {useGradient && (
         <div className="space-y-3 p-4 bg-zinc-50 rounded-lg border border-zinc-200">
           <div className="flex rounded-lg overflow-hidden border border-zinc-200">
@@ -226,7 +235,6 @@ export default function SettingsPanel({
         </div>
       )}
 
-      {/* Blur settings */}
       {useBlur && images.length > 0 && (
         <div className="space-y-3 p-4 bg-zinc-50 rounded-lg border border-zinc-200">
           <div>
@@ -258,25 +266,29 @@ export default function SettingsPanel({
           </div>
         </div>
       )}
+    </>
+  );
 
-      {/* Artwork Scale */}
-      <div>
-        <label className="block text-xs font-medium text-zinc-600 mb-2">
-          Artwork Scale: {artworkScale.toFixed(1)}x
-        </label>
-        <input
-          type="range"
-          min={0.5}
-          max={2}
-          step={0.1}
-          value={artworkScale}
-          onChange={(e) => setArtworkScale(Number(e.target.value))}
-          className="w-full"
-        />
-        <p className="text-xs text-zinc-400 mt-1">Zoom in/out on album artwork</p>
-      </div>
+  const artworkScaleSection = (
+    <div>
+      <label className="block text-xs font-medium text-zinc-600 mb-2">
+        Artwork Scale: {artworkScale.toFixed(1)}x
+      </label>
+      <input
+        type="range"
+        min={0.5}
+        max={2}
+        step={0.1}
+        value={artworkScale}
+        onChange={(e) => setArtworkScale(Number(e.target.value))}
+        className="w-full"
+      />
+      <p className="text-xs text-zinc-400 mt-1">Zoom in/out on album artwork</p>
+    </div>
+  );
 
-      {/* Resolution */}
+  const resolutionSection = (
+    <>
       <div>
         <label className="block text-xs font-medium text-zinc-600 mb-2">Resolution</label>
         <div className="flex rounded-lg overflow-hidden border border-zinc-200">
@@ -310,13 +322,13 @@ export default function SettingsPanel({
       </div>
 
       {useCustom && (
-        <div className="flex gap-2 items-center">
+        <div className="grid grid-cols-[1fr_auto_1fr] gap-2 items-center">
           <input
             type="number"
             value={customWidth}
             onChange={(e) => setCustomWidth(e.target.value)}
             placeholder="Width"
-            className="flex-1 px-3 py-2 bg-white border border-zinc-200 rounded-lg text-zinc-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#1db954]"
+            className="w-full min-w-0 px-3 py-2 bg-white border border-zinc-200 rounded-lg text-zinc-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#1db954]"
           />
           <span className="text-zinc-400">×</span>
           <input
@@ -324,62 +336,129 @@ export default function SettingsPanel({
             value={customHeight}
             onChange={(e) => setCustomHeight(e.target.value)}
             placeholder="Height"
-            className="flex-1 px-3 py-2 bg-white border border-zinc-200 rounded-lg text-zinc-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#1db954]"
+            className="w-full min-w-0 px-3 py-2 bg-white border border-zinc-200 rounded-lg text-zinc-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#1db954]"
           />
         </div>
       )}
+    </>
+  );
 
-      {/* Spacing */}
-      <div>
-        <label className="block text-xs font-medium text-zinc-600 mb-2">
-          Cell Spacing: {spacing}px
-        </label>
-        <input
-          type="range"
-          min={0}
-          max={20}
-          value={spacing}
-          onChange={(e) => setSpacing(Number(e.target.value))}
-          className="w-full"
-        />
-      </div>
+  const spacingSection = (
+    <div>
+      <label className="block text-xs font-medium text-zinc-600 mb-2">
+        Cell Spacing: {spacing}px
+      </label>
+      <input
+        type="range"
+        min={0}
+        max={20}
+        value={spacing}
+        onChange={(e) => setSpacing(Number(e.target.value))}
+        className="w-full"
+      />
+    </div>
+  );
 
-      {/* Border Radius */}
-      <div>
-        <label className="block text-xs font-medium text-zinc-600 mb-2">
-          Border Radius: {borderRadius}px
-        </label>
-        <input
-          type="range"
-          min={0}
-          max={20}
-          value={borderRadius}
-          onChange={(e) => setBorderRadius(Number(e.target.value))}
-          className="w-full"
-        />
-      </div>
+  const borderRadiusSection = (
+    <div>
+      <label className="block text-xs font-medium text-zinc-600 mb-2">
+        Border Radius: {borderRadius}px
+      </label>
+      <input
+        type="range"
+        min={0}
+        max={20}
+        value={borderRadius}
+        onChange={(e) => setBorderRadius(Number(e.target.value))}
+        className="w-full"
+      />
+    </div>
+  );
 
-      {/* Image Effects */}
-      <EffectsPanel effects={effects} onChange={setEffects} />
+  const effectsSection = <EffectsPanel effects={effects} onChange={setEffects} />;
 
-      {/* Show Title */}
-      <div className="flex items-center gap-3 p-3 bg-zinc-50 rounded-lg border border-zinc-200">
-        <input
-          type="checkbox"
-          id="show-title"
-          checked={showTitle}
-          onChange={(e) => setShowTitle(e.target.checked)}
-          className="w-4 h-4 rounded border-zinc-300 text-[#1db954] focus:ring-[#1db954]"
-        />
-        <label htmlFor="show-title" className="text-sm text-zinc-700 cursor-pointer">
-          Show playlist title on wallpaper
-        </label>
-      </div>
+  const showTitleSection = (
+    <div className="flex items-center gap-3 p-3 bg-zinc-50 rounded-lg border border-zinc-200">
+      <input
+        type="checkbox"
+        id="show-title"
+        checked={showTitle}
+        onChange={(e) => setShowTitle(e.target.checked)}
+        className="w-4 h-4 rounded border-zinc-300 text-[#1db954] focus:ring-[#1db954]"
+      />
+      <label htmlFor="show-title" className="text-sm text-zinc-700 cursor-pointer">
+        Show playlist title on wallpaper
+      </label>
+    </div>
+  );
 
-      {/* Text customization */}
-      {showTitle && (
-        <TextSettings textStyle={textStyle} onChange={setTextStyle} />
+  const textSection = showTitle && (
+    <TextSettings textStyle={textStyle} onChange={setTextStyle} />
+  );
+
+  const desktopSections = (
+    <div className="hidden lg:block space-y-5">
+      {themeSection}
+      {backgroundSection}
+      {artworkScaleSection}
+      {resolutionSection}
+      {spacingSection}
+      {borderRadiusSection}
+      {effectsSection}
+      {showTitleSection}
+      {textSection}
+    </div>
+  );
+
+  const mobileSections = (
+    <div className="lg:hidden space-y-5">
+      {activeTab === "background" && (
+        <>
+          {themeSection}
+          {backgroundSection}
+          {artworkScaleSection}
+        </>
       )}
+      {activeTab === "layout" && (
+        <>
+          {resolutionSection}
+          {spacingSection}
+          {borderRadiusSection}
+        </>
+      )}
+      {activeTab === "effects" && effectsSection}
+      {activeTab === "text" && (
+        <>
+          {showTitleSection}
+          {textSection}
+        </>
+      )}
+    </div>
+  );
+
+  return (
+    <div className="bg-white rounded-xl p-5 card-shadow-lg space-y-5">
+      <h2 className="text-lg font-bold text-zinc-900">Customize</h2>
+
+      {/* Mobile pagination tabs */}
+      <div className="lg:hidden flex rounded-lg overflow-hidden border border-zinc-200">
+        {TABS.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={
+              activeTab === tab.id
+                ? "flex-1 py-2 text-xs font-medium bg-[#1db954] text-white transition-colors"
+                : "flex-1 py-2 text-xs font-medium bg-white text-zinc-600 hover:bg-zinc-50 transition-colors"
+            }
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {mobileSections}
+      {desktopSections}
 
       {/* Generate Button */}
       <button

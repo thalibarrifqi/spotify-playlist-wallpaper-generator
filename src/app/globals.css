@@ -176,6 +176,12 @@ input[type="range"]::-moz-range-thumb {
   transform: scale(0.97);
 }
 
+/* Improve tap responsiveness on touch devices (disable double-tap zoom delay) */
+button,
+a {
+  touch-action: manipulation;
+}
+
 /* Loading dots */
 @keyframes loadingDots {
   0%, 20% { content: '.'; }

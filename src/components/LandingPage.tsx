@@ -7,46 +7,45 @@ interface LandingPageProps {
 export default function LandingPage({ onGetStarted }: LandingPageProps) {
   return (
     <div className="relative min-h-screen flex flex-col">
-      {/* Hero Section */}
-      <div className="relative flex-1 flex items-center justify-center overflow-hidden">
-        {/* Background Image */}
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{
-            backgroundImage:
-              "url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=1920&q=80')",
-          }}
-        />
-        {/* Dark Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/80" />
+      {/* Full-page Background Image */}
+      <div
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage:
+            "url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=1920&q=80')",
+        }}
+      />
+      {/* Dark Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/80" />
 
-        {/* Content */}
-        <div className="relative z-10 text-center px-6 max-w-2xl mx-auto">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4 animate-fade-in">
+      {/* Centered content */}
+      <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 py-8 sm:py-16">
+        {/* Hero */}
+        <div className="text-center max-w-2xl mx-auto">
+          <h1 className="text-2xl sm:text-5xl md:text-6xl font-bold text-white mb-2 sm:mb-4 animate-fade-in">
             Spotify Wallpaper Generator
           </h1>
-          <p className="text-lg sm:text-xl text-zinc-300 mb-8 animate-fade-in-delay-1">
+          <p className="text-sm sm:text-xl text-zinc-300 mb-5 sm:mb-8 animate-fade-in-delay-1">
             Transform your favorite playlists into stunning wallpapers for your
             phone or desktop
           </p>
           <button
+            type="button"
             onClick={onGetStarted}
-            className="px-8 py-4 bg-[#1db954] hover:bg-[#1ed760] text-white font-semibold text-lg rounded-full transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-green-500/25 active:scale-95 animate-fade-in-delay-2"
+            className="px-6 py-3 sm:px-8 sm:py-4 bg-[#1db954] hover:bg-[#1ed760] text-white font-semibold text-base sm:text-lg rounded-full transition-all duration-200 sm:hover:scale-105 hover:shadow-lg hover:shadow-green-500/25 active:scale-95 animate-fade-in-delay-2"
           >
             Get Started
           </button>
         </div>
-      </div>
 
-      {/* Features Section */}
-      <div className="relative z-10 bg-zinc-900/95 backdrop-blur-sm">
-        <div className="max-w-4xl mx-auto px-6 py-12 sm:py-16">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
+        {/* Features */}
+        <div className="w-full max-w-4xl mx-auto mt-8 sm:mt-16">
+          <div className="grid grid-cols-3 gap-2 sm:gap-8">
             {/* Feature 1 */}
-            <div className="text-center p-6 rounded-xl bg-zinc-800/50 border border-zinc-700/50 animate-fade-in-delay-1">
-              <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-[#1db954]/20 flex items-center justify-center">
+            <div className="text-center p-3 sm:p-6 rounded-xl bg-zinc-800/70 border border-zinc-700/50 animate-fade-in-delay-1">
+              <div className="w-8 h-8 sm:w-12 sm:h-12 mx-auto mb-2 sm:mb-4 rounded-full bg-[#1db954]/20 flex items-center justify-center">
                 <svg
-                  className="w-6 h-6 text-[#1db954]"
+                  className="w-4 h-4 sm:w-6 sm:h-6 text-[#1db954]"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -59,18 +58,16 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
                   />
                 </svg>
               </div>
-              <h3 className="text-white font-semibold mb-2">Fetch Playlist</h3>
-              <p className="text-zinc-400 text-sm">
-                Paste any Spotify playlist URL and we&apos;ll fetch the album
-                artwork
+              <p className="text-xs sm:text-sm text-zinc-300 mt-1 sm:mt-2">
+                Paste a Spotify URL to fetch album artwork
               </p>
             </div>
 
             {/* Feature 2 */}
-            <div className="text-center p-6 rounded-xl bg-zinc-800/50 border border-zinc-700/50 animate-fade-in-delay-2">
-              <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-[#1db954]/20 flex items-center justify-center">
+            <div className="text-center p-3 sm:p-6 rounded-xl bg-zinc-800/70 border border-zinc-700/50 animate-fade-in-delay-2">
+              <div className="w-8 h-8 sm:w-12 sm:h-12 mx-auto mb-2 sm:mb-4 rounded-full bg-[#1db954]/20 flex items-center justify-center">
                 <svg
-                  className="w-6 h-6 text-[#1db954]"
+                  className="w-4 h-4 sm:w-6 sm:h-6 text-[#1db954]"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -88,17 +85,16 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
                   />
                 </svg>
               </div>
-              <h3 className="text-white font-semibold mb-2">Customize</h3>
-              <p className="text-zinc-400 text-sm">
-                Choose themes, gradients, blur effects, spacing, and more
+              <p className="text-xs sm:text-sm text-zinc-300 mt-1 sm:mt-2">
+                Customize themes, effects, and more
               </p>
             </div>
 
             {/* Feature 3 */}
-            <div className="text-center p-6 rounded-xl bg-zinc-800/50 border border-zinc-700/50 animate-fade-in-delay-3">
-              <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-[#1db954]/20 flex items-center justify-center">
+            <div className="text-center p-3 sm:p-6 rounded-xl bg-zinc-800/70 border border-zinc-700/50 animate-fade-in-delay-3">
+              <div className="w-8 h-8 sm:w-12 sm:h-12 mx-auto mb-2 sm:mb-4 rounded-full bg-[#1db954]/20 flex items-center justify-center">
                 <svg
-                  className="w-6 h-6 text-[#1db954]"
+                  className="w-4 h-4 sm:w-6 sm:h-6 text-[#1db954]"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -111,9 +107,8 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
                   />
                 </svg>
               </div>
-              <h3 className="text-white font-semibold mb-2">Download</h3>
-              <p className="text-zinc-400 text-sm">
-                Export in screen or print quality (up to 3x DPI)
+              <p className="text-xs sm:text-sm text-zinc-300 mt-1 sm:mt-2">
+                Export up to print quality
               </p>
             </div>
           </div>
