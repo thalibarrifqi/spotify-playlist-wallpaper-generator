@@ -43,9 +43,16 @@ Wallpaper generation is complete. The app can:
   - Effects preview in real-time and apply to exported wallpapers at any DPI
 - Layout templates for the artwork:
   - 6 templates: Grid, Collage, Mosaic, Diagonal, Border, Film Strip
-  - Visual thumbnail picker with last-used template remembered
+  - Visual thumbnail picker (template persisted with settings)
   - Template-specific settings (rotation angle, border thickness, variation, overlap, orientation)
   - Works with all background modes and effects at any resolution
+- Settings persistence:
+  - All wallpaper settings auto-save to localStorage (debounced) and restore on the next visit
+  - Reset all settings returns everything to defaults
+- History:
+  - Every generated wallpaper is saved to your own browser history (up to 20 entries) with a thumbnail
+  - History drawer restores any past wallpaper with its exact settings and playlist
+  - Export history as JSON or clear it at any time
 - Reshuffle button to randomize artwork order and padding images
 
 ---
@@ -73,7 +80,14 @@ src/
     TextSettings.tsx      Title text customization panel
     EffectsPanel.tsx      Image effects controls
     TemplateSelector.tsx  Layout template picker with thumbnails
+    HistoryPanel.tsx      History drawer (restore, export, clear)
+    HistoryItem.tsx       Single history entry row
+  hooks/
+    useLocalStorage.ts    Generic localStorage-backed state hook
+    useHistory.ts         History state synced to localStorage
   lib/
+    storage.ts            Settings persistence (load/save/clear, schema validation)
+    history.ts            History entry helpers (cap 20, export JSON, download)
     spotify/
       parse-playlist-url.ts   URL parsing utility
       playlists.ts            Playlist fetch helper with rate-limit retry
@@ -102,6 +116,8 @@ __tests__/
   effects.test.ts             Filter and overlay helper tests
   presets.test.ts             Effect preset tests
   templates.test.ts           Template layout tests
+  storage.test.ts             Settings merge/validation + storage helpers
+  history.test.ts             History add/remove/clear/export tests
 docs/
   prd.md                     Product Requirements Document
   implementation-plan.md     Sprint-level implementation plan

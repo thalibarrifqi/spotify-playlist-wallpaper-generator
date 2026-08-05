@@ -57,6 +57,7 @@ interface SettingsPanelProps {
   setTemplateSettings: (s: TemplateSettings) => void;
   images: AlbumImage[];
   onGenerate: () => void;
+  onReset: () => void;
 }
 
 type SettingsTab = "background" | "layout" | "effects" | "text";
@@ -107,6 +108,7 @@ export default function SettingsPanel({
   setTemplateSettings,
   images,
   onGenerate,
+  onReset,
 }: SettingsPanelProps) {
   const [activeTab, setActiveTab] = useState<SettingsTab>("background");
 
@@ -544,6 +546,13 @@ export default function SettingsPanel({
         className="w-full py-3 px-4 bg-[#1db954] hover:bg-[#1ed760] text-white font-semibold rounded-lg transition-all duration-200 btn-press"
       >
         Generate Wallpaper
+      </button>
+
+      <button
+        onClick={onReset}
+        className="w-full text-xs text-zinc-400 hover:text-zinc-900 font-medium transition-colors"
+      >
+        Reset all settings
       </button>
     </div>
   );

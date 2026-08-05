@@ -1,9 +1,10 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import LandingPage from "@/components/LandingPage";
 import WallpaperPreview from "@/components/WallpaperPreview";
 import SettingsPanel from "@/components/SettingsPanel";
+import HistoryPanel from "@/components/HistoryPanel";
 import { THEMES } from "@/lib/wallpaper/themes";
 import { DEFAULT_TEXT_STYLE } from "@/lib/wallpaper/text-layout";
 import { DEFAULT_EFFECTS } from "@/lib/wallpaper/effects";
@@ -12,6 +13,10 @@ import type { AlbumImage, GradientConfig, ResolutionKey, TemplateId, TextStyle, 
 import type { ThemeKey } from "@/lib/wallpaper/themes";
 import { defaultTemplateSettings } from "@/lib/wallpaper/templates";
 import type { TemplateSettings } from "@/lib/wallpaper/templates";
+import { DEFAULT_SETTINGS, clearSettings, loadSettings, saveSettings } from "@/lib/storage";
+import type { WallpaperSettings } from "@/lib/storage";
+import { useHistory } from "@/hooks/useHistory";
+import type { HistoryEntry } from "@/lib/history";
 
 interface PlaylistResponse {
   name: string;
@@ -58,6 +63,73 @@ export default function Home() {
   const [effects, setEffects] = useState<WallpaperEffects>(DEFAULT_EFFECTS);
   const [template, setTemplate] = useState<TemplateId>("grid");
   const [templateSettings, setTemplateSettings] = useState<TemplateSettings>({});
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const latestThumbnailRef = useRef<string>("");
+  const { history, add: addHistory, remove: removeHistory, clear: clearHistory, exportJson: exportHistoryJson } = useHistory();
+
+  const applySettings = useCallback((s: WallpaperSettings) => {
+    setTheme(s.theme);
+    setResolution(s.resolution);
+    setCustomWidth(s.customWidth);
+    setCustomHeight(s.customHeight);
+    setUseCustom(s.useCustom);
+    setShowTitle(s.showTitle);
+    setTextStyle(s.textStyle);
+    setSpacing(s.spacing);
+    setBorderRadius(s.borderRadius);
+    setUseGradient(s.useGradient);
+    setGradient(s.gradient);
+    setUseBlur(s.useBlur);
+    setBlurIntensity(s.blurIntensity);
+    setBlurImageIndex(s.blurImageIndex);
+    setArtworkScale(s.artworkScale);
+    setEffects(s.effects);
+    setTemplate(s.template);
+    setTemplateSettings(s.templateSettings);
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => applySettings(loadSettings()), 0);
+    return () => clearTimeout(timer);
+  }, [applySettings]);
+
+  const settings = useMemo<WallpaperSettings>(
+    () => ({
+      theme,
+      resolution,
+      customWidth,
+      customHeight,
+      useCustom,
+      showTitle,
+      textStyle,
+      spacing,
+      borderRadius,
+      useGradient,
+      gradient,
+      useBlur,
+      blurIntensity,
+      blurImageIndex,
+      artworkScale,
+      effects,
+      template,
+      templateSettings,
+    }),
+    [theme, resolution, customWidth, customHeight, useCustom, showTitle, textStyle, spacing, borderRadius, useGradient, gradient, useBlur, blurIntensity, blurImageIndex, artworkScale, effects, template, templateSettings]
+  );
+
+  useEffect(() => {
+    const timer = setTimeout(() => saveSettings(settings), 300);
+    return () => clearTimeout(timer);
+  }, [settings]);
+
+  const handleRendered = useCallback((dataUrl: string) => {
+    latestThumbnailRef.current = dataUrl;
+  }, []);
+
+  const handleResetAll = () => {
+    applySettings(DEFAULT_SETTINGS);
+    clearSettings();
+  };
 
   const effectiveResolution: ResolutionKey = useCustom ? "desktop" : resolution;
   const themeConfig = THEMES[theme];
@@ -133,7 +205,42 @@ export default function Home() {
   };
 
   const handleGenerateWallpaper = () => {
+    if (playlist) {
+      addHistory({
+        playlistName: playlist.name,
+        url,
+        thumbnail: latestThumbnailRef.current || "",
+        settings,
+      });
+    }
     setStep(4);
+  };
+
+  const handleRestoreHistory = async (entry: HistoryEntry) => {
+    setHistoryOpen(false);
+    applySettings(entry.settings);
+    setUrl(entry.url);
+    setError("");
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `/api/playlist?url=${encodeURIComponent(entry.url)}`
+      );
+      const data: PlaylistResponse = await response.json();
+      if (!response.ok) {
+        setError(data.error || "Failed to fetch playlist");
+        setStep(1);
+        return;
+      }
+      setPlaylist(data);
+      setShuffledImages(data.images);
+      setStep(3);
+    } catch {
+      setError("Network error. Please check your connection and try again.");
+      setStep(1);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleBackToLanding = () => {
@@ -200,7 +307,15 @@ export default function Home() {
             <h1 className="text-sm sm:text-base font-semibold text-white">
               Spotify Wallpaper Generator
             </h1>
-            <div className="w-16" />
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setHistoryOpen(true)}
+                className="text-sm text-white/70 hover:text-white transition-colors font-medium"
+                aria-label="Open history"
+              >
+                History
+              </button>
+            </div>
           </div>
         </header>
 
@@ -348,6 +463,7 @@ export default function Home() {
                     setTemplateSettings={setTemplateSettings}
                     images={shuffledImages}
                     onGenerate={handleGenerateWallpaper}
+                    onReset={handleResetAll}
                   />
                 </div>
 
@@ -378,6 +494,7 @@ export default function Home() {
                       showReshuffle={true}
                       showDownload={false}
                       onReshuffle={handleReshuffle}
+                      onRendered={handleRendered}
                     />
                   )}
                 </div>
@@ -430,12 +547,23 @@ export default function Home() {
                   showReshuffle={false}
                   showDownload={true}
                   onReshuffle={handleReshuffle}
+                  onRendered={handleRendered}
                 />
               </div>
             </div>
           )}
         </main>
       </div>
+
+      <HistoryPanel
+        open={historyOpen}
+        onClose={() => setHistoryOpen(false)}
+        history={history}
+        onRestore={handleRestoreHistory}
+        onDelete={removeHistory}
+        onClear={clearHistory}
+        onExport={exportHistoryJson}
+      />
     </div>
   );
 }

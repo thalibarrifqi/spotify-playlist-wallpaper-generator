@@ -1,7 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import { drawWallpaper } from "@/lib/wallpaper/render";
+import { useCallback, useEffect, useRef, useState } from "react";import { drawWallpaper } from "@/lib/wallpaper/render";
 import { scaleEffects } from "@/lib/wallpaper/effects";
 import { RESOLUTIONS } from "@/lib/wallpaper/types";
 import type {
@@ -37,6 +36,7 @@ interface WallpaperPreviewProps {
   showReshuffle?: boolean;
   showDownload?: boolean;
   onReshuffle: () => void;
+  onRendered?: (dataUrl: string) => void;
 }
 
 function sanitizeFilename(name: string): string {
@@ -56,6 +56,20 @@ function triggerDownload(url: string, filename: string): void {
   link.click();
   link.remove();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function makeThumbnail(source: HTMLCanvasElement): string {
+  const maxDim = 320;
+  const scale = Math.min(1, maxDim / Math.max(source.width, source.height));
+  const w = Math.max(1, Math.round(source.width * scale));
+  const h = Math.max(1, Math.round(source.height * scale));
+  const thumb = document.createElement("canvas");
+  thumb.width = w;
+  thumb.height = h;
+  const ctx = thumb.getContext("2d");
+  if (!ctx) return "";
+  ctx.drawImage(source, 0, 0, w, h);
+  return thumb.toDataURL("image/jpeg", 0.85);
 }
 
 export default function WallpaperPreview({
@@ -82,12 +96,18 @@ export default function WallpaperPreview({
   showReshuffle = true,
   showDownload = true,
   onReshuffle,
+  onRendered,
 }: WallpaperPreviewProps) {
   const [status, setStatus] = useState<{ key: string; error: string } | null>(
     null
   );
   const [dpiMultiplier, setDpiMultiplier] = useState<1 | 2 | 3>(1);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const onRenderedRef = useRef(onRendered);
+
+  useEffect(() => {
+    onRenderedRef.current = onRendered;
+  }, [onRendered]);
 
   const { width: presetWidth, height: presetHeight } = RESOLUTIONS[resolution];
   const width = customWidth ?? presetWidth;
@@ -126,6 +146,7 @@ export default function WallpaperPreview({
         });
         if (cancelled) return;
         setStatus({ key: renderKey, error: "" });
+        onRenderedRef.current?.(makeThumbnail(canvas));
       } catch (e) {
         if (cancelled) return;
         setStatus({

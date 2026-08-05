@@ -94,6 +94,13 @@ Legend: ✅ Complete | ⏳ Planned | 🔧 In Progress
 - **Review:** `docs/sprints/sprint-10-review.md`
 - **Verification:** 380 tests pass via vitest; lint passes; production build succeeds; all 6 templates render distinctly in headless browser
 
+### Sprint 11 — Local Storage & History ✅
+- **Date:** 2026-08-05
+- **Goal:** Persist settings locally and keep a browser history of generated wallpapers
+- **Status:** Complete — all acceptance criteria verified
+- **Review:** `docs/sprints/sprint-11-review.md`
+- **Verification:** 401 tests pass via vitest; lint passes; production build succeeds; headless-browser flow verified (persist→reload, generate→history→restore, export JSON, reset, mobile drawer)
+
 ---
 
 ## Completed
@@ -159,20 +166,27 @@ Legend: ✅ Complete | ⏳ Planned | 🔧 In Progress
 - [x] `touch-action: manipulation` on buttons/links
 - [x] Mobile download fix (DOM link + deferred revoke)
 - [x] Template registry (6 templates: Grid, Collage, Mosaic, Diagonal, Border, Film Strip)
-- [x] Template picker with visual thumbnails + localStorage persistence
+- [x] Template picker with visual thumbnails
 - [x] Template-specific settings (rotation, thickness, variation, overlap, orientation)
 - [x] Rotation-aware cell rendering for the Diagonal template
 - [x] Template tests (30 cases, 380 total)
+- [x] Settings auto-save to localStorage (debounced 300ms) with schema validation
+- [x] Settings restore on next visit (mount-time load)
+- [x] Reset all settings button
+- [x] Wallpaper history in browser localStorage (up to 20 entries, newest first)
+- [x] History drawer with thumbnails, restore, export JSON, and clear
+- [x] Restore flow: re-fetch playlist by URL → apply saved settings → land on Customize
+- [x] Storage + history tests (21 cases, 401 total)
 
 ---
 
 ## Current Task
 
-Sprint 10 (Wallpaper Templates) complete.
+Sprint 11 (Local Storage & History) complete.
 
 ## Next Task
 
-Sprint 11 — per plan in `docs/sprints/sprint-11-plan.md`.
+Sprint 12 — per plan in `docs/sprints/sprint-12-plan.md`.
 
 ---
 

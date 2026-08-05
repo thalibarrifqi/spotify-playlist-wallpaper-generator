@@ -1,10 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
 import type { TemplateId } from "@/lib/wallpaper/types";
-import { TEMPLATES, isTemplateId } from "@/lib/wallpaper/templates";
-
-const STORAGE_KEY = "spotify-wallpaper-template";
+import { TEMPLATES } from "@/lib/wallpaper/templates";
 
 interface ThumbCell {
   x: number;
@@ -64,24 +61,7 @@ export default function TemplateSelector({
   value,
   onChange,
 }: TemplateSelectorProps) {
-  useEffect(() => {
-    try {
-      const saved = window.localStorage.getItem(STORAGE_KEY);
-      if (saved && isTemplateId(saved) && saved !== value) {
-        onChange(saved);
-      }
-    } catch {
-      // localStorage is unavailable; ignore.
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const handleSelect = (id: TemplateId) => {
-    try {
-      window.localStorage.setItem(STORAGE_KEY, id);
-    } catch {
-      // localStorage is unavailable; ignore.
-    }
     onChange(id);
   };
 
