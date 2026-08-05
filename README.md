@@ -34,6 +34,13 @@ Wallpaper generation is complete. The app can:
   - 6 title positions (top/bottom × left/center/right) with padding control
   - Text color, outline/stroke width, shadow blur and color
   - Optional background strip behind text with opacity slider
+- Image effects for the artwork:
+  - Brightness, contrast, and saturation sliders (-100% to +100%)
+  - Grayscale, sepia, and invert toggles
+  - Artistic blur (0–10px)
+  - Vignette and noise/grain overlays with intensity controls
+  - 5 presets: Vibrant, Muted, Vintage, B&W, Neon
+  - Effects preview in real-time and apply to exported wallpapers at any DPI
 - Reshuffle button to randomize artwork order and padding images
 
 ---
@@ -57,23 +64,29 @@ src/
     page.tsx         Main page component
   components/
     WallpaperPreview.tsx  Canvas preview, reshuffle, and download
+    SettingsPanel.tsx     Wallpaper settings (theme, background, resolution)
     TextSettings.tsx      Title text customization panel
+    EffectsPanel.tsx      Image effects controls
   lib/
     spotify/
       parse-playlist-url.ts   URL parsing utility
       playlists.ts            Playlist fetch helper with rate-limit retry
       token.ts                OAuth token cache
     wallpaper/
-      types.ts                Resolution and text style types
+      types.ts                Resolution, text style, and effects types
       grid-layout.ts          Square-cell grid layout calculation
-      render.ts               Canvas rendering logic
+      render.ts               Canvas rendering + filter pipeline
       themes.ts               Wallpaper theme presets
       fonts.ts                Font definitions
       text-layout.ts          Text layout math and presets
+      effects.ts              Filter logic, overlays, and helpers
+      presets.ts              Image effect presets
 __tests__/
   grid-layout.test.ts         Layout math tests (300 cases)
   fonts.test.ts               Font definition tests
   text-layout.test.ts         Text layout math tests
+  effects.test.ts             Filter and overlay helper tests
+  presets.test.ts             Effect preset tests
 docs/
   prd.md                     Product Requirements Document
   implementation-plan.md     Sprint-level implementation plan

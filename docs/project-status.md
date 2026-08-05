@@ -80,6 +80,13 @@ Legend: ✅ Complete | ⏳ Planned | 🔧 In Progress
 - **Review:** `docs/sprints/sprint-8-review.md`
 - **Verification:** 324 tests pass via vitest; lint passes; production build succeeds with self-hosted Google Fonts
 
+### Sprint 9 — Image Effects ✅
+- **Date:** 2026-08-05
+- **Goal:** Post-processing filters to customize artwork appearance
+- **Status:** Complete — all acceptance criteria verified
+- **Review:** `docs/sprints/sprint-9-review.md`
+- **Verification:** 350 tests pass via vitest; lint passes; production build succeeds
+
 ---
 
 ## Completed
@@ -132,16 +139,23 @@ Legend: ✅ Complete | ⏳ Planned | 🔧 In Progress
 - [x] Text shadow (blur + color)
 - [x] Background strip behind text (toggle + opacity slider)
 - [x] Font size slider with Small/Medium/Large/Extra Large presets
+- [x] Brightness, contrast, and saturation sliders (-100% to +100%)
+- [x] Grayscale, sepia, and invert toggles
+- [x] Artistic blur effect (0–10px)
+- [x] Vignette effect (toggle + intensity)
+- [x] Noise/grain overlay (toggle + intensity)
+- [x] 5 effect presets (Vibrant, Muted, Vintage, B&W, Neon)
+- [x] Real-time effect preview and DPI-scaled effect export
 
 ---
 
 ## Current Task
 
-Sprint 8 (Text Customization) complete.
+Sprint 9 (Image Effects) complete.
 
 ## Next Task
 
-Sprint 9 — Image Effects (post-processing filters for artwork).
+Sprint 10 — Wallpaper Templates (predefined layout presets).
 
 ---
 

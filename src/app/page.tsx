@@ -6,8 +6,9 @@ import WallpaperPreview from "@/components/WallpaperPreview";
 import SettingsPanel from "@/components/SettingsPanel";
 import { THEMES } from "@/lib/wallpaper/themes";
 import { DEFAULT_TEXT_STYLE } from "@/lib/wallpaper/text-layout";
+import { DEFAULT_EFFECTS } from "@/lib/wallpaper/effects";
 import { RESOLUTIONS } from "@/lib/wallpaper/types";
-import type { AlbumImage, GradientConfig, ResolutionKey, TextStyle } from "@/lib/wallpaper/types";
+import type { AlbumImage, GradientConfig, ResolutionKey, TextStyle, WallpaperEffects } from "@/lib/wallpaper/types";
 import type { ThemeKey } from "@/lib/wallpaper/themes";
 
 interface PlaylistResponse {
@@ -52,6 +53,7 @@ export default function Home() {
   const [blurIntensity, setBlurIntensity] = useState(20);
   const [blurImageIndex, setBlurImageIndex] = useState(0);
   const [artworkScale, setArtworkScale] = useState(1);
+  const [effects, setEffects] = useState<WallpaperEffects>(DEFAULT_EFFECTS);
 
   const effectiveResolution: ResolutionKey = useCustom ? "desktop" : resolution;
   const themeConfig = THEMES[theme];
@@ -329,6 +331,8 @@ export default function Home() {
                     setBlurImageIndex={setBlurImageIndex}
                     artworkScale={artworkScale}
                     setArtworkScale={setArtworkScale}
+                    effects={effects}
+                    setEffects={setEffects}
                     images={shuffledImages}
                     onGenerate={handleGenerateWallpaper}
                   />
@@ -355,6 +359,7 @@ export default function Home() {
                       blurIntensity={blurIntensity}
                       blurImageIndex={blurImageIndex}
                       artworkScale={artworkScale}
+                      effects={effects}
                       showReshuffle={true}
                       showDownload={false}
                       onReshuffle={handleReshuffle}
@@ -404,6 +409,7 @@ export default function Home() {
                   blurIntensity={blurIntensity}
                   blurImageIndex={blurImageIndex}
                   artworkScale={artworkScale}
+                  effects={effects}
                   showReshuffle={false}
                   showDownload={true}
                   onReshuffle={handleReshuffle}

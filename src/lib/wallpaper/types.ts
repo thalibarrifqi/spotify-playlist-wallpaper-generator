@@ -49,6 +49,20 @@ export interface GradientConfig {
   colors: string[];
 }
 
+export interface WallpaperEffects {
+  brightness: number;
+  contrast: number;
+  saturation: number;
+  grayscale: boolean;
+  sepia: boolean;
+  invert: boolean;
+  blur: number;
+  vignette: boolean;
+  vignetteIntensity: number;
+  noise: boolean;
+  noiseIntensity: number;
+}
+
 export interface WallpaperConfig {
   width: number;
   height: number;
@@ -64,6 +78,7 @@ export interface WallpaperConfig {
   blurIntensity?: number;
   blurImageIndex?: number;
   artworkScale?: number;
+  effects?: WallpaperEffects;
 }
 
 export const RESOLUTIONS: Record<

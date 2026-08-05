@@ -8,7 +8,18 @@ import {
   scaleForCanvas,
   withAlpha,
 } from "./text-layout";
-import type { AlbumImage, FontWeight, GradientConfig, WallpaperConfig } from "./types";
+import {
+  DEFAULT_EFFECTS,
+  buildFilterString,
+  drawNoise,
+  drawVignette,
+} from "./effects";
+import type {
+  AlbumImage,
+  FontWeight,
+  GradientConfig,
+  WallpaperConfig,
+} from "./types";
 
 function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
@@ -150,6 +161,117 @@ export async function drawWallpaper(
     throw new Error("Canvas 2D context is not supported in this browser");
   }
 
+  const effects = config.effects ?? DEFAULT_EFFECTS;
+
+  // 1. Render the background + artwork grid to an offscreen canvas.
+  const base = document.createElement("canvas");
+  base.width = config.width;
+  base.height = config.height;
+  const baseCtx = base.getContext("2d");
+  if (!baseCtx) {
+    throw new Error("Canvas 2D context is not supported in this browser");
+  }
+  await renderBase(baseCtx, images, config);
+
+  // 2. Composite the base onto the main canvas with the filter pipeline.
+  ctx.save();
+  ctx.filter = buildFilterString(effects);
+
+  let drawX = 0;
+  let drawY = 0;
+  let drawWidth = config.width;
+  let drawHeight = config.height;
+  if (effects.blur > 0) {
+    const margin = Math.max(16, effects.blur * 4);
+    const scaleX = (config.width + margin * 2) / config.width;
+    const scaleY = (config.height + margin * 2) / config.height;
+    const scale = Math.max(scaleX, scaleY);
+    drawWidth = config.width * scale;
+    drawHeight = config.height * scale;
+    drawX = (config.width - drawWidth) / 2;
+    drawY = (config.height - drawHeight) / 2;
+  }
+  ctx.drawImage(base, drawX, drawY, drawWidth, drawHeight);
+  ctx.filter = "none";
+  ctx.restore();
+
+  // 3. Overlay effects (vignette + noise) applied after the filter pass.
+  if (effects.vignette) {
+    drawVignette(ctx, config.width, config.height, effects.vignetteIntensity);
+  }
+  if (effects.noise) {
+    drawNoise(ctx, config.width, config.height, effects.noiseIntensity);
+  }
+
+  if (config.title) {
+    const textStyle = config.textStyle ?? DEFAULT_TEXT_STYLE;
+    const font = getFont(textStyle.fontFamilyId) ?? WALLPAPER_FONTS[0];
+    const fontSize = Math.round(scaleForCanvas(textStyle.fontSize, config.width));
+    const padding = Math.round(scaleForCanvas(textStyle.padding, config.width));
+    const canvasFont = buildCanvasFont(textStyle.fontWeight, fontSize, font);
+
+    await ensureFontLoaded(font, textStyle.fontWeight, fontSize, config.title);
+
+    ctx.save();
+    ctx.font = canvasFont;
+
+    const textWidth = ctx.measureText(config.title).width;
+    const layout = computeTitleLayout(
+      textStyle.position,
+      config.width,
+      config.height,
+      textWidth,
+      fontSize,
+      padding,
+      textStyle.showBackground
+    );
+
+    if (textStyle.showBackground) {
+      const stripFill = withAlpha(
+        config.titleBarColor ?? "#000000",
+        textStyle.backgroundOpacity / 100
+      );
+      ctx.fillStyle = stripFill;
+      ctx.beginPath();
+      ctx.roundRect(
+        layout.stripX,
+        layout.stripY,
+        layout.stripWidth,
+        layout.stripHeight,
+        layout.radius
+      );
+      ctx.fill();
+    }
+
+    ctx.textAlign = layout.align;
+    ctx.textBaseline = layout.baseline;
+
+    ctx.shadowColor = textStyle.shadow.color;
+    ctx.shadowBlur = scaleForCanvas(textStyle.shadow.blur, config.width);
+    const shadowOffset = Math.max(1, scaleForCanvas(1, config.width));
+    ctx.shadowOffsetX = shadowOffset;
+    ctx.shadowOffsetY = shadowOffset;
+
+    const strokeWidth = scaleForCanvas(textStyle.strokeWidth, config.width);
+    if (strokeWidth > 0) {
+      ctx.lineWidth = strokeWidth;
+      ctx.strokeStyle = textStyle.strokeColor;
+      ctx.lineJoin = "round";
+      ctx.miterLimit = 2;
+      ctx.strokeText(config.title, layout.textX, layout.textY);
+    }
+
+    ctx.fillStyle = textStyle.color;
+    ctx.fillText(config.title, layout.textX, layout.textY);
+    ctx.restore();
+  }
+}
+
+async function renderBase(
+  ctx: CanvasRenderingContext2D,
+  images: AlbumImage[],
+  config: WallpaperConfig
+): Promise<void> {
   const bgColor = config.backgroundColor ?? "#000000";
   const spacing = config.spacing ?? 0;
   const borderRadius = config.borderRadius ?? 0;
@@ -219,69 +341,6 @@ export async function drawWallpaper(
       drawW,
       drawH
     );
-    ctx.restore();
-  }
-
-  if (config.title) {
-    const textStyle = config.textStyle ?? DEFAULT_TEXT_STYLE;
-    const font = getFont(textStyle.fontFamilyId) ?? WALLPAPER_FONTS[0];
-    const fontSize = Math.round(scaleForCanvas(textStyle.fontSize, config.width));
-    const padding = Math.round(scaleForCanvas(textStyle.padding, config.width));
-    const canvasFont = buildCanvasFont(textStyle.fontWeight, fontSize, font);
-
-    await ensureFontLoaded(font, textStyle.fontWeight, fontSize, config.title);
-
-    ctx.save();
-    ctx.font = canvasFont;
-
-    const textWidth = ctx.measureText(config.title).width;
-    const layout = computeTitleLayout(
-      textStyle.position,
-      config.width,
-      config.height,
-      textWidth,
-      fontSize,
-      padding,
-      textStyle.showBackground
-    );
-
-    if (textStyle.showBackground) {
-      const stripFill = withAlpha(
-        config.titleBarColor ?? "#000000",
-        textStyle.backgroundOpacity / 100
-      );
-      ctx.fillStyle = stripFill;
-      ctx.beginPath();
-      ctx.roundRect(
-        layout.stripX,
-        layout.stripY,
-        layout.stripWidth,
-        layout.stripHeight,
-        layout.radius
-      );
-      ctx.fill();
-    }
-
-    ctx.textAlign = layout.align;
-    ctx.textBaseline = layout.baseline;
-
-    ctx.shadowColor = textStyle.shadow.color;
-    ctx.shadowBlur = scaleForCanvas(textStyle.shadow.blur, config.width);
-    const shadowOffset = Math.max(1, scaleForCanvas(1, config.width));
-    ctx.shadowOffsetX = shadowOffset;
-    ctx.shadowOffsetY = shadowOffset;
-
-    const strokeWidth = scaleForCanvas(textStyle.strokeWidth, config.width);
-    if (strokeWidth > 0) {
-      ctx.lineWidth = strokeWidth;
-      ctx.strokeStyle = textStyle.strokeColor;
-      ctx.lineJoin = "round";
-      ctx.miterLimit = 2;
-      ctx.strokeText(config.title, layout.textX, layout.textY);
-    }
-
-    ctx.fillStyle = textStyle.color;
-    ctx.fillText(config.title, layout.textX, layout.textY);
     ctx.restore();
   }
 }

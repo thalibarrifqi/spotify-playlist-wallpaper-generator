@@ -4,8 +4,9 @@ import { THEMES } from "@/lib/wallpaper/themes";
 import { RESOLUTIONS } from "@/lib/wallpaper/types";
 import type { ResolutionKey } from "@/lib/wallpaper/types";
 import type { ThemeKey } from "@/lib/wallpaper/themes";
-import type { AlbumImage, GradientConfig, TextStyle } from "@/lib/wallpaper/types";
+import type { AlbumImage, GradientConfig, TextStyle, WallpaperEffects } from "@/lib/wallpaper/types";
 import TextSettings from "./TextSettings";
+import EffectsPanel from "./EffectsPanel";
 
 interface SettingsPanelProps {
   theme: ThemeKey;
@@ -38,6 +39,8 @@ interface SettingsPanelProps {
   setBlurImageIndex: (i: number) => void;
   artworkScale: number;
   setArtworkScale: (s: number) => void;
+  effects: WallpaperEffects;
+  setEffects: (e: WallpaperEffects) => void;
   images: AlbumImage[];
   onGenerate: () => void;
 }
@@ -73,6 +76,8 @@ export default function SettingsPanel({
   setBlurImageIndex,
   artworkScale,
   setArtworkScale,
+  effects,
+  setEffects,
   images,
   onGenerate,
 }: SettingsPanelProps) {
@@ -353,6 +358,9 @@ export default function SettingsPanel({
           className="w-full"
         />
       </div>
+
+      {/* Image Effects */}
+      <EffectsPanel effects={effects} onChange={setEffects} />
 
       {/* Show Title */}
       <div className="flex items-center gap-3 p-3 bg-zinc-50 rounded-lg border border-zinc-200">
