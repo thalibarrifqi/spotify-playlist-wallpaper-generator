@@ -1,7 +1,7 @@
 # Project Status
 
 **Last updated:** 2026-08-05
-**Commits:** 69593e9 → e6220e7 (25 commits on main)
+**Commits:** 69593e9 → eea1e5e (34 commits on main)
 **Deployed:** Vercel
 
 ---
@@ -101,6 +101,14 @@ Legend: ✅ Complete | ⏳ Planned | 🔧 In Progress
 - **Review:** `docs/sprints/sprint-11-review.md`
 - **Verification:** 401 tests pass via vitest; lint passes; production build succeeds; headless-browser flow verified (persist→reload, generate→history→restore, export JSON, reset, mobile drawer)
 
+### Sprint 12 — Social Sharing ❌ Dropped
+- **Date:** 2026-08-05
+- **Reason:** Sharing wallpapers publicly redistributes copyrighted Spotify album artwork (copyright/API ToU exposure). Plan deleted; no code was built.
+
+### Sprint 13 — Gallery / Community ❌ Dropped
+- **Date:** 2026-08-05
+- **Reason:** Same copyrighted-artwork redistribution concern as Sprint 12 (public display). Plan deleted; no code was built.
+
 ---
 
 ## Completed
@@ -182,11 +190,11 @@ Legend: ✅ Complete | ⏳ Planned | 🔧 In Progress
 
 ## Current Task
 
-Sprint 11 (Local Storage & History) complete.
+Sprint 14 (Performance & Accessibility) — planned in `docs/sprints/sprint-14-plan.md`.
 
 ## Next Task
 
-Sprint 12 — per plan in `docs/sprints/sprint-12-plan.md`.
+Sprint 15 — per plan in `docs/sprints/sprint-15-plan.md`.
 
 ---
 

@@ -2,11 +2,11 @@
 
 ## Goal
 
-Final QA, deployment setup, and documentation.
+Final QA, documentation, and release readiness.
 
 ## Background
 
-Sprint 14 completed performance and accessibility improvements. The app is feature-complete and needs final polish, testing, and deployment preparation.
+Sprint 14 completed performance and accessibility improvements. The app is already deployed to Vercel and `.env.example` exists, so this sprint focuses on QA, documentation, and final polish rather than greenfield deployment setup.
 
 ## Requirements
 
@@ -14,25 +14,24 @@ Sprint 14 completed performance and accessibility improvements. The app is featu
 
 - [ ] Cross-browser testing (Chrome, Firefox, Safari, Edge)
 - [ ] Mobile testing (iOS Safari, Android Chrome)
-- [ ] Responsive design verification
-- [ ] Error handling review
-- [ ] Edge case testing (empty playlists, network errors)
+- [ ] Responsive design verification (390px–1920px)
+- [ ] Error handling review (network errors, empty playlists, invalid URLs)
+- [ ] Edge case testing (empty playlists, API failures, large playlists)
 
-### Deployment
+### Release Readiness
 
-- [ ] Vercel deployment configuration
-- [ ] Environment variable documentation
-- [ ] Build optimization
-- [ ] Performance benchmarks
-- [ ] SEO meta tags and Open Graph
+- [ ] SEO meta tags and Open Graph on the landing page
+- [ ] Final performance benchmark recorded in `docs/performance.md`
+- [ ] Fix remaining lint warnings (HistoryItem `<img>`, page thumbnail grid)
+- [ ] Lighthouse audit > 90 (desktop + mobile)
 
 ### Documentation
 
 - [ ] User guide (`docs/user-guide.md`)
 - [ ] API documentation (`docs/api.md`)
 - [ ] Contributing guidelines (`CONTRIBUTING.md`)
+- [ ] Changelog (`CHANGELOG.md`)
 - [ ] README.md updates
-- [ ] Changelog
 
 ### Final Polish
 
@@ -48,7 +47,7 @@ Sprint 14 completed performance and accessibility improvements. The app is featu
 - [ ] App works in Chrome, Firefox, Safari, Edge
 - [ ] App works on iOS Safari and Android Chrome
 - [ ] All features work correctly
-- [ ] No console errors or warnings
+- [ ] No console errors or new lint warnings
 - [ ] Lighthouse score > 90
 - [ ] Deployment succeeds on Vercel
 - [ ] Documentation is complete and accurate
@@ -57,28 +56,30 @@ Sprint 14 completed performance and accessibility improvements. The app is featu
 
 ## Deliverables
 
-- `vercel.json` — Vercel configuration
-- `.env.example` — Environment template
+- `.env.example` — verify/refresh existing template
 - `docs/user-guide.md` — User documentation
 - `docs/api.md` — API documentation
 - `CONTRIBUTING.md` — Contributing guide
 - `CHANGELOG.md` — Version history
 - Updated `README.md`
-- Performance benchmark report
+- `docs/performance.md` — Final performance benchmark report
 
 ## Out of Scope
 
+- Social sharing / sharing links (dropped — copyrighted artwork redistribution)
+- Public gallery / community features (dropped — same reason)
 - Custom domain setup
 - CI/CD pipeline
 - Monitoring and alerting
 - Analytics integration
+- Native mobile sharing (Web Share API)
 
 ## Risks
 
 | Risk | Mitigation |
 |------|------------|
 | Browser compatibility issues | Test early, use progressive enhancement |
-| Deployment configuration | Follow Vercel best practices, test in staging |
+| Deployment configuration drift | Vercel auto-deploys from main; verify a preview build before promoting |
 | Documentation drift | Write docs alongside code, review before release |
 
 ## Definition of Done

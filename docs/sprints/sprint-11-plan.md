@@ -1,5 +1,8 @@
 # Sprint 11 - Local Storage & History
 
+**Status:** ✅ Complete (2026-08-05, commit `a8afd2d`)
+**Review:** `docs/sprints/sprint-11-review.md`
+
 ## Goal
 
 Persist user settings and maintain wallpaper history.
@@ -12,37 +15,37 @@ Sprint 10 added wallpaper templates. Users now have many customization options b
 
 ### Settings Persistence
 
-- [ ] Save last-used settings to localStorage
-- [ ] Load saved settings on app mount
-- [ ] Settings include: theme, resolution, spacing, border radius, etc.
-- [ ] Reset settings option
+- [x] Save last-used settings to localStorage
+- [x] Load saved settings on app mount
+- [x] Settings include: theme, resolution, spacing, border radius, etc.
+- [x] Reset settings option
 
 ### Wallpaper History
 
-- [ ] Store last 20 generated wallpapers
-- [ ] History includes: playlist name, thumbnail, settings used
-- [ ] History viewer with thumbnails
-- [ ] Re-generate wallpaper from history with same settings
-- [ ] Clear history option
-- [ ] Export history as JSON
+- [x] Store last 20 generated wallpapers
+- [x] History includes: playlist name, thumbnail, settings used
+- [x] History viewer with thumbnails
+- [x] Re-generate wallpaper from history with same settings
+- [x] Clear history option
+- [x] Export history as JSON
 
 ### History UI
 
-- [ ] History panel accessible from wizard
-- [ ] History item shows playlist name, artwork thumbnail, date
-- [ ] Click to restore settings
-- [ ] Delete individual history items
+- [x] History panel accessible from wizard
+- [x] History item shows playlist name, artwork thumbnail, date
+- [x] Click to restore settings
+- [x] Delete individual history items
 
 ## Acceptance Criteria
 
-- [ ] Settings persist across page reloads
-- [ ] History stores last 20 wallpapers
-- [ ] User can view history with thumbnails
-- [ ] User can re-generate from history
-- [ ] User can clear history
-- [ ] Storage doesn't exceed 5MB localStorage limit
-- [ ] All existing tests pass
-- [ ] New tests added for storage utilities
+- [x] Settings persist across page reloads
+- [x] History stores last 20 wallpapers
+- [x] User can view history with thumbnails
+- [x] User can re-generate from history
+- [x] User can clear history
+- [x] Storage doesn't exceed 5MB localStorage limit
+- [x] All existing tests pass
+- [x] New tests added for storage utilities
 
 ## Deliverables
 
@@ -69,10 +72,12 @@ Sprint 10 added wallpaper templates. Users now have many customization options b
 | Data corruption | Add validation on load, fallback to defaults |
 | Privacy concerns | Store only playlist names, not full URLs |
 
+> **Note on the privacy risk (deviation):** history entries store the full playlist URL (not just the name) because **Restore** re-fetches the playlist from that URL. This is deliberate and contained to the user's own browser localStorage; it enables the restore flow the plan requires. Nothing is transmitted anywhere.
+
 ## Definition of Done
 
-- [ ] Acceptance criteria completed
-- [ ] Lint passes
-- [ ] AI self-review completed
-- [ ] Human review completed
-- [ ] Documentation updated (README.md, sprint review)
+- [x] Acceptance criteria completed
+- [x] Lint passes
+- [x] AI self-review completed
+- [x] Human review completed
+- [x] Documentation updated (README.md, sprint review)
