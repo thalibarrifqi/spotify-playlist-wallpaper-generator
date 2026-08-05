@@ -158,7 +158,7 @@ export default function SettingsPanel({
             onClick={() => handleThemeChange(key)}
             className={
               theme === key
-                ? "px-3 py-1.5 text-xs font-medium bg-[#1db954] text-white rounded-lg transition-all duration-150"
+                ? "px-3 py-1.5 text-xs font-medium bg-[#11853a] text-white rounded-lg transition-all duration-150"
                 : "px-3 py-1.5 text-xs font-medium bg-zinc-100 text-zinc-600 rounded-lg hover:bg-zinc-200 transition-colors"
             }
           >
@@ -185,7 +185,7 @@ export default function SettingsPanel({
                 (type === "solid" && !useGradient && !useBlur) ||
                 (type === "gradient" && useGradient && !useBlur) ||
                 (type === "blur" && useBlur)
-                  ? "flex-1 py-2 text-sm font-medium bg-[#1db954] text-white transition-colors"
+                  ? "flex-1 py-2 text-sm font-medium bg-[#11853a] text-white transition-colors"
                   : "flex-1 py-2 text-sm font-medium bg-white text-zinc-600 hover:bg-zinc-50 transition-colors"
               }
             >
@@ -200,13 +200,13 @@ export default function SettingsPanel({
           <div className="flex rounded-lg overflow-hidden border border-zinc-200">
             <button
               onClick={() => setGradient({ ...gradient, type: "linear" })}
-              className={gradient.type === "linear" ? "flex-1 py-1.5 text-xs font-medium bg-[#1db954] text-white" : "flex-1 py-1.5 text-xs font-medium bg-white text-zinc-600"}
+              className={gradient.type === "linear" ? "flex-1 py-1.5 text-xs font-medium bg-[#11853a] text-white" : "flex-1 py-1.5 text-xs font-medium bg-white text-zinc-600"}
             >
               Linear
             </button>
             <button
               onClick={() => setGradient({ ...gradient, type: "radial" })}
-              className={gradient.type === "radial" ? "flex-1 py-1.5 text-xs font-medium bg-[#1db954] text-white" : "flex-1 py-1.5 text-xs font-medium bg-white text-zinc-600"}
+              className={gradient.type === "radial" ? "flex-1 py-1.5 text-xs font-medium bg-[#11853a] text-white" : "flex-1 py-1.5 text-xs font-medium bg-white text-zinc-600"}
             >
               Radial
             </button>
@@ -258,7 +258,7 @@ export default function SettingsPanel({
                       const colors = gradient.colors.filter((_, j) => j !== i);
                       setGradient({ ...gradient, colors });
                     }}
-                    className="w-7 h-7 flex items-center justify-center text-zinc-500 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
+                    className="w-9 h-9 flex items-center justify-center text-zinc-500 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
                     aria-label="Remove color"
                   >
                     ×
@@ -269,7 +269,7 @@ export default function SettingsPanel({
             {gradient.colors.length < 3 && (
               <button
                 onClick={() => setGradient({ ...gradient, colors: [...gradient.colors, "#ffffff"] })}
-                className="text-xs text-[#1db954] hover:text-[#1ed760] font-medium"
+                className="text-xs text-[#11853a] hover:text-[#12883b] font-medium"
               >
                 + Add color
               </button>
@@ -344,7 +344,7 @@ export default function SettingsPanel({
               }}
               className={
                 !useCustom && resolution === key
-                  ? "flex-1 py-2 text-sm font-medium bg-[#1db954] text-white transition-colors"
+                  ? "flex-1 py-2 text-sm font-medium bg-[#11853a] text-white transition-colors"
                   : "flex-1 py-2 text-sm font-medium bg-white text-zinc-600 hover:bg-zinc-50 transition-colors"
               }
             >
@@ -355,7 +355,7 @@ export default function SettingsPanel({
             onClick={() => setUseCustom(true)}
             className={
               useCustom
-                ? "flex-1 py-2 text-sm font-medium bg-[#1db954] text-white transition-colors"
+                ? "flex-1 py-2 text-sm font-medium bg-[#11853a] text-white transition-colors"
                 : "flex-1 py-2 text-sm font-medium bg-white text-zinc-600 hover:bg-zinc-50 transition-colors"
             }
           >
@@ -450,7 +450,7 @@ export default function SettingsPanel({
                       }
                       className={`px-3 py-1 text-xs font-medium rounded-lg transition-colors ${
                         val > 0.5
-                          ? "bg-[#1db954] text-white"
+                          ? "bg-[#11853a] text-white"
                           : "bg-zinc-200 text-zinc-600"
                       }`}
                     >
@@ -502,7 +502,7 @@ export default function SettingsPanel({
         id="show-title"
         checked={showTitle}
         onChange={(e) => setShowTitle(e.target.checked)}
-        className="w-4 h-4 rounded border-zinc-300 text-[#1db954] focus:ring-[#1db954]"
+        className="w-4 h-4 rounded border-zinc-300 text-[#11853a] focus:ring-[#1db954]"
       />
       <label htmlFor="show-title" className="text-sm text-zinc-700 cursor-pointer">
         Show playlist title on wallpaper
@@ -572,7 +572,7 @@ export default function SettingsPanel({
             onKeyDown={(event) => handleTabKeyDown(event, index)}
             className={
               activeTab === tab.id
-                ? "flex-1 py-2 text-xs sm:text-sm font-medium bg-[#1db954] text-white transition-colors"
+                ? "flex-1 py-2 text-xs sm:text-sm font-medium bg-[#11853a] text-white transition-colors"
                 : "flex-1 py-2 text-xs sm:text-sm font-medium bg-white text-zinc-600 hover:bg-zinc-50 transition-colors"
             }
           >
@@ -586,7 +586,7 @@ export default function SettingsPanel({
       {/* Generate Button */}
       <button
         onClick={onGenerate}
-        className="w-full py-3 px-4 bg-[#1db954] hover:bg-[#1ed760] text-white font-semibold rounded-lg transition-all duration-200 btn-press"
+        className="w-full py-3 px-4 bg-[#11853a] hover:bg-[#12883b] text-white font-semibold rounded-lg transition-all duration-200 btn-press"
       >
         Generate Wallpaper
       </button>

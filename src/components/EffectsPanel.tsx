@@ -25,7 +25,7 @@ function ToggleRow({
         id={`effect-${label.toLowerCase().replace(/\s+/g, "-")}`}
         checked={checked}
         onChange={(e) => onChange(e.target.checked)}
-        className="w-4 h-4 rounded border-zinc-300 text-[#1db954] focus:ring-[#1db954]"
+        className="w-4 h-4 rounded border-zinc-300 text-[#11853a] focus:ring-[#1db954]"
       />
       <label
         htmlFor={`effect-${label.toLowerCase().replace(/\s+/g, "-")}`}
@@ -60,7 +60,7 @@ export default function EffectsPanel({ effects, onChange }: EffectsPanelProps) {
               onClick={() => onChange(preset.effects)}
               className={
                 effectsEqual(effects, preset.effects)
-                  ? "px-3 py-1.5 text-xs font-medium bg-[#1db954] text-white rounded-lg transition-all duration-150"
+                  ? "px-3 py-1.5 text-xs font-medium bg-[#11853a] text-white rounded-lg transition-all duration-150"
                   : "px-3 py-1.5 text-xs font-medium bg-white text-zinc-600 border border-zinc-200 rounded-lg hover:bg-zinc-100 transition-colors"
               }
             >

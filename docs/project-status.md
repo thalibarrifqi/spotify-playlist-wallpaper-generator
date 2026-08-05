@@ -1,7 +1,7 @@
 # Project Status
 
 **Last updated:** 2026-08-05
-**Commits:** 69593e9 → (Sprint 14, on main)
+**Commits:** 69593e9 → (Sprint 14, on main) → Sprint 15 (on main, not pushed)
 **Deployed:** Vercel
 
 ---
@@ -117,6 +117,14 @@ Legend: ✅ Complete | ⏳ Planned | 🔧 In Progress
 - **Docs:** `docs/performance.md`, `docs/accessibility.md`
 - **Verification:** 411 tests pass via vitest (incl. 10 new hook tests); lint 0 errors / 0 warnings; production build succeeds; headless browser: keyboard-only wizard, reduced-motion emulation, lazy thumbnails, history drawer focus/Escape, 3x worker export; long tasks during 3x export 1168ms → 0ms
 
+### Sprint 15 — Polish & Deployment ✅ (pending deploy)
+- **Date:** 2026-08-05
+- **Goal:** Final QA, SEO/OG meta, docs, polish, Lighthouse, release readiness
+- **Status:** Complete (code + docs) — see review; Vercel deploy + `git push` pending human action (no credentials in sandbox)
+- **Review:** `docs/sprints/sprint-15-review.md`
+- **Docs:** `docs/user-guide.md`, `docs/api.md`, `CONTRIBUTING.md`, `CHANGELOG.md`
+- **Verification:** 411 tests pass via vitest; lint 0 errors / 0 warnings; production build succeeds; Playwright QA 13 checks pass (Chromium + Firefox full wizard, 4 viewports, 7 edge cases; WebKit skipped — missing system libs); Lighthouse a11y 100, best-practices 100, SEO 100 (performance 52 mobile prod — see review); Landing hero now `next/image` with preload + AA-compliant green `#11853a`
+
 ---
 
 ## Completed
@@ -208,24 +216,33 @@ Legend: ✅ Complete | ⏳ Planned | 🔧 In Progress
 - [x] HistoryItem thumbnail lint warning fixed (`next/image` + placeholder)
 - [x] Accessibility hook tests (10 cases, 411 total)
 - [x] `docs/performance.md` + `docs/accessibility.md`
+- [x] SEO/Open Graph metadata (title template, description, keywords, robots, OG, Twitter card)
+- [x] AA-compliant action green (white text on `#11853a` 4.7:1; hover `#12883b`)
+- [x] Landing hero via `next/image` (preload, responsive srcset, darker overlay) — LCP/contrast polish
+- [x] Touch targets enlarged (color swatches, remove-color, history close)
+- [x] `docs/user-guide.md`, `docs/api.md`, `CONTRIBUTING.md`, `CHANGELOG.md`
+- [x] README Documentation + license/legal note sections
+- [x] Final performance benchmark (0 long tasks, heap stable) in `docs/performance.md`
+- [x] Lighthouse: accessibility 100, best-practices 100, SEO 100; performance 52 (mobile, prod build) — deferred, see review
 
 ---
 
 ## Current Task
 
-Sprint 15 — per plan in `docs/sprints/sprint-15-plan.md`.
+Sprint 15 complete (code + docs committed on main, not pushed). Remaining release steps are human actions: `git push` to origin, Vercel deploy, real-device cross-browser pass, Lighthouse performance follow-up.
 
 ## Next Task
 
-(Next sprint after 15 — TBD in the roadmap.)
+(None in roadmap; post-Sprint-15 follow-ups: performance >90, real-device browser pass, deploy verification.)
 
 ---
 
 ## Technical Debt
 
 1. Google Fonts may fail in restricted network environments
-2. Lighthouse >90 not run in sandbox (real API unreachable); targeted checks done instead
+2. Lighthouse performance <90 (sandbox + remote hero image); a11y/BP/SEO at 100
 3. jsdom added as a devDependency for hook tests
+4. Real-device browser pass (iOS/Android, WebKit/Safari/Edge) not run — sandbox lacks system libs
 
 ---
 

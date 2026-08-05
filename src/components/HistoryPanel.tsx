@@ -94,7 +94,7 @@ export default function HistoryPanel({
           <button
             onClick={onClose}
             aria-label="Close history"
-            className="w-8 h-8 flex items-center justify-center text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 rounded-lg transition-colors"
+            className="w-10 h-10 flex items-center justify-center text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 rounded-lg transition-colors"
           >
             ×
           </button>

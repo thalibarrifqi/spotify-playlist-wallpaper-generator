@@ -81,7 +81,7 @@ export default function TemplateSelector({
               aria-label={`${template.label} template: ${template.description}`}
               className={`p-2 rounded-lg border-2 transition-all duration-150 ${
                 selected
-                  ? "border-[#1db954] bg-[#1db954]/5"
+                  ? "border-[#1db954] bg-[#11853a]/5"
                   : "border-zinc-200 bg-white hover:border-zinc-300"
               }`}
             >

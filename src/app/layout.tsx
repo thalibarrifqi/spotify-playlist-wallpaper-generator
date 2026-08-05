@@ -54,8 +54,37 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Spotify Playlist Wallpaper Generator",
-  description: "Generate beautiful wallpapers from Spotify playlists",
+  title: {
+    default: "Spotify Playlist Wallpaper Generator",
+    template: "%s | Spotify Wallpaper Generator",
+  },
+  description:
+    "Turn any Spotify playlist into a custom phone or desktop wallpaper. Choose a layout template, background, effects, and text — then download at print quality.",
+  applicationName: "Spotify Wallpaper Generator",
+  keywords: [
+    "spotify",
+    "wallpaper",
+    "playlist",
+    "phone wallpaper",
+    "desktop wallpaper",
+    "wallpaper generator",
+  ],
+  authors: [{ name: "Spotify Wallpaper Generator" }],
+  creator: "Spotify Wallpaper Generator",
+  robots: { index: true, follow: true },
+  openGraph: {
+    type: "website",
+    siteName: "Spotify Wallpaper Generator",
+    title: "Spotify Playlist Wallpaper Generator",
+    description:
+      "Turn any Spotify playlist into a custom phone or desktop wallpaper.",
+  },
+  twitter: {
+    card: "summary",
+    title: "Spotify Playlist Wallpaper Generator",
+    description:
+      "Turn any Spotify playlist into a custom phone or desktop wallpaper.",
+  },
 };
 
 export default function RootLayout({

@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+
 interface LandingPageProps {
   onGetStarted: () => void;
 }
@@ -7,16 +9,17 @@ interface LandingPageProps {
 export default function LandingPage({ onGetStarted }: LandingPageProps) {
   return (
     <div className="relative min-h-screen flex flex-col">
-      {/* Full-page Background Image */}
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage:
-            "url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=1920&q=80')",
-        }}
+      {/* Full-page Background Image (LCP element) */}
+      <Image
+        src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819"
+        alt=""
+        fill
+        preload
+        sizes="100vw"
+        className="object-cover"
       />
       {/* Dark Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/80" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/75 to-black/85" />
 
       {/* Centered content */}
       <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 py-8 sm:py-16">
@@ -32,7 +35,7 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
           <button
             type="button"
             onClick={onGetStarted}
-            className="px-6 py-3 sm:px-8 sm:py-4 bg-[#1db954] hover:bg-[#1ed760] text-white font-semibold text-base sm:text-lg rounded-full transition-all duration-200 sm:hover:scale-105 hover:shadow-lg hover:shadow-green-500/25 active:scale-95 animate-fade-in-delay-2"
+            className="px-6 py-3 sm:px-8 sm:py-4 bg-[#11853a] hover:bg-[#12883b] text-white font-semibold text-base sm:text-lg rounded-full transition-all duration-200 sm:hover:scale-105 hover:shadow-lg hover:shadow-green-500/25 active:scale-95 animate-fade-in-delay-2"
           >
             Get Started
           </button>
@@ -43,9 +46,9 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
           <div className="grid grid-cols-3 gap-2 sm:gap-8">
             {/* Feature 1 */}
             <div className="text-center p-3 sm:p-6 rounded-xl bg-zinc-800/70 border border-zinc-700/50 animate-fade-in-delay-1">
-              <div className="w-8 h-8 sm:w-12 sm:h-12 mx-auto mb-2 sm:mb-4 rounded-full bg-[#1db954]/20 flex items-center justify-center">
+              <div className="w-8 h-8 sm:w-12 sm:h-12 mx-auto mb-2 sm:mb-4 rounded-full bg-[#11853a]/20 flex items-center justify-center">
                 <svg
-                  className="w-4 h-4 sm:w-6 sm:h-6 text-[#1db954]"
+                  className="w-4 h-4 sm:w-6 sm:h-6 text-[#11853a]"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -65,9 +68,9 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
 
             {/* Feature 2 */}
             <div className="text-center p-3 sm:p-6 rounded-xl bg-zinc-800/70 border border-zinc-700/50 animate-fade-in-delay-2">
-              <div className="w-8 h-8 sm:w-12 sm:h-12 mx-auto mb-2 sm:mb-4 rounded-full bg-[#1db954]/20 flex items-center justify-center">
+              <div className="w-8 h-8 sm:w-12 sm:h-12 mx-auto mb-2 sm:mb-4 rounded-full bg-[#11853a]/20 flex items-center justify-center">
                 <svg
-                  className="w-4 h-4 sm:w-6 sm:h-6 text-[#1db954]"
+                  className="w-4 h-4 sm:w-6 sm:h-6 text-[#11853a]"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -92,9 +95,9 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
 
             {/* Feature 3 */}
             <div className="text-center p-3 sm:p-6 rounded-xl bg-zinc-800/70 border border-zinc-700/50 animate-fade-in-delay-3">
-              <div className="w-8 h-8 sm:w-12 sm:h-12 mx-auto mb-2 sm:mb-4 rounded-full bg-[#1db954]/20 flex items-center justify-center">
+              <div className="w-8 h-8 sm:w-12 sm:h-12 mx-auto mb-2 sm:mb-4 rounded-full bg-[#11853a]/20 flex items-center justify-center">
                 <svg
-                  className="w-4 h-4 sm:w-6 sm:h-6 text-[#1db954]"
+                  className="w-4 h-4 sm:w-6 sm:h-6 text-[#11853a]"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"

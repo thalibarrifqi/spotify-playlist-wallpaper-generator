@@ -177,3 +177,20 @@ docs/
 - Review AI-generated code before accepting changes.
 - Keep components simple and reusable.
 - Do not introduce unnecessary complexity.
+
+---
+
+## Documentation
+
+- [User guide](docs/user-guide.md) — how to use the app
+- [API reference](docs/api.md) — `/api/playlist` endpoint + internal libraries
+- [Performance](docs/performance.md) — profiling baseline + Web Worker export results
+- [Accessibility](docs/accessibility.md) — WCAG 2.1 AA work
+- [Changelog](CHANGELOG.md) — release history
+- [Contributing](CONTRIBUTING.md) — setup, checks, and conventions
+
+---
+
+## License / Legal note
+
+Generated wallpapers are stored only in the user's own browser (history + download). This project deliberately does **not** implement social sharing or public galleries, which would redistribute copyrighted Spotify album artwork.

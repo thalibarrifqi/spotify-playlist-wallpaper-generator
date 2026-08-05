@@ -61,20 +61,24 @@ function ColorSwatches({
         <button
           key={color}
           onClick={() => onSelect(color)}
-          className={`w-7 h-7 rounded-full border transition-transform hover:scale-110 ${
-            value === color
-              ? "border-[#1db954] ring-2 ring-[#1db954]/40"
-              : "border-zinc-200"
+          className={`p-1.5 rounded-full transition-transform hover:scale-110 ${
+            value === color ? "ring-2 ring-[#1db954]/40" : ""
           }`}
-          style={{ backgroundColor: color }}
           aria-label={`Color ${color}`}
-        />
+        >
+          <span
+            className={`block w-7 h-7 rounded-full border ${
+              value === color ? "border-[#1db954]" : "border-zinc-200"
+            }`}
+            style={{ backgroundColor: color }}
+          />
+        </button>
       ))}
       <input
         type="color"
         value={hexOrFallback(value, "#ffffff")}
         onChange={(e) => onSelect(e.target.value)}
-        className="w-7 h-7 rounded-full border border-zinc-200 cursor-pointer bg-white p-0"
+        className="w-9 h-9 rounded-full border border-zinc-200 cursor-pointer bg-white p-1"
         aria-label="Custom color"
       />
     </div>
@@ -104,7 +108,7 @@ function PositionPicker({
             onClick={() => onChange(position)}
             className={`relative h-12 rounded-lg border transition-colors ${
               value === position
-                ? "border-[#1db954] bg-[#1db954]/10"
+                ? "border-[#1db954] bg-[#11853a]/10"
                 : "border-zinc-200 bg-white hover:bg-zinc-100"
             }`}
             aria-label={`Position ${position}`}
@@ -112,7 +116,7 @@ function PositionPicker({
           >
             <span
               className={`absolute w-2 h-2 rounded-full ${
-                value === position ? "bg-[#1db954]" : "bg-zinc-400"
+                value === position ? "bg-[#11853a]" : "bg-zinc-400"
               } ${dotClass}`}
             />
           </button>
@@ -172,7 +176,7 @@ export default function TextSettings({ textStyle, onChange }: TextSettingsProps)
               onClick={() => update({ fontWeight: weight })}
               className={
                 textStyle.fontWeight === weight
-                  ? "flex-1 py-1.5 text-xs font-medium bg-[#1db954] text-white transition-colors"
+                  ? "flex-1 py-1.5 text-xs font-medium bg-[#11853a] text-white transition-colors"
                   : "flex-1 py-1.5 text-xs font-medium bg-white text-zinc-600 hover:bg-zinc-50 transition-colors"
               }
             >
@@ -194,7 +198,7 @@ export default function TextSettings({ textStyle, onChange }: TextSettingsProps)
               onClick={() => update({ fontSize: preset.value })}
               className={
                 textStyle.fontSize === preset.value
-                  ? "px-3 py-1.5 text-xs font-medium bg-[#1db954] text-white rounded-lg transition-all duration-150"
+                  ? "px-3 py-1.5 text-xs font-medium bg-[#11853a] text-white rounded-lg transition-all duration-150"
                   : "px-3 py-1.5 text-xs font-medium bg-white text-zinc-600 border border-zinc-200 rounded-lg hover:bg-zinc-100 transition-colors"
               }
             >
@@ -316,7 +320,7 @@ export default function TextSettings({ textStyle, onChange }: TextSettingsProps)
           id="text-background"
           checked={textStyle.showBackground}
           onChange={(e) => update({ showBackground: e.target.checked })}
-          className="w-4 h-4 rounded border-zinc-300 text-[#1db954] focus:ring-[#1db954]"
+          className="w-4 h-4 rounded border-zinc-300 text-[#11853a] focus:ring-[#1db954]"
         />
         <label htmlFor="text-background" className="text-sm text-zinc-700 cursor-pointer">
           Background strip behind text

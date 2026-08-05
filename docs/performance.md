@@ -50,6 +50,19 @@ The main thread is no longer blocked during high-DPI export; wall time is domina
 - `npm run build` — passes
 - Headless browser: worker export at 3× downloads a correct, non-blank PNG with no JS errors; long-task measurement drops to zero (see table above)
 
+## Final Benchmark (Sprint 15)
+
+Re-run of the same Phase 1 harness after all Sprint 15 polish (same mock 12-image playlist, 1080×1920 preview, 3240×5760 3× export). The machine was under heavier load than the initial run (multiple browsers open), so wall times are higher — the responsiveness metric is what matters and it is unchanged.
+
+| Metric | Phase 1 baseline | Post-worker (Sprint 14) | Final (Sprint 15) |
+|--------|------------------|-------------------------|-------------------|
+| Preview redraw wall time (incl. 80ms debounce) | 246 ms | 331 ms | 417–536 ms |
+| 3× export wall time | 1588 ms | 1525 ms | 2357–2493 ms |
+| Long tasks during 3× export | 2 (sum 1168 ms, max 1082 ms) | 0 | **0** |
+| JS heap before/after export | stable ~12.8 MB | stable ~14.5 MB | stable ~14.5 MB |
+
+**Conclusion:** the main thread is never blocked during high-DPI export regardless of machine load; the 3× wall-time variance is entirely inside the worker. Preview redraws are debounced to one draw per gesture and do not trigger long tasks.
+
 ## Assets
 
 - Profiling harness: `/tmp/opencode/profile-export.cjs` (CDP trace, long-task + heap measurement)

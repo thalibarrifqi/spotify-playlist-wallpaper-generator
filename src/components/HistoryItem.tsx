@@ -50,7 +50,7 @@ export default function HistoryItem({
         <div className="mt-1 flex gap-2">
           <button
             onClick={() => onRestore(entry)}
-            className="text-xs text-[#1db954] hover:text-[#1ed760] font-medium"
+            className="text-xs text-[#11853a] hover:text-[#12883b] font-medium"
           >
             Restore
           </button>

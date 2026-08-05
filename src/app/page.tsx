@@ -377,7 +377,7 @@ export default function Home() {
                   <button
                     onClick={handleFetchPlaylist}
                     disabled={loading}
-                    className="w-full py-3 px-4 bg-[#1db954] hover:bg-[#1ed760] text-white font-semibold rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed btn-press"
+                    className="w-full py-3 px-4 bg-[#11853a] hover:bg-[#12883b] text-white font-semibold rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed btn-press"
                     aria-label={loading ? "Loading playlist..." : "Fetch playlist"}
                   >
                     {loading ? (
@@ -435,7 +435,7 @@ export default function Home() {
 
                 <button
                   onClick={handleGoToSettings}
-                  className="w-full py-3 px-4 bg-[#1db954] hover:bg-[#1ed760] text-white font-semibold rounded-lg transition-all duration-200 btn-press"
+                  className="w-full py-3 px-4 bg-[#11853a] hover:bg-[#12883b] text-white font-semibold rounded-lg transition-all duration-200 btn-press"
                 >
                   Proceed to Customize
                 </button>
