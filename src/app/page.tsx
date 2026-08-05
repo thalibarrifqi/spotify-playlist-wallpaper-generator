@@ -17,6 +17,9 @@ import { DEFAULT_SETTINGS, clearSettings, loadSettings, saveSettings } from "@/l
 import type { WallpaperSettings } from "@/lib/storage";
 import { useHistory } from "@/hooks/useHistory";
 import type { HistoryEntry } from "@/lib/history";
+import SkipLink from "@/components/SkipLink";
+import LiveRegion from "@/components/LiveRegion";
+import LazyImage from "@/components/LazyImage";
 
 interface PlaylistResponse {
   name: string;
@@ -32,6 +35,13 @@ const STEP_BACKGROUNDS = {
   artwork: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=1920&q=80",
   settings: "https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=1920&q=80",
   download: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=1920&q=80",
+};
+
+const STEP_LABELS: Record<number, string> = {
+  1: "Step 1: Enter your Spotify playlist URL",
+  2: "Step 2: Confirm the album artwork",
+  3: "Step 3: Customize your wallpaper",
+  4: "Step 4: Download your wallpaper",
 };
 
 export default function Home() {
@@ -65,7 +75,16 @@ export default function Home() {
   const [templateSettings, setTemplateSettings] = useState<TemplateSettings>({});
   const [historyOpen, setHistoryOpen] = useState(false);
   const latestThumbnailRef = useRef<string>("");
+  const mainRef = useRef<HTMLElement | null>(null);
   const { history, add: addHistory, remove: removeHistory, clear: clearHistory, exportJson: exportHistoryJson } = useHistory();
+
+  const announcement = STEP_LABELS[step] ?? "";
+
+  useEffect(() => {
+    if (step >= 1 && step <= 4) {
+      mainRef.current?.focus();
+    }
+  }, [step]);
 
   const applySettings = useCallback((s: WallpaperSettings) => {
     setTheme(s.theme);
@@ -286,12 +305,16 @@ export default function Home() {
   // Wizard steps
   return (
     <div className="min-h-screen relative flex flex-col">
+      <SkipLink />
       {/* Background */}
       <div
         className="fixed inset-0 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url('${getBackground()}')` }}
       />
       <div className="fixed inset-0 bg-black/60" />
+
+      {/* Screen reader announcements for wizard state changes */}
+      <LiveRegion message={announcement} />
 
       {/* Content */}
       <div className="relative z-10 flex flex-col min-h-screen">
@@ -312,6 +335,7 @@ export default function Home() {
                 onClick={() => setHistoryOpen(true)}
                 className="text-sm text-white/70 hover:text-white transition-colors font-medium"
                 aria-label="Open history"
+                aria-haspopup="dialog"
               >
                 History
               </button>
@@ -320,7 +344,12 @@ export default function Home() {
         </header>
 
         {/* Main content */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8">
+        <main
+          ref={mainRef}
+          id="main-content"
+          tabIndex={-1}
+          className="flex-1 p-4 sm:p-6 lg:p-8 outline-none"
+        >
           {step === 1 && (
             <div className="max-w-md mx-auto animate-fade-in">
               <div className="bg-white/95 backdrop-blur-sm rounded-xl p-6 card-shadow-lg">
@@ -382,17 +411,19 @@ export default function Home() {
                   {playlist.description && (
                     <p className="text-zinc-500 text-sm mt-1">{playlist.description}</p>
                   )}
-                  <p className="text-zinc-400 text-xs mt-1">{playlist.images.length} album artworks</p>
+                  <p className="text-zinc-500 text-xs mt-1">{playlist.images.length} album artworks</p>
                 </div>
 
                 {playlist.images.length > 0 ? (
                   <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 mb-6">
                     {playlist.images.map((image, index) => (
-                      <img
+                      <LazyImage
                         key={index}
                         src={image.url}
                         alt={image.albumName || `Album artwork ${index + 1}`}
+                        placeholderClassName="w-full aspect-square"
                         className="w-full aspect-square object-cover rounded-lg transition-transform duration-200 hover:scale-105"
+                        onError={() => {}}
                       />
                     ))}
                   </div>
@@ -520,7 +551,7 @@ export default function Home() {
 
                 <div className="mb-4">
                   <h2 className="text-xl font-bold text-zinc-900">{playlist.name}</h2>
-                  <p className="text-zinc-400 text-xs mt-1">{playlist.images.length} tracks</p>
+                  <p className="text-zinc-500 text-xs mt-1">{playlist.images.length} tracks</p>
                 </div>
 
                 <WallpaperPreview

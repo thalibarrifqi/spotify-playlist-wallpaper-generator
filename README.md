@@ -52,6 +52,16 @@ Wallpaper generation is complete. The app can:
 - History:
   - Every generated wallpaper is saved to your own browser history (up to 20 entries) with a thumbnail
   - History drawer restores any past wallpaper with its exact settings and playlist
+- Performance:
+  - High-DPI (2x/3x) export runs in a Web Worker via `OffscreenCanvas`, keeping the main thread responsive (with a main-thread fallback)
+  - Debounced preview redraws during slider adjustments
+  - Lazy-loaded artwork thumbnails (IntersectionObserver, `decoding="async"`)
+  - See `docs/performance.md` for the baseline and results
+- Accessibility (WCAG 2.1 AA):
+  - Skip navigation link, focus management per wizard step, ARIA tabs with arrow-key navigation, focus-trapped history dialog (Escape to close)
+  - Screen-reader live regions for step/export status; visible focus indicators
+  - `prefers-reduced-motion` support (CSS + JS) and AA color contrast
+  - See `docs/accessibility.md`
   - Export history as JSON or clear it at any time
 - Reshuffle button to randomize artwork order and padding images
 
@@ -82,9 +92,16 @@ src/
     TemplateSelector.tsx  Layout template picker with thumbnails
     HistoryPanel.tsx      History drawer (restore, export, clear)
     HistoryItem.tsx       Single history entry row
+    LazyImage.tsx         IntersectionObserver image loading (artwork thumbs)
+    SkipLink.tsx          Skip-to-content link for keyboard/screen-reader users
+    LiveRegion.tsx        Screen reader announcements (live regions)
   hooks/
     useLocalStorage.ts    Generic localStorage-backed state hook
     useHistory.ts         History state synced to localStorage
+    useReducedMotion.ts   Live prefers-reduced-motion preference
+    useKeyboardNav.ts     Document-level key handler hook
+  workers/
+    canvas.worker.ts      OffscreenCanvas export worker (2x/3x download)
   lib/
     storage.ts            Settings persistence (load/save/clear, schema validation)
     history.ts            History entry helpers (cap 20, export JSON, download)
@@ -95,7 +112,9 @@ src/
     wallpaper/
       types.ts                Resolution, text style, template, and effects types
       grid-layout.ts          Square-cell grid layout calculation
-      render.ts               Canvas rendering + filter pipeline
+      canvas-core.ts          DOM-free renderer core (worker + main thread share it)
+      render.ts               Main-thread canvas rendering + filter pipeline
+      worker.ts               Export-worker client (lazy singleton, fallback)
       themes.ts               Wallpaper theme presets
       fonts.ts                Font definitions
       text-layout.ts          Text layout math and presets
@@ -118,11 +137,14 @@ __tests__/
   templates.test.ts           Template layout tests
   storage.test.ts             Settings merge/validation + storage helpers
   history.test.ts             History add/remove/clear/export tests
+  hooks.test.tsx              useReducedMotion + useKeyboardNav tests (jsdom)
 docs/
   prd.md                     Product Requirements Document
   implementation-plan.md     Sprint-level implementation plan
   engineering-principles.md  Development workflow and principles
   project-status.md          Development log
+  performance.md             Performance baseline + Web Worker export results
+  accessibility.md           Accessibility (WCAG 2.1 AA) documentation
   sprints/                   Sprint plans and reviews
 ```
 

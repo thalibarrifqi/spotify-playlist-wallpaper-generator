@@ -129,7 +129,7 @@ export default function EffectsPanel({ effects, onChange }: EffectsPanelProps) {
           onChange={(e) => update({ blur: Number(e.target.value) })}
           className="w-full"
         />
-        <p className="text-xs text-zinc-400 mt-1">Artistic dreamy blur</p>
+        <p className="text-xs text-zinc-500 mt-1">Artistic dreamy blur</p>
       </div>
 
       {/* Color toggles */}

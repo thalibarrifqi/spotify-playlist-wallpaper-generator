@@ -1,7 +1,7 @@
 # Project Status
 
 **Last updated:** 2026-08-05
-**Commits:** 69593e9 → eea1e5e (34 commits on main)
+**Commits:** 69593e9 → (Sprint 14, on main)
 **Deployed:** Vercel
 
 ---
@@ -109,6 +109,14 @@ Legend: ✅ Complete | ⏳ Planned | 🔧 In Progress
 - **Date:** 2026-08-05
 - **Reason:** Same copyrighted-artwork redistribution concern as Sprint 12 (public display). Plan deleted; no code was built.
 
+### Sprint 14 — Performance & Accessibility ✅
+- **Date:** 2026-08-05
+- **Goal:** Optimize performance (profile → Web Worker export) and reach WCAG 2.1 AA
+- **Status:** Complete — see review (Lighthouse >90 noted as pending, see review note)
+- **Review:** `docs/sprints/sprint-14-review.md`
+- **Docs:** `docs/performance.md`, `docs/accessibility.md`
+- **Verification:** 411 tests pass via vitest (incl. 10 new hook tests); lint 0 errors / 0 warnings; production build succeeds; headless browser: keyboard-only wizard, reduced-motion emulation, lazy thumbnails, history drawer focus/Escape, 3x worker export; long tasks during 3x export 1168ms → 0ms
+
 ---
 
 ## Completed
@@ -185,23 +193,39 @@ Legend: ✅ Complete | ⏳ Planned | 🔧 In Progress
 - [x] History drawer with thumbnails, restore, export JSON, and clear
 - [x] Restore flow: re-fetch playlist by URL → apply saved settings → land on Customize
 - [x] Storage + history tests (21 cases, 401 total)
+- [x] High-DPI (2x/3x) export in a Web Worker (OffscreenCanvas) — 0 main-thread long tasks during 3x export
+- [x] Main-thread export fallback + Google-font title path (fonts live in the document)
+- [x] Debounced preview redraws (80ms) during slider adjustments
+- [x] Lazy-loaded artwork thumbnails (IntersectionObserver, `loading="lazy"`, `decoding="async"`)
+- [x] DOM-free renderer core (`canvas-core.ts`) shared by main thread and worker
+- [x] Skip-to-content link + focus management on wizard step changes
+- [x] ARIA tabs with arrow-key navigation in the settings panel
+- [x] History dialog: focus trap, Escape to close, focus restore
+- [x] Screen reader live regions (step changes, export/download status)
+- [x] `prefers-reduced-motion` support (CSS + JS)
+- [x] Color contrast AA pass on helper text (zinc-400 → zinc-500)
+- [x] Fixed undefined `animate-slide-in` utility; added slideIn keyframe
+- [x] HistoryItem thumbnail lint warning fixed (`next/image` + placeholder)
+- [x] Accessibility hook tests (10 cases, 411 total)
+- [x] `docs/performance.md` + `docs/accessibility.md`
 
 ---
 
 ## Current Task
 
-Sprint 14 (Performance & Accessibility) — planned in `docs/sprints/sprint-14-plan.md`.
+Sprint 15 — per plan in `docs/sprints/sprint-15-plan.md`.
 
 ## Next Task
 
-Sprint 15 — per plan in `docs/sprints/sprint-15-plan.md`.
+(Next sprint after 15 — TBD in the roadmap.)
 
 ---
 
 ## Technical Debt
 
 1. Google Fonts may fail in restricted network environments
-2. Pre-existing `<img>` lint warning in thumbnail grid
+2. Lighthouse >90 not run in sandbox (real API unreachable); targeted checks done instead
+3. jsdom added as a devDependency for hook tests
 
 ---
 

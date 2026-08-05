@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { THEMES } from "@/lib/wallpaper/themes";
 import { RESOLUTIONS } from "@/lib/wallpaper/types";
 import type { ResolutionKey } from "@/lib/wallpaper/types";
@@ -111,6 +111,30 @@ export default function SettingsPanel({
   onReset,
 }: SettingsPanelProps) {
   const [activeTab, setActiveTab] = useState<SettingsTab>("background");
+  const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
+
+  const handleTabKeyDown = (event: React.KeyboardEvent, index: number) => {
+    const last = TABS.length - 1;
+    const moveTo = (target: number) => {
+      const btn = tabRefs.current[target];
+      if (!btn) return;
+      setActiveTab(TABS[target].id);
+      btn.focus();
+    };
+    if (event.key === "ArrowRight") {
+      event.preventDefault();
+      moveTo(index === last ? 0 : index + 1);
+    } else if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      moveTo(index === 0 ? last : index - 1);
+    } else if (event.key === "Home") {
+      event.preventDefault();
+      moveTo(0);
+    } else if (event.key === "End") {
+      event.preventDefault();
+      moveTo(last);
+    }
+  };
 
   const handleThemeChange = (key: ThemeKey) => {
     setTheme(key);
@@ -234,7 +258,7 @@ export default function SettingsPanel({
                       const colors = gradient.colors.filter((_, j) => j !== i);
                       setGradient({ ...gradient, colors });
                     }}
-                    className="w-7 h-7 flex items-center justify-center text-zinc-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
+                    className="w-7 h-7 flex items-center justify-center text-zinc-500 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
                     aria-label="Remove color"
                   >
                     ×
@@ -302,7 +326,7 @@ export default function SettingsPanel({
         onChange={(e) => setArtworkScale(Number(e.target.value))}
         className="w-full"
       />
-      <p className="text-xs text-zinc-400 mt-1">Zoom in/out on album artwork</p>
+      <p className="text-xs text-zinc-500 mt-1">Zoom in/out on album artwork</p>
     </div>
   );
 
@@ -349,7 +373,7 @@ export default function SettingsPanel({
             placeholder="Width"
             className="w-full min-w-0 px-3 py-2 bg-white border border-zinc-200 rounded-lg text-zinc-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#1db954]"
           />
-          <span className="text-zinc-400">×</span>
+          <span className="text-zinc-500">×</span>
           <input
             type="number"
             value={customHeight}
@@ -492,28 +516,34 @@ export default function SettingsPanel({
 
   const tabSections = (
     <div className="space-y-5">
-      {activeTab === "background" && (
-        <>
-          {themeSection}
-          {backgroundSection}
-          {artworkScaleSection}
-        </>
-      )}
-      {activeTab === "layout" && (
-        <>
-          {templateSection}
-          {resolutionSection}
-          {spacingSection}
-          {borderRadiusSection}
-        </>
-      )}
-      {activeTab === "effects" && effectsSection}
-      {activeTab === "text" && (
-        <>
-          {showTitleSection}
-          {textSection}
-        </>
-      )}
+      <div
+        role="tabpanel"
+        id={`panel-${activeTab}`}
+        aria-labelledby={`tab-${activeTab}`}
+      >
+        {activeTab === "background" && (
+          <>
+            {themeSection}
+            {backgroundSection}
+            {artworkScaleSection}
+          </>
+        )}
+        {activeTab === "layout" && (
+          <>
+            {templateSection}
+            {resolutionSection}
+            {spacingSection}
+            {borderRadiusSection}
+          </>
+        )}
+        {activeTab === "effects" && effectsSection}
+        {activeTab === "text" && (
+          <>
+            {showTitleSection}
+            {textSection}
+          </>
+        )}
+      </div>
     </div>
   );
 
@@ -522,11 +552,24 @@ export default function SettingsPanel({
       <h2 className="text-lg font-bold text-zinc-900">Customize</h2>
 
       {/* Pagination tabs */}
-      <div className="flex rounded-lg overflow-hidden border border-zinc-200">
-        {TABS.map((tab) => (
+      <div
+        role="tablist"
+        aria-label="Wallpaper settings"
+        className="flex rounded-lg overflow-hidden border border-zinc-200"
+      >
+        {TABS.map((tab, index) => (
           <button
             key={tab.id}
+            role="tab"
+            id={`tab-${tab.id}`}
+            aria-selected={activeTab === tab.id}
+            aria-controls={`panel-${tab.id}`}
+            tabIndex={activeTab === tab.id ? 0 : -1}
+            ref={(el) => {
+              tabRefs.current[index] = el;
+            }}
             onClick={() => setActiveTab(tab.id)}
+            onKeyDown={(event) => handleTabKeyDown(event, index)}
             className={
               activeTab === tab.id
                 ? "flex-1 py-2 text-xs sm:text-sm font-medium bg-[#1db954] text-white transition-colors"
@@ -550,7 +593,7 @@ export default function SettingsPanel({
 
       <button
         onClick={onReset}
-        className="w-full text-xs text-zinc-400 hover:text-zinc-900 font-medium transition-colors"
+        className="w-full text-xs text-zinc-500 hover:text-zinc-900 font-medium transition-colors"
       >
         Reset all settings
       </button>

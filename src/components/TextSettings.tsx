@@ -213,7 +213,7 @@ export default function TextSettings({ textStyle, onChange }: TextSettingsProps)
           onChange={(e) => update({ fontSize: Number(e.target.value) })}
           className="w-full"
         />
-        <p className="text-xs text-zinc-400 mt-1">
+        <p className="text-xs text-zinc-500 mt-1">
           Scales automatically to match the wallpaper resolution
         </p>
       </div>

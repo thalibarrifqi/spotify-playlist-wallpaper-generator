@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import type { HistoryEntry } from "@/lib/history";
 
 interface HistoryItemProps {
@@ -24,16 +25,28 @@ export default function HistoryItem({
 }: HistoryItemProps) {
   return (
     <div className="flex gap-3 p-3 bg-zinc-50 rounded-lg border border-zinc-200 hover:border-zinc-300 transition-colors">
-      <img
-        src={entry.thumbnail}
-        alt={`${entry.playlistName} wallpaper thumbnail`}
-        className="w-14 h-14 object-cover rounded-md border border-zinc-200 shrink-0"
-      />
+      {entry.thumbnail ? (
+        <Image
+          src={entry.thumbnail}
+          alt={`${entry.playlistName} wallpaper thumbnail`}
+          width={56}
+          height={56}
+          unoptimized
+          className="w-14 h-14 object-cover rounded-md border border-zinc-200 shrink-0"
+        />
+      ) : (
+        <div
+          aria-hidden="true"
+          className="w-14 h-14 rounded-md border border-zinc-200 shrink-0 bg-zinc-200 flex items-center justify-center text-zinc-500"
+        >
+          ♪
+        </div>
+      )}
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-zinc-900 truncate">
           {entry.playlistName}
         </p>
-        <p className="text-xs text-zinc-400">{formatDate(entry.createdAt)}</p>
+        <p className="text-xs text-zinc-500">{formatDate(entry.createdAt)}</p>
         <div className="mt-1 flex gap-2">
           <button
             onClick={() => onRestore(entry)}
@@ -43,7 +56,7 @@ export default function HistoryItem({
           </button>
           <button
             onClick={() => onDelete(entry.id)}
-            className="text-xs text-zinc-400 hover:text-red-500 font-medium"
+            className="text-xs text-zinc-500 hover:text-red-500 font-medium"
           >
             Delete
           </button>

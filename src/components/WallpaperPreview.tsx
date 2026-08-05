@@ -1,7 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";import { drawWallpaper } from "@/lib/wallpaper/render";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { drawWallpaper } from "@/lib/wallpaper/render";
 import { scaleEffects } from "@/lib/wallpaper/effects";
+import { exportWallpaperInWorker, supportsOffscreenWorker } from "@/lib/wallpaper/worker";
+import { getFont } from "@/lib/wallpaper/fonts";
+import LiveRegion from "./LiveRegion";
 import { RESOLUTIONS } from "@/lib/wallpaper/types";
 import type {
   AlbumImage,
@@ -102,6 +106,9 @@ export default function WallpaperPreview({
     null
   );
   const [dpiMultiplier, setDpiMultiplier] = useState<1 | 2 | 3>(1);
+  const [exportState, setExportState] = useState<
+    "idle" | "preparing" | "done"
+  >("idle");
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const onRenderedRef = useRef(onRendered);
 
@@ -159,9 +166,12 @@ export default function WallpaperPreview({
       }
     };
 
-    render();
+    const timer = window.setTimeout(() => {
+      void render();
+    }, 80);
     return () => {
       cancelled = true;
+      window.clearTimeout(timer);
     };
   }, [images, width, height, renderKey, showTitle, playlistName, spacing, borderRadius, backgroundColor, titleBarColor, titleTextColor, textStyle, gradient, blur, blurIntensity, blurImageIndex, artworkScale, effects, template, templateSettings]);
 
@@ -169,16 +179,66 @@ export default function WallpaperPreview({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
+    setExportState("preparing");
+
     if (dpiMultiplier === 1) {
       canvas.toBlob((blob) => {
         if (!blob) {
+          setExportState("idle");
           setStatus({ key: renderKey, error: "Failed to export image" });
           return;
         }
         const url = URL.createObjectURL(blob);
         triggerDownload(url, `${sanitizeFilename(playlistName)}.png`);
+        setExportState("done");
       }, "image/png");
       return;
+    }
+
+    const exportConfig = {
+      width: width * dpiMultiplier,
+      height: height * dpiMultiplier,
+      title: showTitle ? playlistName : undefined,
+      spacing: spacing * dpiMultiplier,
+      borderRadius: borderRadius * dpiMultiplier,
+      backgroundColor,
+      titleBarColor,
+      titleTextColor,
+      textStyle,
+      gradient,
+      blur,
+      blurIntensity: blurIntensity ? blurIntensity * dpiMultiplier : undefined,
+      blurImageIndex,
+      artworkScale,
+      effects: effects ? scaleEffects(effects, dpiMultiplier) : undefined,
+      template,
+      templateSettings,
+    };
+
+    // Self-hosted Google fonts are loaded into the document, not the worker,
+    // so title text with a Google font must render on the main thread.
+    const googleFontTitle =
+      showTitle &&
+      textStyle &&
+      getFont(textStyle.fontFamilyId)?.category === "google";
+
+    if (supportsOffscreenWorker() && !googleFontTitle) {
+      try {
+        const blob = await exportWallpaperInWorker(
+          exportConfig,
+          images.map((image) => image.url)
+        );
+        const url = URL.createObjectURL(blob);
+        triggerDownload(
+          url,
+          `${sanitizeFilename(playlistName)}-${dpiMultiplier}x.png`
+        );
+        setExportState("done");
+        return;
+      } catch {
+        setExportState("idle");
+        // Fall back to the main-thread renderer below.
+      }
     }
 
     const exportCanvas = document.createElement("canvas");
@@ -186,28 +246,11 @@ export default function WallpaperPreview({
     exportCanvas.height = height * dpiMultiplier;
 
     try {
-      await drawWallpaper(images, exportCanvas, {
-        width: width * dpiMultiplier,
-        height: height * dpiMultiplier,
-        title: showTitle ? playlistName : undefined,
-        spacing: spacing * dpiMultiplier,
-        borderRadius: borderRadius * dpiMultiplier,
-        backgroundColor,
-        titleBarColor,
-        titleTextColor,
-        textStyle,
-        gradient,
-        blur,
-        blurIntensity: blurIntensity ? blurIntensity * dpiMultiplier : undefined,
-        blurImageIndex,
-        artworkScale,
-        effects: effects ? scaleEffects(effects, dpiMultiplier) : undefined,
-        template,
-        templateSettings,
-      });
+      await drawWallpaper(images, exportCanvas, exportConfig);
 
       exportCanvas.toBlob((blob) => {
         if (!blob) {
+          setExportState("idle");
           setStatus({ key: renderKey, error: "Failed to export image" });
           return;
         }
@@ -216,18 +259,30 @@ export default function WallpaperPreview({
           url,
           `${sanitizeFilename(playlistName)}-${dpiMultiplier}x.png`
         );
+        setExportState("done");
       }, "image/png");
     } catch {
+      setExportState("idle");
       setStatus({ key: renderKey, error: "Failed to export high-res image" });
     }
   }, [playlistName, renderKey, width, height, dpiMultiplier, images, showTitle, spacing, borderRadius, backgroundColor, titleBarColor, titleTextColor, textStyle, gradient, blur, blurIntensity, blurImageIndex, artworkScale, effects, template, templateSettings]);
+
+  const liveMessage = rendering
+    ? "Generating wallpaper preview"
+    : exportState === "preparing"
+      ? "Preparing your wallpaper download"
+      : exportState === "done"
+        ? "Wallpaper download started"
+        : "";
 
   return (
     <div className="bg-white rounded-xl p-5 card-shadow-lg space-y-4">
       <h2 className="text-lg font-bold text-zinc-900">Preview</h2>
 
+      <LiveRegion message={liveMessage} />
+
       {/* Canvas */}
-      <div className="relative">
+      <div className="relative" aria-busy={rendering}>
         {rendering && (
           <div className="absolute inset-0 flex items-center justify-center bg-zinc-100 rounded-lg z-10">
             <div className="text-center">
@@ -260,23 +315,30 @@ export default function WallpaperPreview({
       {/* Export Quality */}
       {showDownload && (
         <div>
-          <label className="block text-xs font-medium text-zinc-600 mb-2">Export Quality</label>
-          <div className="flex rounded-lg overflow-hidden border border-zinc-200">
-            {([1, 2, 3] as const).map((dpi) => (
-              <button
-                key={dpi}
-                onClick={() => setDpiMultiplier(dpi)}
-                className={
-                  dpiMultiplier === dpi
-                    ? "flex-1 py-2 text-sm font-medium bg-[#1db954] text-white transition-colors"
-                    : "flex-1 py-2 text-sm font-medium bg-white text-zinc-600 hover:bg-zinc-50 transition-colors"
-                }
-              >
-                {dpi}x
-              </button>
-            ))}
+          <div
+            role="group"
+            aria-label="Export quality"
+            className="mb-2"
+          >
+            <span className="block text-xs font-medium text-zinc-600">Export Quality</span>
+            <div className="flex rounded-lg overflow-hidden border border-zinc-200 mt-1">
+              {([1, 2, 3] as const).map((dpi) => (
+                <button
+                  key={dpi}
+                  onClick={() => setDpiMultiplier(dpi)}
+                  aria-pressed={dpiMultiplier === dpi}
+                  className={
+                    dpiMultiplier === dpi
+                      ? "flex-1 py-2 text-sm font-medium bg-[#1db954] text-white transition-colors"
+                      : "flex-1 py-2 text-sm font-medium bg-white text-zinc-600 hover:bg-zinc-50 transition-colors"
+                  }
+                >
+                  {dpi}x
+                </button>
+              ))}
+            </div>
           </div>
-          <p className="text-xs text-zinc-400 mt-1">
+          <p className="text-xs text-zinc-500 mt-1">
             {dpiMultiplier === 1 && "Screen quality"}
             {dpiMultiplier === 2 && "High-res screens"}
             {dpiMultiplier === 3 && "Print quality (300 DPI)"}

@@ -14,56 +14,56 @@ The canvas renderer (`src/lib/wallpaper/render.ts`) is intentionally DOM-coupled
 
 ### Phase 1 — Profile (mandatory, defines Phase 3)
 
-- [ ] Instrument render + export: measure `drawWallpaper` time and 3x-DPI `toDataURL` time
-- [ ] Capture main-thread blocking and long tasks during a 3x export (Chrome DevTools Performance trace)
-- [ ] Measure memory growth across repeated exports
-- [ ] Record a baseline in `docs/performance.md` and decide Phase 3 against a threshold (e.g., >100ms main-thread block on 3x export)
+- [x] Instrument render + export: measure `drawWallpaper` time and 3x-DPI `toDataURL` time
+- [x] Capture main-thread blocking and long tasks during a 3x export (Chrome DevTools Performance trace)
+- [x] Measure memory growth across repeated exports
+- [x] Record a baseline in `docs/performance.md` and decide Phase 3 against a threshold (e.g., >100ms main-thread block on 3x export) — 1.1s of long tasks → Phase 3 triggered
 
 ### Phase 2 — Cheap wins (independent of Phase 3)
 
-- [ ] Debounced/requestAnimationFrame-coalesced slider updates during preview
-- [ ] IntersectionObserver lazy-loading for the artwork selector thumbnails
-- [ ] Image `decoding="async"` + decode hints on artwork images
-- [ ] Memoize/avoid re-rendering the preview when unrelated state changes (already partially done via `renderKey`)
+- [x] Debounced/requestAnimationFrame-coalesced slider updates during preview
+- [x] IntersectionObserver lazy-loading for the artwork selector thumbnails
+- [x] Image `decoding="async"` + decode hints on artwork images
+- [x] Memoize/avoid re-rendering the preview when unrelated state changes (already partially done via `renderKey`)
 
 ### Phase 3 — Web Worker (ONLY if Phase 1 shows a blocker)
 
-- [ ] Move export rendering to a Web Worker using `OffscreenCanvas` + `createImageBitmap`
-- [ ] Keep a main-thread fallback path where OffscreenCanvas/`ctx.filter` are unsupported (e.g., Safari)
-- [ ] Scope to export-only first; do not rewrite the live preview pipeline
-- [ ] Re-run Phase 1 measurements and confirm the improvement
+- [x] Move export rendering to a Web Worker using `OffscreenCanvas` + `createImageBitmap`
+- [x] Keep a main-thread fallback path where OffscreenCanvas/`ctx.filter` are unsupported (e.g., Safari)
+- [x] Scope to export-only first; do not rewrite the live preview pipeline
+- [x] Re-run Phase 1 measurements and confirm the improvement — long tasks 1168ms → 0ms
 
 ### Accessibility (WCAG 2.1 AA)
 
-- [ ] ARIA labels for all interactive elements
-- [ ] Keyboard navigation (Tab, Enter, Escape, Arrow keys)
-- [ ] Focus management in wizard flow (move focus on step change, restore on return)
-- [ ] Visible focus indicators on all interactive elements
-- [ ] Skip navigation link
-- [ ] Screen reader announcements for state changes (live regions for status/step changes)
-- [ ] Color contrast ratios meet AA standards
-- [ ] `prefers-reduced-motion` support (CSS + JS)
+- [x] ARIA labels for all interactive elements
+- [x] Keyboard navigation (Tab, Enter, Escape, Arrow keys)
+- [x] Focus management in wizard flow (move focus on step change, restore on return)
+- [x] Visible focus indicators on all interactive elements
+- [x] Skip navigation link
+- [x] Screen reader announcements for state changes (live regions for status/step changes)
+- [x] Color contrast ratios meet AA standards
+- [x] `prefers-reduced-motion` support (CSS + JS)
 
 ### Testing
 
-- [ ] Lighthouse audit score > 90 (desktop + mobile)
-- [ ] Keyboard-only navigation works through the full wizard
-- [ ] Reduced-motion preference respected (no forced animation)
-- [ ] New unit tests for `useKeyboardNav` and `useReducedMotion` hooks
+- [ ] Lighthouse audit score > 90 (desktop + mobile) — noted in review: not run in sandbox (see review note)
+- [x] Keyboard-only navigation works through the full wizard
+- [x] Reduced-motion preference respected (no forced animation)
+- [x] New unit tests for `useKeyboardNav` and `useReducedMotion` hooks
 
 ## Acceptance Criteria
 
-- [ ] Phase 1 baseline recorded; Phase 3 decision documented with data
-- [ ] Slider adjustments don't cause perceptible jank
-- [ ] Large playlists load smoothly (lazy thumbnails)
-- [ ] All elements have ARIA labels
-- [ ] Keyboard navigation works throughout the wizard
-- [ ] Focus is visible on all interactive elements
-- [ ] Reduced motion is respected
-- [ ] Lighthouse score > 90
-- [ ] All existing tests pass
-- [ ] New tests added for accessibility hooks
-- [ ] No new lint errors; fix the HistoryItem `<img>` lint warning
+- [x] Phase 1 baseline recorded; Phase 3 decision documented with data
+- [x] Slider adjustments don't cause perceptible jank
+- [x] Large playlists load smoothly (lazy thumbnails)
+- [x] All elements have ARIA labels
+- [x] Keyboard navigation works throughout the wizard
+- [x] Focus is visible on all interactive elements
+- [x] Reduced motion is respected
+- [ ] Lighthouse score > 90 (not run in sandbox; see review)
+- [x] All existing tests pass
+- [x] New tests added for accessibility hooks
+- [x] No new lint errors; fix the HistoryItem `<img>` lint warning
 
 ## Deliverables
 

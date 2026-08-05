@@ -80,6 +80,16 @@ body {
   animation: slideUp 0.4s ease-out forwards;
 }
 
+/* Slide in (drawer) */
+@keyframes slideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease-out forwards;
+}
+
 /* Pulse loading */
 @keyframes pulse {
   0%, 100% { opacity: 1; }
@@ -187,4 +197,17 @@ a {
   0%, 20% { content: '.'; }
   40% { content: '..'; }
   60%, 100% { content: '...'; }
+}
+
+/* Respect prefers-reduced-motion: collapse all animation/transition
+   durations so nothing moves for users who opt out of motion. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
